@@ -96,7 +96,7 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 ![TB16 Ports Image](images/ports.png)
 
 ### 1. 	HDMI
-This is a 1.4 standard connector and supports up to 4K (3840x2160) resolution at 24/30Hz. I personally tested QHD (2560x1440@60Hz). If MST and Cable NVM are not up to date, it may show black, not always wake up, or not work at all.
+This is a 1.4a standard connector and supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not up to date, it may show black, not always wake up, or not work at all. The port does not HDCP.
 
 ### 2. 	VGA
 Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1200 @ 60Hz
@@ -120,19 +120,24 @@ Limited (intended) Thunderbolt is available for Daisy-chain DP via tunneling, e.
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. Some users say the TB16 won't deliver more than 60W (20V @3A) for non-Dell systems. It should be enough for most Laptops/Ultrabooks.
 
 ### 10. 	3.5 mm Speaker-out
+Works well, maybe a little to sensitive to RF interference like mobile phones (missing shielding)
 
 ### 11. 	Dell Docking station connector 
 Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with, e.g., MacBooks, but it works and charges.
 
 ### 12. 	Headset Jack
+Front-jack is useful for wired earplugs and a quick Video-call. Linux works with no problem. Since Unbuntu LTS 24.04 it also detects if a jack is not plugged and removes it from the output list. On MACs you need to edit advanced MIDI/Audio device config to add the second (front/back) stream to the outputs in the quick bar top-right.
 
 ### 13. 	USB 3.0 w/PowerShare
+This useful quick-access front port has always-on power. It is ideal for charging phones or plugging hungrier devices. It also works at full power without a Laptop connected.
 
 ### 14. 	USB 3.0
+As above, w/always on power. Here, the device must register first to pull more power.
 
 ### 15. 	Power Adapter LED
 
 ### 16. 	Dock Button
+Works with Dell, the same as the power button. No luck otherwise.
 
 ### 17. 	Kensington lock slot
     
