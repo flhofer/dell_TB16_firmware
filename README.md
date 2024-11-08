@@ -89,4 +89,41 @@ If there is more than one bin file in the directory, it will take the first one 
 
 If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash with version 1.00 and then 1.02 first. These install a Bios-based update file that executes an update at Bios start.
 
-Furthermore, it seems that Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15 and TB18, all got a new `Cable.bin` and where released the same day. You can use the WD15s flasher to update the `Cable.bin`
+Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15, and TB18, got a new `Cable.bin` and were released the same day. You can use the WD15s flasher to update the `Cable.bin`
+
+## What's there and what works
+
+![TB16 Ports Image](images/ports.png)
+
+### 1. 	HDMI v1.4 
+
+### 2. 	VGA
+
+### 3. + 4 	DisplayPort (DP) and mini-DisplayPort (mDP)
+
+### 5. 	RJ45 Gigabit Ethernet
+
+### 6. 	USB 2.0 (2 ports)
+
+### 7. 	USB 3.0
+
+### 8. 	Thunderbolt 3 (USB Type-C)
+
+### 9. 	3.5 mm Speaker-out
+
+### 10. 	7.4 mm DC-in power
+
+### 11. 	Dell Docking station connector (Dell Proprietary connection to USB Type 3 port on PC)
+
+### 12. 	Headset Jack
+
+### 13. 	USB 3.0 w/PowerShare
+
+### 14. 	USB 3.0
+
+### 15. 	Power Adapter LED
+
+### 16. 	Dock Button
+
+### 17. 	Kensington lock slot
+    
