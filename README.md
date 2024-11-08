@@ -19,5 +19,18 @@ Cable PD | 00.03.12 | N/A | Updated through BIOS | none yet |
 
 ## Flashing instructions
 
-I will find alternative flashing methods for all files to the original Dell tool, as it is limited and buggy.
+I will find alternative flashing methods for all files to the original Dell tool, which is limited and buggy.
+
+### Flashing MST chips
+
+While there is a `mst.exe` for manual flashing, that too is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
+For a few years now, it has been possible to flash the chips also on Linux. You will need a recent `fwupd` package, e.g., shipped in Ubuntu 23.10 or newer.
+
+Unlike what is suggested online, you MUST have a monitor connected to perform this update. This means that for MST1, you'll need a DP or VGA connection, and for MST2, you will need a miniDP or an HDMI screen.
+To install, type the following as root or with `sudo`
+
+```
+$ fwupdmgr install <cab-file>
+```
+This install may fail at the prompt but continue flashing and succeed in the background. Thus, do not remove the power to the dock for a minute or two after the command ends.
 
