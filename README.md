@@ -9,15 +9,15 @@ makes it an unbeatable bargain.
 
 The Power button seems to work only on Dell PCs, though. Maybe a script out there somewhere?
 
-> ![Note]
+> [!Note]
 > This procedure may also work for the peers Dell WD15, Dell TB15 (retired), and Dell TB18DC, as they share most of the components. In any case, I'm not responsible for any damages caused by these instructions.
 
 ## Firmware versions and status
 
 System | newest/available version | file | fixes? | alt flashing |
 --- | --- | --- | --- | ---
-Synaptic MST-1 VMM3320 DP + VGA | 03.12.002 | mst_03.12.002.cab | Glitches on screens, compatibility for MacBooks | Linux |
-Synaptic MST-2 VMM3330 miniDP + HDMI | 03.12.002 | mst_03.12.002.cab | " "  | Linux |
+Synaptics MST-1 VMM3320 DP + VGA | 03.12.002 | mst_03.12.002.cab | Glitches on screens, compatibility for MacBooks | Linux |
+Synaptics MST-2 VMM3330 mini-DP + HDMI | 03.12.002 | mst_03.12.002.cab | " "  | Linux |
 Thunderbolt TB16 Cable | 16.00 | Cable_16_0.bin | Fixes MacBook charging problem (to confirm) | Linux |
   " | 26.06 | Cable_26_06.bin | Unofficial update borrowed from WD15, fixes "DROM data CRC32 mismatch" error and random display malfunction | Linux |
 Thunderbolt TB16 Dock | 27.00 | Dock_BME_27_0.bin | Unknown benefits | Linux |
@@ -42,7 +42,7 @@ While there is a `mst.exe` for manual flashing, that too is unreliable and buggy
 
 For a few years now, it has been possible to flash the chips also on Linux. You will need a recent `fwupd` package, e.g., shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a Live-USB using an official Ubuntu which comes with `fwupd` installed.
 
-Unlike what is suggested online, you MUST have a monitor connected to perform this update. This means that for MST1, you'll need a DP or VGA connection; for MST2, you will need a miniDP or an HDMI screen.
+Unlike what is suggested online, you MUST have a monitor connected to perform this update. This means that for MST-1, you'll need a DP or VGA connection; for MST-2, you will need a mini-DP or an HDMI screen.
 To check if both MSTs are running, type the following as root or with `sudo`
 
 ```
@@ -98,7 +98,7 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 ![TB16 Ports Image](images/ports.png)
 
 ### 1. 	HDMI
-This is a 1.4a standard connector and supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not up to date, it may show black, not always wake up, or not work at all. The port does not HDCP.
+This is a HDMI 1.4a standard port and supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not up to date, it may show black, not always wake up, or not work at all. It does not support HDCP.
 
 ### 2. 	VGA
 Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1200 @ 60Hz
@@ -146,7 +146,7 @@ Works with Dell, the same as the power button. No luck otherwise.
 
 ## Video outputs and resolutions
 
-The device comes with three video sources: MST1, MST2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise 3x4k@60Hz is possible, upstream bandwidth limits cap such a configuration to 1x@60Hz + 2x@30Hz.
+The device comes with three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise 3x4k@60Hz is possible, upstream bandwidth limits cap such a configuration to 1x@60Hz + 2x@30Hz.
 
-The two MST devices serve two ports each. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwith and software/graphics card limits, there may not be more than 3 monitors in operation at the same time. Special modes are possible with proprietary Dell hardware.
+The two MST devices serve two ports each: DP and VGA for MST-1, mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwith and software/graphics card limits, there may not be more than 3 monitors in operation at the same time. Special modes are possible with proprietary Dell hardware.
 
