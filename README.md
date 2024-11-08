@@ -95,19 +95,26 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 
 ![TB16 Ports Image](images/ports.png)
 
-### 1. 	HDMI v1.4 
+### 1. 	HDMI
+This is a 1.4 standard connector and supports up to 4K (3840x2160) resolution at 24/30Hz. I personally tested QHD (2560x1440@60Hz). If MST and Cable NVM are not up to date, it may show black, not always wake up, or not work at all.
 
 ### 2. 	VGA
+Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1200 @ 60Hz
 
 ### 3. + 4 	DisplayPort (DP) and mini-DisplayPort (mDP)
+These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz, and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM.
 
 ### 5. 	RJ45 Gigabit Ethernet
+Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have issues waking up from deep sleep (suspend) if the ASMedia USB controller firmware is not up-to-date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via script.
 
 ### 6. 	USB 2.0 (2 ports)
+"Slow"-speed port generally intended for input devices such as mouse, keyboard, trackpad, Smart-card readers, etc. No issues
 
 ### 7. 	USB 3.0
+SuperSpeed USB is ideal for, e.g., monitor USB-HUBs or USB-NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
+Limited Thunderbolt is available for Daisy-chain DP via tunneling, e.g., Multiple USB-C monitors or some USB 3.1 Superspeed devices. In particular configurations, it may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
 
 ### 9. 	3.5 mm Speaker-out
 
