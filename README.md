@@ -89,7 +89,7 @@ If there is more than one bin file in the directory, it will take the first one 
 
 If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash with version 1.00 and then 1.02 first. These install a Bios-based update file that executes an update at Bios start.
 
-Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15, and TB18, got a new `Cable.bin` and were released the same day. You can use the WD15s flasher to update the `Cable.bin`
+Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15, and TB18, got a new `Cable.bin` and were released the same day. You can use the WD15s flasher to update the `Cable.bin`.
 
 ## What's there and what works
 
@@ -114,13 +114,15 @@ Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have 
 SuperSpeed USB is ideal for, e.g., monitor USB-HUBs or USB-NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
-Limited Thunderbolt is available for Daisy-chain DP via tunneling, e.g., Multiple USB-C monitors or some USB 3.1 Superspeed devices. In particular configurations, it may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
+Limited (intended) Thunderbolt is available for Daisy-chain DP via tunneling, e.g., Multiple USB-C monitors or some USB 3.1 Superspeed devices. In particular configurations, it may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
 
-### 9. 	3.5 mm Speaker-out
+### 9. 	7.4 mm DC-in power
+According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. Some users say the TB16 won't deliver more than 60W (20V @3A) for non-Dell systems. It should be enough for most Laptops/Ultrabooks.
 
-### 10. 	7.4 mm DC-in power
+### 10. 	3.5 mm Speaker-out
 
-### 11. 	Dell Docking station connector (Dell Proprietary connection to USB Type 3 port on PC)
+### 11. 	Dell Docking station connector 
+Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with, e.g., MacBooks, but it works and charges.
 
 ### 12. 	Headset Jack
 
