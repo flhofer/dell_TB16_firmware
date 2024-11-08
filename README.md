@@ -21,10 +21,11 @@ Thunderbolt TB16 Cable | 16.00 | Cable_16_0.bin | Fixes MacBook charging problem
 Thunderbolt TB16 Dock | 27.00 | Dock_BME_27_0.bin | Unknown benefits | Linux |
 ASM USB controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
  " | 	140124_10.10_04_2 aka 131025_10.11_AB aka 131025_10.11_171 | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller | Windows/Linux |
-TI 1.2.11 Port Controller 1	 | 01.02.11 | N/A | Updated through BIOS | none yet | 
-TI 1.2.32 Port Controller 2	| 01.02.32 | N/A | Updated through BIOS | none yet | 
-Dock EC | 01.00.00.10 | N/A | Updated through BIOS | none yet | 
-Cable PD | 00.03.12 | N/A | Updated through BIOS | none yet | 
+TI 1.2.11 Port Controller 1	 | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
+TI 1.2.32 Port Controller 2	| 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
+Dock EC | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
+Cable PD | 00.03.12 | N/A | Updated through BIOS[^1]| none yet | 
+[^1]: These are updated early on and should already be done (Dell Tool v1.00.00 - v1.00.02)
 
 ## Flashing instructions
 
