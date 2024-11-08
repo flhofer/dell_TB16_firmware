@@ -9,6 +9,8 @@ makes it an unbeatable bargain.
 
 The Power button seems to work only on Dell PCs, though. Maybe a script out there somewhere?
 
+> ![Note]
+> This procedure may also work for the peers Dell WD15, Dell TB15 (retired), and Dell TB18DC, as they share most of the components. In any case, I'm not responsible for any damages caused by these instructions.
 
 ## Firmware versions and status
 
@@ -140,4 +142,11 @@ As above, w/always on power. Here, the device must register first to pull more p
 Works with Dell, the same as the power button. No luck otherwise.
 
 ### 17. 	Kensington lock slot
-    
+
+
+## Video outputs and resolutions
+
+The device comes with three video sources: MST1, MST2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise 3x4k@60Hz is possible, upstream bandwidth limits cap such a configuration to 1x@60Hz + 2x@30Hz.
+
+The two MST devices serve two ports each. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwith and software/graphics card limits, there may not be more than 3 monitors in operation at the same time. Special modes are possible with proprietary Dell hardware.
+
