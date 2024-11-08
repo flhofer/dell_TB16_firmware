@@ -85,3 +85,8 @@ If there is more than one bin file in the directory, it will take the first one 
 > [!NOTE]
 > The Dell firmware updater checks only the last digits of the firmware version and may thus think the firmware is older. However, `asm.exe` is invoked and does not update.
 
+## Official Flashing tools
+
+If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash with version 1.00 and then 1.02 first. These install a Bios-based update file that executes an update at Bios start.
+
+Furthermore, it seems that Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15 and TB18, all got a new `Cable.bin` and where released the same day. You can use the WD15s flasher to update the `Cable.bin`
