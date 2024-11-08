@@ -1,5 +1,14 @@
-# dell_TB16_firmware
-Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues
+# Dell TB16 Firmware
+Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We're using three of those between home and work.
+* low price — got all of them used under 50eur/piece
+* Up-to-date performance—Thunderbolt 3 has the same interface and speeds as TB4, but TB4 adds mostly some security features.
+* When fixed, works with MacBooks and all types of Windows/Linux PCs
+* One of the few Docks that can deliver more than 100W on the cable
+  
+makes it an unbeatable bargain.
+
+The Power button seems to work only on Dell PCs, though. Maybe a script out there somewhere?
+
 
 ## Firmware versions and status
 
@@ -19,14 +28,14 @@ Cable PD | 00.03.12 | N/A | Updated through BIOS | none yet |
 
 ## Flashing instructions
 
-I will find alternative flashing methods for all files to the original Dell tool, which is limited and buggy.
+I will find alternative flashing methods for all files to the original Dell tool, which is limited and buggy. Also, while the original tool works ONLY with Dell PCs, these should work on all Thunderbolt-equipped systems.
 
 ### Flashing MST chips
 
 While there is a `mst.exe` for manual flashing, that too is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
-For a few years now, it has been possible to flash the chips also on Linux. You will need a recent `fwupd` package, e.g., shipped in Ubuntu 23.10 or newer.
+For a few years now, it has been possible to flash the chips also on Linux. You will need a recent `fwupd` package, e.g., shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a Live-USB using an official Ubuntu which comes with `fwupd` installed.
 
-Unlike what is suggested online, you MUST have a monitor connected to perform this update. This means that for MST1, you'll need a DP or VGA connection, and for MST2, you will need a miniDP or an HDMI screen.
+Unlike what is suggested online, you MUST have a monitor connected to perform this update. This means that for MST1, you'll need a DP or VGA connection; for MST2, you will need a miniDP or an HDMI screen.
 To install, type the following as root or with `sudo`
 
 ```
@@ -43,7 +52,7 @@ To update Thunderbolt Cable or Dock NVM, type as root/`sudo`
 $ fwupdtool install-blob <bin-file>
 ```
 
-It will prompt you to select the correct device to flash. Be sure to select `Cable` with `Cable_xxx.bin` and vice versa.
+It will prompt you to select the correct device to flash. Select `Cable` with `Cable_xxx.bin` and vice versa.
 
 ### Flashing the ASMedia USB Controller
 
