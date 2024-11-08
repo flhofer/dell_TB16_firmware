@@ -33,15 +33,31 @@ I will find alternative flashing methods for all files to the original Dell tool
 ### Flashing MST chips
 
 While there is a `mst.exe` for manual flashing, that too is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
+
+> [!NOTE]
+> The official update tool tends to report version such as 00.00.fd. These are actually error codes reported from the `mst.exe` and do not show if you perform a manual version check.
+
 For a few years now, it has been possible to flash the chips also on Linux. You will need a recent `fwupd` package, e.g., shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a Live-USB using an official Ubuntu which comes with `fwupd` installed.
 
 Unlike what is suggested online, you MUST have a monitor connected to perform this update. This means that for MST1, you'll need a DP or VGA connection; for MST2, you will need a miniDP or an HDMI screen.
+To check if both MSTs are running, type the following as root or with `sudo`
+
+```
+$ fwupdmgr get-devices
+```
+You will see them as Dell TB16/TB18/WD15 Dock or similar.
+
+> [!NOTE]
+> If you don't see both MST devices, check cables and power or perform NVM updates first.
+
 To install, type the following as root or with `sudo`
 
 ```
 $ fwupdmgr install <cab-file>
 ```
-This install may fail at the prompt but continue flashing and succeed in the background. Thus, do not remove the power to the dock for a minute or two after the command ends.
+> [!WARNING]
+> This install may fail at the prompt but continue flashing and succeed in the background. Thus, do not remove the power to the dock for a minute or two after the command ends.
+
 
 ### Flashing TB16's NVM
 
@@ -64,3 +80,7 @@ If you use the `cmd` prompt and enter the directory, you can check the installed
 ```
 The tool will not flash if the bin is older or equal to the installed one and exits (unless run with `/f`).
 If there is more than one bin file in the directory, it will take the first one using ASCII order, e.g., numbers before letters.
+
+> [!NOTE]
+> The Dell firmware updater checks only the last digits of the firmware version and may thus think the firmware is older. However, `asm.exe` is invoked and does not update.
+
