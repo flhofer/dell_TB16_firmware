@@ -34,3 +34,24 @@ $ fwupdmgr install <cab-file>
 ```
 This install may fail at the prompt but continue flashing and succeed in the background. Thus, do not remove the power to the dock for a minute or two after the command ends.
 
+### Flashing TB16's NVM
+
+For the two following, `Cable` and `Dock/BME`, the requirements are identical: Linux and recent `fwupd` package.
+
+To update Thunderbolt Cable or Dock NVM, type as root/`sudo`
+```
+$ fwupdtool install-blob <bin-file>
+```
+
+It will prompt you to select the correct device to flash. Be sure to select `Cable` with `Cable_xxx.bin` and vice versa.
+
+### Flashing the ASMedia USB Controller
+
+While a C #- coded Linux tool exists, I prefer the official ASM flasher. Use the `exe` found in `tools/ASMedia_win` of this repos on Windows or a Windows-to-go disk made, e.g., with Rufus, and execute it with the binary file copied into its folder.
+
+If you use the `cmd` prompt and enter the directory, you can check the installed version with `/version` or force overwrite using the `/f` flag.
+```
+> asm.exe /version
+```
+The tool will not flash if the bin is older or equal to the installed one and exits (unless run with `/f`).
+If there is more than one bin file in the directory, it will take the first one using ASCII order, e.g., numbers before letters.
