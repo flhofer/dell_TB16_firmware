@@ -98,7 +98,7 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 ![TB16 Ports Image](images/ports.png)
 
 ### 1. 	HDMI
-This is a HDMI 1.4a standard port and supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not up to date, it may show black, not always wake up, or not work at all. It does not support HDCP.
+This is a HDMI 1.4a standard port and supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not up to date, it may show black, not always wake up, or not work at all. According to Dell, it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
 
 ### 2. 	VGA
 Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1200 @ 60Hz
