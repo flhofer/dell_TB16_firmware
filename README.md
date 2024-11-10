@@ -150,3 +150,8 @@ The device comes with three video sources: MST-1, MST-2, and the TB3 port on the
 
 The two MST devices serve two ports each: DP and VGA for MST-1, mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwith and software/graphics card limits, there may not be more than 3 monitors in operation at the same time. Special modes are possible with proprietary Dell hardware.
 
+Summing it up, if your graphics adapter supports it, a laptop + dock can support up to 4 screens (panels). You can check how many displays your card suports with
+```
+grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
+```
+Where `<PCI-address>` is the one shown using `lspci`, escaped, e.g., `0000\:00\:02.0`.
