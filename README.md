@@ -118,10 +118,10 @@ Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have 
 SuperSpeed USB is ideal for, e.g., monitor USB-HUBs or USB-NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
-Limited (intended) Thunderbolt is available for Daisy-chain DP via tunneling, e.g., Multiple USB-C monitors or some USB 3.1 Superspeed devices. In particular configurations, it may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
+Limited (intended) Thunderbolt is available for Daisy-chain DP via tunneling, e.g., Multiple USB-C monitors or USB 3.1 Superspeed devices. In particular configurations, it may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
 
 ### 9. 	7.4 mm DC-in power
-According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. Some users say the TB16 won't deliver more than 60W (20V @3A) for non-Dell systems. It should be enough for most Laptops/Ultrabooks.
+According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. It should be enough for most Laptops/Ultrabooks.
 
 ### 10. 	3.5 mm Speaker-out
 Works well, maybe a little to sensitive to RF interference like mobile phones (missing shielding)
@@ -130,13 +130,13 @@ Works well, maybe a little to sensitive to RF interference like mobile phones (m
 Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with, e.g., MacBooks, but it works and charges.
 
 ### 12. 	Headset Jack
-Front-jack is useful for wired earplugs and a quick Video-call. Linux works with no problem. Since Unbuntu LTS 24.04 it also detects if a jack is not plugged and removes it from the output list. On MACs you need to edit advanced MIDI/Audio device config to add the second (front/back) stream to the outputs in the quick bar top-right.
+The front jack is useful for wired earplugs and a quick Video Call. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. On MACs, you need to edit the advanced MIDI/Audio device config to add the second (front/back) stream to the outputs in the quick bar at the top right.
 
 ### 13. 	USB 3.0 w/PowerShare
 This useful quick-access front port has always-on power. It is ideal for charging phones or plugging hungrier devices. It also works at full power without a Laptop connected.
 
 ### 14. 	USB 3.0
-As above, w/always on power. Here, the device must register first to pull more power.
+As above, w/o always on power. Here, the device must register first to pull more power.
 
 ### 15. 	Power Adapter LED
 
@@ -148,11 +148,11 @@ Works with Dell, the same as the power button. No luck otherwise.
 
 ## Video outputs and resolutions
 
-The device comes with three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise 3x4k@60Hz is possible, upstream bandwidth limits cap such a configuration to 1x@60Hz + 2x@30Hz.
+The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise 3x4k@60Hz is possible, upstream bandwidth limits cap such a configuration to 1x@60Hz + 2x@30Hz.
 
-The two MST devices serve two ports each: DP and VGA for MST-1, mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwith and software/graphics card limits, there may not be more than 3 monitors in operation at the same time. Special modes are possible with proprietary Dell hardware.
+The two MST devices serve two ports each: DP and VGA for MST-1, mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, there may be at most 3 monitors in operation simultaneously. Special modes are possible with proprietary Dell hardware.
 
-Summing it up, if your graphics adapter supports it, a laptop + dock can support up to 4 screens (panels). You can check how many displays your card suports with
+Summing it up, if your graphics adapter supports it, a laptop + dock can support up to 4 screens (panels). On `i915` compatible systems, you can check how many displays your card supports with
 ```
 grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
 ```
