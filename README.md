@@ -7,6 +7,8 @@ Firmware and flashing instructions for the (now) affordable TB16 to fix some maj
   
 makes it an unbeatable bargain.
 
+I've spent quite some time tweaking and fixing most issues with the Dock, especially finding different ways to flash the firmware with hardware that is possibly non-Windows and non-Dell.
+
 The Power button seems to work only on Dell PCs, though. Maybe a script out there somewhere?
 
 > [!Note]
@@ -93,7 +95,7 @@ If you prefer to use the official Flash tool, you can find a copy in the `offici
 
 Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15, and TB18, got a new `Cable.bin` and were released the same day. You can use the WD15s flasher to update the `Cable.bin`.
 
-## What's there and what works
+## What's there and what works (also non Windows)
 
 ![TB16 Ports Image](images/ports.png)
 
