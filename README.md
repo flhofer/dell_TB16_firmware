@@ -123,7 +123,11 @@ Limited (intended) Thunderbolt is available for Daisy-chain DP via tunneling, e.
 ### 9. 	7.4 mm DC-in power
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol.
 
-Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
+### 10. 	3.5 mm Speaker-out
+It works well, but it may be a little too sensitive to RF interference like mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. Look for a quick guide online, as it seems to be a common problem.
+
+### 11. 	Dell Docking station connector 
+Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with, e.g., MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
 ```
 Adapter: ISA adapter
 in0:          19.50 V  (min =  +5.00 V, max = +19.50 V)
@@ -137,16 +141,10 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, like in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.).
-
-### 10. 	3.5 mm Speaker-out
-Works well, maybe a little to sensitive to RF interference like mobile phones (missing shielding)
-
-### 11. 	Dell Docking station connector 
-Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with, e.g., MacBooks, but it works and charges.
+However, like in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU and she uses it regularly with no issues. 
 
 ### 12. 	Headset Jack
-The front jack is useful for wired earplugs and a quick Video Call. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. On MACs, you need to edit the advanced MIDI/Audio device config to add the second (front/back) stream to the outputs in the quick bar at the top right.
+The front jack is helpful for wired earplugs and a quick Video Call. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
 
 ### 13. 	USB 3.0 w/PowerShare
 This useful quick-access front port has always-on power. It is ideal for charging phones or plugging hungrier devices. It also works at full power without a Laptop connected.
