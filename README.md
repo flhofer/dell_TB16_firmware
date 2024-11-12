@@ -121,7 +121,16 @@ SuperSpeed USB is ideal for, e.g., monitor USB-HUBs or USB-NAS. No problems
 Limited (intended) Thunderbolt is available for Daisy-chain DP via tunneling, e.g., Multiple USB-C monitors or USB 3.1 Superspeed devices. In particular configurations, it may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
 
 ### 9. 	7.4 mm DC-in power
-According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. It should be enough for most Laptops/Ultrabooks.
+According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. 
+
+Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems to be true and does apply to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
+```
+Adapter: ISA adapter
+in0:          19.50 V  (min =  +5.00 V, max = +19.50 V)
+curr1:         3.00 A  (max =  +3.00 A)
+```
+Dell likely uses proprietary information in the extended information PDO of USB-PD to identify its systems and deliver more than 3A. Even if I attach a new Dell system, it won't report more than 3A max. By the way, 3A is the maximum limit USB-C can deliver with default specifications. For more current, you need electronics and wiring that support it. It makes thus sense that Dell limits it at 3A.
+However, 60W should be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.).
 
 ### 10. 	3.5 mm Speaker-out
 Works well, maybe a little to sensitive to RF interference like mobile phones (missing shielding)
