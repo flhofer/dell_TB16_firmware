@@ -128,6 +128,8 @@ It works well but may be too sensitive to RF interference, such as mobile phones
 
 ### 11. 	Dell Docking station connector 
 Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with, e.g., MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
+
+(These examples use Linux package `lmsensors` and command `sensors`)
 ```
 Adapter: ISA adapter
 in0:          19.50 V  (min =  +5.00 V, max = +19.50 V)
@@ -141,7 +143,7 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, like in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU and she uses it regularly with no issues. 
+However, in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. It is likely that the `Calble PD` firmware is responsible for this negotiation mechanism, assuming that PD stands for power delivery, as in USB-PD. I will investigate!
 
 ### 12. 	Headset Jack
 The front jack is helpful for wired earplugs and a quick Video Call. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
