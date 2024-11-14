@@ -22,7 +22,8 @@ Synaptics MST-1 VMM3320 | DP + VGA stream processing | 03.12.002 | mst_03.12.002
 Synaptics MST-2 VMM3330 | mini-DP + HDMI stream processing | 03.12.002 | mst_03.12.002.cab | " "  | Linux |
 Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00 | Cable_16_00.bin | Fixes MacBook charging problem (to confirm) | Linux |
   " | " | 26.06 | Cable_26_06.bin | Unofficial update borrowed from WD15[^2], fixes "DROM data CRC32 mismatch" error and random display malfunction | Linux |
-Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 27.00 | Dock_BME_27_0.bin | Unknown benefits | Linux |
+Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00 | Dock_BME_16_0.bin | Unknown benefits | Linux |
+" | " | 27.00 | Dock_BME_27_0.bin | Thunderbolt security update | Linux |
 ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
  " | " | 140124_10.10_04_2 aka 131025_10.11_AB aka 131025_10.11_171 | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller | Windows/Linux |
 TI 1.2.11 Port Controller 1	 | TI TB-chip firmware Cable | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
