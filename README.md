@@ -77,6 +77,10 @@ $ fwupdtool install-blob <bin-file>
 
 It will prompt you to select the correct device to flash. Select `Cable` with `Cable_xxx.bin` and vice versa.
 
+### Which NVM controller firmware to flash?
+
+I kept the latest and the previous versions in this repository for one simple reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter don't allow communication without a security authorization mechanism. This means that legacy devices (first-gen TB3 and Thunderbolt 1 - 2 through adapters) can no longer communicate with updated controllers. With the v16.xx NVM it was still possible to select a security mode in the BIOS, optionally disabling Thunderbolt security. In short, unless you want to connect to some legacy thunderbolt device up and/or downstream, use the latest v2x.xx firmware. It is less buggy and has overall a better user experience (see table above).
+
 ### Flashing the ASMedia USB Controller
 
 While a [C #—coded Linux tool](https://github.com/smx-smx/ASMTool) exists, I prefer the official ASM flasher. The Thunderbolt controller extends the PCIe bus where the controller is connected and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repos on Windows or a Windows-to-go disk made, e.g., with Rufus, and execute it with the binary file copied into its folder.
