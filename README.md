@@ -16,19 +16,19 @@ The Power button seems to work only on Dell PCs, though. Maybe a script out ther
 
 ## Firmware versions and status
 
-System | newest/available version | file | fixes? | alt flashing |
---- | --- | --- | --- | ---
-Synaptics MST-1 VMM3320 DP + VGA | 03.12.002 | mst_03.12.002.cab | Glitches on screens, compatibility for MacBooks | Linux |
-Synaptics MST-2 VMM3330 mini-DP + HDMI | 03.12.002 | mst_03.12.002.cab | " "  | Linux |
-Thunderbolt TB16 Cable | 16.00 | Cable_16_0.bin | Fixes MacBook charging problem (to confirm) | Linux |
-  " | 26.06 | Cable_26_06.bin | Unofficial update borrowed from WD15, fixes "DROM data CRC32 mismatch" error and random display malfunction | Linux |
-Thunderbolt TB16 Dock | 27.00 | Dock_BME_27_0.bin | Unknown benefits | Linux |
-ASM 1042A USB controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
- " | 	140124_10.10_04_2 aka 131025_10.11_AB aka 131025_10.11_171 | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller | Windows/Linux |
-TI 1.2.11 Port Controller 1	 | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
-TI 1.2.32 Port Controller 2	| 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
-Dock EC | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
-Cable PD | 00.03.12 | N/A | Updated through BIOS[^1]| none yet | 
+System | probable function | newest/available version | file | fixes? | alt flashing |
+--- | --- | --- | --- | --- | ---
+Synaptics MST-1 VMM3320 | DP + VGA stream processing | 03.12.002 | mst_03.12.002.cab | Glitches on screens, compatibility for MacBooks | Linux |
+Synaptics MST-2 VMM3330 | mini-DP + HDMI stream processing | 03.12.002 | mst_03.12.002.cab | " "  | Linux |
+Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00 | Cable_16_0.bin | Fixes MacBook charging problem (to confirm) | Linux |
+  " | " | 26.06 | Cable_26_06.bin | Unofficial update borrowed from WD15, fixes "DROM data CRC32 mismatch" error and random display malfunction | Linux |
+Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 27.00 | Dock_BME_27_0.bin | Unknown benefits | Linux |
+ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
+ " | " | 140124_10.10_04_2 aka 131025_10.11_AB aka 131025_10.11_171 | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller | Windows/Linux |
+TI 1.2.11 Port Controller 1	 | TI TB-chip firmware Cable | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
+TI 1.2.32 Port Controller 2	| TI TB-chip firmware Dock | 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
+Dock EC | Embedded controller basic function, e.g. led | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
+Cable PD | Power Delivery controller | 00.03.12 | N/A | Updated through BIOS[^1]| none yet | 
 [^1]: These are updated early on and should already be done (Dell Tool v1.00.00 - v1.00.02)
 
 ## Flashing instructions
