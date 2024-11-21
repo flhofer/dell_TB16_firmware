@@ -16,13 +16,15 @@ The Power button seems to work only on Dell PCs, though. Maybe a script out ther
 
 ## Firmware versions and status
 
+The following table contains a list of known and working firmware versions. 
+
 System | probable function | newest/available version | file | fixes? | alt flashing |
 --- | --- | --- | --- | --- | ---
 Synaptics MST-1 VMM3320 | DP + VGA stream processing | 03.12.002 | mst_03.12.002.cab | Glitches on screens, compatibility for MacBooks | Linux |
 Synaptics MST-2 VMM3330 | mini-DP + HDMI stream processing | 03.12.002 | mst_03.12.002.cab | " "  | Linux |
 Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00 | Cable_16_00.bin | Fixes MacBook charging problem (to confirm) | Linux |
   " | " | 26.06 | Cable_26_06.bin | Unofficial update borrowed from WD15[^2], fixes "DROM data CRC32 mismatch" error and random display malfunction + Thunderbolt security update | Linux |
-Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00 | Dock_BME_16_0.bin | Unknown benefits | Linux |
+Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00 | Dock_BME_160_0.bin | Unknown benefits | Linux |
 " | " | 27.00 | Dock_BME_27_00.bin | Thunderbolt security update | Linux |
 ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
  " | " | 140124_10.10_04_2 aka 131025_10.11_AB aka 131025_10.11_171 | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller | Windows/Linux |
@@ -79,7 +81,16 @@ It will prompt you to select the correct device to flash. Select `Cable` with `C
 
 ### Which NVM controller firmware to flash?
 
-I kept the latest and the previous versions in this repository for one simple reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter don't allow communication without a security authorization mechanism. This means that legacy devices (first-gen TB3 and Thunderbolt 1 - 2 through adapters) can no longer communicate with updated controllers. With the v16.xx NVM it was still possible to select a security mode in the BIOS, optionally disabling Thunderbolt security. In short, unless you want to connect to some legacy thunderbolt device up and/or downstream, use the latest v2x.xx firmware. It is less buggy and has overall a better user experience (see table above).
+I kept the latest and the previous versions in this repository for one simple reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter don't allow communication without a security authorization mechanism. This means that legacy devices (first-gen TB3 and Thunderbolt 1 - 2 through adapters) can no longer communicate with updated controllers. With the v16.xx NVM it was still possible to select a security mode in the BIOS, optionally disabling Thunderbolt security. In short, unless you want to connect to some legacy thunderbolt device up and/or downstream, use the latest v2x.xx firmware. It is less buggy and has a better user experience (see table above).
+
+### Alternate NVMs (untested)
+
+While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate with legacy devices that don't have such a function. A TB3 to TB2 adapter is one such device. Apple MACs have a special firmware to make those work, PCs need a special NVM. Unfortunately, you can not flash the firmware if you have a TB security-enabled device. The flashing starts but then returns an error after a minute or so. Please report back if you manage to flash the firmware.
+
+System | probable function | version | file | fixes? | alt flashing |
+--- | --- | --- | --- | --- | ---
+Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00_nosec | Cable_16_00_nosec.bin | Disables upstream security (Laptop) and the use of legacy TB3 controllers | Linux |
+Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downstream security, allows the use of legacy devices such as TB3 to TB1/2 adapters | Linux |
 
 ### Flashing the ASMedia USB Controller
 
