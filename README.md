@@ -7,9 +7,9 @@ Firmware and flashing instructions for the (now) affordable TB16 to fix some maj
   
 makes it an unbeatable bargain.
 
-I've spent quite some time tweaking and fixing most issues with the Dock, especially finding different ways to flash the firmware with hardware that is possibly non-Windows and non-Dell.
+I've spent some time tweaking and fixing most issues with the Dock, especially finding different ways to flash the firmware with non-Windows and non-Dell hardware.
 
-The Power button seems to work only on Dell PCs, though. Maybe a script out there somewhere?
+The Power button works only on Dell PCs, though. Is there a script somewhere that would make it work on others, too?
 
 > [!Note]
 > This procedure may also work for the peers Dell WD15, Dell TB15 (retired), and Dell TB18DC, as they share most of the components. In any case, I'm not responsible for any damages caused by these instructions.
@@ -33,7 +33,7 @@ TI 1.2.32 Port Controller 2	| TI TB-chip firmware Dock | 01.02.32 | N/A | Update
 Dock EC | Embedded controller basic function, e.g. led | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
 Cable PD | Power Delivery controller | 00.03.12 | N/A | Updated through BIOS[^1]| none yet | 
 [^1]: These are updated early on and should already be done (Dell Tool v1.00.00 - v1.00.02)
-[^2]: Since summer 2016, Dell shipped WD15 and TB16 docks with universal cables, supporting USB3 and Thunderbolt 3 (recognizeable by bolt and DP logo on the type C connector). It makes thus sense that they ship TB Cable firmware with the WD15, too.
+[^2]: Since the summer of 2016, Dell has shipped WD15 and TB16 docks with universal cables, supporting USB3 and Thunderbolt 3 (recognizable by the bolt and DP logo on the type C connector). It makes thus sense that they ship TB Cable firmware with the WD15.
 
 ## Flashing instructions
 
@@ -81,11 +81,11 @@ It will prompt you to select the correct device to flash. Select `Cable` with `C
 
 ### Which NVM controller firmware to flash?
 
-I kept the latest and the previous versions in this repository for one simple reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter don't allow communication without a security authorization mechanism. This means that legacy devices (first-gen TB3 and Thunderbolt 1 - 2 through adapters) can no longer communicate with updated controllers. With the v16.xx NVM it was still possible to select a security mode in the BIOS, optionally disabling Thunderbolt security. In short, unless you want to connect to some legacy thunderbolt device up and/or downstream, use the latest v2x.xx firmware. It is less buggy and has a better user experience (see table above).
+I kept the latest and the previous versions in this repository for a straightforward reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter doesn't allow communication without a security authorization mechanism. This means legacy devices (first-gen TB3 and Thunderbolt 1 - 2 adapters) can no longer communicate with updated controllers. With the v16.xx NVM, selecting a security mode in the BIOS was still possible, optionally disabling Thunderbolt security. In short, unless you want to connect to some legacy Thunderbolt device up and/or downstream, use the latest v2x.xx firmware. It is less buggy and has a better user experience (see table above).
 
 ### Alternate NVMs (untested)
 
-While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate with legacy devices that don't have such a function. A TB3 to TB2 adapter is one such device. Apple MACs have a special firmware to make those work, PCs need a special NVM. Unfortunately, you can not flash the firmware if you have a TB security-enabled device. The flashing starts but then returns an error after a minute or so. Please report back if you manage to flash the firmware.
+While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't have such a function. A TB3 to TB2 adapter is one such device. Apple MACs have special firmware to make those work; PCs need a special NVM. Unfortunately, you can not flash the firmware if you have a TB security-enabled device. The flashing starts but then returns an error after a minute or so. Please report back if you manage to flash the firmware.
 
 System | probable function | version | file | fixes? | alt flashing |
 --- | --- | --- | --- | --- | ---
@@ -137,7 +137,7 @@ Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have 
 SuperSpeed USB is ideal for, e.g., the monitors USB-HUBs or USB-NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
-Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors, or USB 3.1 Superspeed devices. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
+Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. You can create an IP over the Thunderbolt tunnel and thus have multiple Gb speed transfers over the virtual ethernet adapters, which is ideal for some compute-backend connections. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
 
 ### 9. 	7.4 mm DC-in power
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol.
@@ -162,7 +162,7 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. It is likely that the `Calble PD` firmware is responsible for this negotiation mechanism, assuming that PD stands for power delivery, as in USB-PD. I will investigate!
+However, in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
 
 ### 12. 	Headset Jack
 The front jack is helpful for wired earplugs and a quick Video Call. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
@@ -183,12 +183,12 @@ Works with Dell, the same as the power button. No luck otherwise.
 
 ## Video outputs and resolutions
 
-The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). It is further unclear how the use of the TB3 port for video affects the MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, nothing for the Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
+The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). It needs to be clarified how using the TB3 port for video affects the MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, nothing for the Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
 
-The two MST devices serve two ports each: DP and VGA for MST-1, mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, there may be at most 3 monitors in operation simultaneously. Special modes are possible with proprietary Dell hardware.
+The two MST devices serve two ports each: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, there may be at most three monitors in operation simultaneously. Special modes are possible with proprietary Dell hardware.
 
 Summing it up, if your graphics adapter supports it, a laptop + dock can support up to 4 screens (panels). On `i915` compatible systems, you can check how many displays your card supports with
 ```
 grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
 ```
-Where `<PCI-address>` is the one shown using `lspci`, escaped, e.g., `0000\:00\:02.0`.
+Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:00\:02.0`.
