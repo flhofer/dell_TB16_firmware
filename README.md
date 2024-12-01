@@ -44,9 +44,9 @@ I will find alternative flashing methods for all files to the original Dell tool
 While there is a `mst.exe` for manual flashing, that too is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
 
 > [!NOTE]
-> The official update tool tends to report version such as 00.00.fd. These are actually error codes reported from the `mst.exe` and do not show if you perform a manual version check.
+> The official update tool tends to report versions such as 00.00.fd. These are actually error codes reported from the `mst.exe` and do not show if you perform a manual version check.
 
-For a few years now, it has been possible to flash the chips also on Linux. You will need a recent `fwupd` package, e.g., shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a Live-USB using an official Ubuntu which comes with `fwupd` installed.
+For a few years now, it has been possible to flash the chips on Linux. You will need a recent `fwupd` package, e.g., shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that comes with `fwupd` installed.
 
 Unlike what is suggested online, you MUST have a monitor connected to perform this update. This means that for MST-1, you'll need a DP or VGA connection; for MST-2, you will need a mini-DP or an HDMI screen.
 To check if both MSTs are running, type the following as root or with `sudo`
@@ -65,7 +65,7 @@ To install, type the following as root or with `sudo`
 $ fwupdmgr install <cab-file>
 ```
 > [!WARNING]
-> This install may fail at the prompt but continue flashing and succeed in the background. Thus, do not remove the power to the dock for a minute or two after the command ends.
+> This install may fail at the prompt but continue flashing and succeed in the background. Thus, keep the power to the dock for a minute or two after the command ends.
 
 
 ### Flashing TB16's NVM
@@ -119,7 +119,7 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 ![TB16 Ports Image](images/ports.png)
 
 ### 1. 	HDMI
-This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not up to date, it may show black, not always wake up, or not work at all. According to Dell, it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
+This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not current, it may show black, not always wake up, or not work at all. According to Dell, it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
 
 ### 2. 	VGA
 Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1200 @ 60Hz
