@@ -66,7 +66,8 @@ $ fwupdmgr install <cab-file>
 ```
 > [!WARNING]
 > This install may fail at the prompt but continue flashing and succeed in the background. Thus, keep the power to the dock for a minute or two after the command ends.
-
+>
+> The flashers `attach()` and `reload()` method calls are done after writing, but they're timeout-based and thus often don't work correctly. You might need to power-cycle the dock to reload new firmware after writing, but wait, as the process is not terminated right after `fwupd` exits. If you want more info about the `attach()` mechanism, check the `fwupdmgr` [docs](https://github.com/fwupd/fwupd/blob/main/docs/tutorial.md). 
 
 ### Flashing TB16's NVM
 
