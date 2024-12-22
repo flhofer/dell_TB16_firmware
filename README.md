@@ -16,7 +16,7 @@ The Power button works only on Dell PCs, though. Is there a script somewhere tha
 
 ## Firmware versions and status
 
-The following table contains a list of known and working firmware versions. 
+The following table contains a list of known and working firmware versions. (Files are in the `bins` subfolder)
 
 System | probable function | newest/available version | file | fixes? | alt flashing |
 --- | --- | --- | --- | --- | ---
