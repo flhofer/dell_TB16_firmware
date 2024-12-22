@@ -1,7 +1,7 @@
 # Dell TB16 Firmware
 Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We're using three of those between home and work.
 * low price — got all of them used under 50eur/piece
-* Up-to-date performance—Thunderbolt 3 has the same interface and speeds as TB4, where TB4 adds mostly some security features/restrictions, whatever you want to call it.
+* Up-to-date performance—Thunderbolt 3 has the same interface and speeds as TB4, where TB4 adds mainly some security features/restrictions, whatever you want to call it.
 * When fixed, works with MacBooks and all types of Windows/Linux PCs
 * One of the few Docks that can deliver more than 100W on the cable
   
@@ -9,7 +9,7 @@ makes it an unbeatable bargain.
 
 I've spent some time tweaking and fixing most issues with the Dock, especially finding different ways to flash the firmware with non-Windows and non-Dell hardware.
 
-The Power button works only on Dell PCs, though. Is there a script somewhere that would make it work on others, too?
+The Power button works only on Dell PCs, though. Is there a script somewhere that would also make it work on others?
 
 > [!Note]
 > This procedure may also work for the peers Dell WD15, Dell TB15 (retired), and Dell TB18DC, as they share most of the components. In any case, I'm not responsible for any damages caused by these instructions.
@@ -89,7 +89,7 @@ While searching for better bins, I stumbled upon some hidden images in one of th
 
 System | probable function | version | file | fixes? | alt flashing |
 --- | --- | --- | --- | --- | ---
-Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00_nosec | Cable_16_00_nosec.bin | Disables upstream security (Laptop) and the use of legacy TB3 controllers | Linux |
+Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00_nosec | Cable_16_00_nosec.bin | Disables upstream security (Laptop) and allows the use of legacy TB3 controllers | Linux |
 Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downstream security, allows the use of legacy devices such as TB3 to TB1/2 adapters | Linux |
 
 ### Flashing the ASMedia USB Controller
@@ -114,7 +114,7 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 
 # The Dell TB16 Dock
 
-## What's there and what works (also non Windows)
+## What's there and what works (also non-Windows)
 
 ![TB16 Ports Image](images/ports.png)
 
@@ -122,10 +122,10 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not current, it may show black, not always wake up, or not work at all. According to Dell, it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
 
 ### 2. 	VGA
-Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1200 @ 60Hz
+Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1080 @ 60Hz
 
 ### 3. + 4. 	DisplayPort (DP) and mini-DisplayPort (mDP)
-These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz, and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM. Again, Dell says it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
+These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM. Again, Dell says it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
 
 ### 5. 	RJ45 Gigabit Ethernet
 Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have issues waking up from deep sleep (suspend) if the ASMedia USB controller firmware is not up-to-date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via script.
@@ -146,7 +146,7 @@ According to the manual, the Dock does not accept 130W power supplies. However, 
 It works well but may be too sensitive to RF interference, such as mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. Look for a quick guide online, as it seems to be a common problem.
 
 ### 11. 	Dell Docking station connector 
-Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with, e.g., MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
+Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with MacBooks but works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
 
 (These examples use Linux package `lmsensors` and command `sensors`)
 ```
@@ -185,9 +185,9 @@ Works with Dell, the same as the power button. No luck otherwise.
 
 The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). It needs to be clarified how using the TB3 port for video affects the MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, nothing for the Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
 
-The two MST devices serve two ports each: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, there may be at most three monitors in operation simultaneously. Special modes are possible with proprietary Dell hardware.
+The two MST devices serve two ports each: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware.
 
-Summing it up, if your graphics adapter supports it, a laptop + dock can support up to 4 screens (panels). On `i915` compatible systems, you can check how many displays your card supports with
+If your graphics adapter supports it, a laptop + dock can support up to 4 screens (panels). On `i915` compatible systems, you can check how many displays your card supports with
 ```
 grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
 ```
