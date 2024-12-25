@@ -109,7 +109,7 @@ If there is more than one bin file in the directory, it will take the first one 
 
 ## Official Flashing tools
 
-If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash with version 1.00 and then 1.02 first. These install a Bios-based update file that executes an update at Bios start.
+If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash with version 1.00 and then 1.02 first. These install a Bios-based update file that executes an update at Bios start. It is thus likely not possible to update them without a Dell system.
 
 Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15, and TB18, got a new `Cable.bin` and were released the same day. You can use the WD15s flasher to update the `Cable.bin`.
 
@@ -129,7 +129,7 @@ Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Ful
 These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM. Again, Dell says it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
 
 ### 5. 	RJ45 Gigabit Ethernet
-Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have issues waking up from deep sleep (suspend) if the ASMedia USB controller firmware is not up-to-date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via script.
+Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have issues waking up from deep sleep (suspension) if the ASMedia USB controller firmware is not up-to-date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via script (you can find an example in `tools/scripts`.
 
 ### 6. 	USB 2.0 (2 ports)
 "Slow"-speed port generally intended for input devices such as mouse, keyboard, trackpad, Smart-card readers, etc. No issues
@@ -138,7 +138,7 @@ Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have 
 SuperSpeed USB is ideal for, e.g., the monitors USB-HUBs or USB-NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
-Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. You can create an IP over the Thunderbolt tunnel and thus have multiple Gb speed transfers over the virtual ethernet adapters, which is ideal for some compute-backend connections. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
+Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. You can create an IP over the Thunderbolt tunnel and thus have multiple Gbit speed transfers over the virtual ethernet adapters, which is ideal for some compute-backend connections. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
 
 ### 9. 	7.4 mm DC-in power
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol.
@@ -147,7 +147,7 @@ According to the manual, the Dock does not accept 130W power supplies. However, 
 It works well but may be too sensitive to RF interference, such as mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. Look for a quick guide online, as it seems to be a common problem.
 
 ### 11. 	Dell Docking station connector 
-Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with MacBooks but works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
+Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
 
 (These examples use Linux package `lmsensors` and command `sensors`)
 ```
@@ -163,7 +163,7 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
+However, in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
 
 ### 12. 	Headset Jack
 The front jack is helpful for wired earplugs and a quick Video Call. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
@@ -184,12 +184,13 @@ Works with Dell, the same as the power button. No luck otherwise.
 
 ## Video outputs and resolutions
 
-The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). It needs to be clarified how using the TB3 port for video affects the MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, nothing for the Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
+The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). It needs to be clarified how using the TB3 port for video affects the MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, nothing for the Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
 
 The two MST devices serve two ports each: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware.
 
-If your graphics adapter supports it, a laptop + dock can support up to 4 screens (panels). On `i915` compatible systems, you can check how many displays your card supports with
+A laptop + dock can support up to 4 screens (panels) if your graphics adapter supports it. On `i915` compatible systems, you can check how many displays your card supports with
 ```
 grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
 ```
-Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:00\:02.0`.
+Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:00\:02.0`. Other graphic adapters should have similar ways to test this.
+
