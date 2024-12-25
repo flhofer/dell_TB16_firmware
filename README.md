@@ -1,5 +1,5 @@
 # Dell TB16 Firmware
-Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We're using three of those between home and work.
+Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We are using three of those between home and work because
 * low price — got all of them used under 50eur/piece
 * Up-to-date performance—Thunderbolt 3 has the same interface and speeds as TB4, where TB4 adds mainly some security features/restrictions, whatever you want to call it.
 * When fixed, works with MacBooks and all types of Windows/Linux PCs
@@ -12,7 +12,7 @@ I've spent some time tweaking and fixing most issues with the Dock, especially f
 The Power button works only on Dell PCs, though. Is there a script somewhere that would also make it work on others?
 
 > [!Note]
-> This procedure may also work for the peers Dell WD15, Dell TB15 (retired), and Dell TB18DC, as they share most of the components. In any case, I'm not responsible for any damages caused by these instructions.
+> This procedure may also work for the peers Dell WD15, Dell TB15 (retired), and Dell TB18DC, as they share most of the components. In any case, I'm not responsible for any damages that were caused by following these instructions.
 
 ## Firmware versions and status
 
@@ -28,27 +28,27 @@ Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back)
 " | " | 27.00 | Dock_BME_27_00.bin | Thunderbolt security update | Linux |
 ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
  " | " | 140124_10.10_04_2 aka 131025_10.11_AB aka 131025_10.11_171 | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs where this problem does also not arise| Windows/Linux |
-TI 1.2.11 Port Controller 1	 | TI TB-chip firmware Cable | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
-TI 1.2.32 Port Controller 2	| TI TB-chip firmware Dock | 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
-Dock EC | Embedded controller basic function, e.g. led | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
+TI 1.2.11 Port Controller 1	 | Texas Instruments TB-chip firmware Cable | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
+TI 1.2.32 Port Controller 2	| Texas Instruments TB-chip firmware Dock | 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
+Dock EC | Embedded controller for basic function, e.g. led, fan | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
 Cable PD | Power Delivery controller | 00.03.12 | N/A | Updated through BIOS[^1]| none yet | 
 [^1]: These are updated early on and should already be done (Dell Tool v1.00.00 - v1.00.02)
 [^2]: Since the summer of 2016, Dell has shipped WD15 and TB16 docks with universal cables, supporting USB3 and Thunderbolt 3 (recognizable by the bolt and DP logo on the type C connector). It makes thus sense that they ship TB Cable firmware with the WD15.
 
 ## Flashing instructions
 
-I will find alternative flashing methods for all files to the original Dell tool, which is limited and buggy. Also, while the original tool works ONLY with Dell PCs, these should work on all Thunderbolt-equipped systems.
+I will try to find alternative flashing methods for all systems to replace the original Dell tool, which is limited and buggy. Also, while the original tool works ONLY with Dell PCs, these instructions should work on all Thunderbolt-equipped systems.
 
 ### Flashing MST chips
 
 While there is a `mst.exe` for manual flashing, that too is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
 
 > [!NOTE]
-> The official update tool tends to report versions such as 00.00.fd. These are actually error codes reported from the `mst.exe` and do not show if you perform a manual version check.
+> The official update tool tends to report versions such as 00.00.fd. These are error codes reported from the `mst.exe` and do not show if you perform a manual version check.
 
-For a few years now, it has been possible to flash the chips on Linux. You will need a recent `fwupd` package, e.g., shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that comes with `fwupd` installed.
+For a few years, it has been possible to flash the chips on Linux. You will need a recent `fwupd` package, e.g., >`v0.8' shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that ships with `fwupd` preinstalled.
 
-Unlike what is suggested online, you MUST have a monitor connected to perform this update. This means that for MST-1, you'll need a DP or VGA connection; for MST-2, you will need a mini-DP or an HDMI screen.
+Unlike what is suggested online, you MUST have a monitor connected to perform this update on Linux. This means that for MST-1, you'll need a DP or VGA connection; for MST-2, you will need a mini-DP or an HDMI screen.
 To check if both MSTs are running, type the following as root or with `sudo`
 
 ```
@@ -57,7 +57,7 @@ $ fwupdmgr get-devices
 You will see them as Dell TB16/TB18/WD15 Dock or similar.
 
 > [!NOTE]
-> If you don't see both MST devices, check cables and power or perform NVM updates first.
+> If you don't see both MST devices, check cables and power or perform NVM updates first (see below).
 
 To install, type the following as root or with `sudo`
 
@@ -71,14 +71,14 @@ $ fwupdmgr install <cab-file>
 
 ### Flashing TB16's NVM
 
-For the two following, `Cable` and `Dock/BME`, the requirements are identical: Linux and recent `fwupd` package.
+The requirements for the two following, the `Cable` and `Dock/BME`'s NonVolatile Memory, are identical: Linux and a recent `fwupd` package.
 
 To update Thunderbolt Cable or Dock NVM, type as root/`sudo`
 ```
 $ fwupdtool install-blob <bin-file>
 ```
 
-It will prompt you to select the correct device to flash. Select `Cable` with `Cable_xxx.bin` and vice versa.
+It will prompt you to select the correct device to flash. Select the device name containing the word `Cable` with `Cable_xxx.bin` and vice versa.
 
 ### Which NVM controller firmware to flash?
 
@@ -86,12 +86,12 @@ I kept the latest and the previous versions in this repository for a straightfor
 
 ### Alternate NVMs (untested)
 
-While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't have such a function. A TB3 to TB2 adapter is one such device. Apple MACs have special firmware to make those work; PCs need a special NVM. Unfortunately, you can not flash the firmware if you have a TB security-enabled device. The flashing starts but then returns an error after a minute or so. Please report back if you manage to flash the firmware.
+While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't have such a function. A TB3 to TB2 adapter is one such device. Apple MACs have special firmware to make those work; PCs need a special NVM. Unfortunately, you can not flash these firmware files with a TB security-enabled device. If you do, the flashing starts but returns an error after a minute. Please report back if you manage to flash the firmware.
 
-System | probable function | version | file | fixes? | alt flashing |
---- | --- | --- | --- | --- | ---
-Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00_nosec | Cable_16_00_nosec.bin | Disables upstream security (Laptop) and allows the use of legacy TB3 controllers | Linux |
-Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downstream security, allows the use of legacy devices such as TB3 to TB1/2 adapters | Linux |
+System | version | file | fixes? |
+--- | --- | --- | --- 
+Thunderbolt TB16 Cable | 16.00_nosec | Cable_16_00_nosec.bin | Disables upstream security (Laptop) and allows the use of legacy TB3 controllers |
+Thunderbolt TB16 Dock | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downstream security, allows the use of legacy devices such as TB3 to TB1/2 adapters |
 
 ### Flashing the ASMedia USB Controller
 
