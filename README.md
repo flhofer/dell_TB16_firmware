@@ -27,13 +27,13 @@ Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00 | Cable_
 Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00 | Dock_BME_16_00.bin | Unknown benefits | Linux |
 " | " | 27.00 | Dock_BME_27_00.bin | Thunderbolt security update | Linux |
 ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
- " | " | 140124_10.10_04_2 aka 131025_10.11_AB aka 131025_10.11_171 | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs where this problem does also not arise| Windows/Linux |
+ " | " | 140124_10.10_04_2 aka 131025_10.11_AB aka 131025_10.11_171 | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs, where this problem also does not arise| Windows/Linux |
 TI 1.2.11 Port Controller 1	 | Texas Instruments TB-chip firmware Cable | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
 TI 1.2.32 Port Controller 2	| Texas Instruments TB-chip firmware Dock | 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
 Dock EC | Embedded controller for basic function, e.g. led, fan | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
 Cable PD | Power Delivery controller | 00.03.12 | N/A | Updated through BIOS[^1]| none yet | 
 [^1]: These are updated early on and should already be done (Dell Tool v1.00.00 - v1.00.02)
-[^2]: Since the summer of 2016, Dell has shipped WD15 and TB16 docks with universal cables, supporting USB3 and Thunderbolt 3 (recognizable by the bolt and DP logo on the type C connector). It makes thus sense that they ship TB Cable firmware with the WD15.
+[^2] Since the summer of 2016, Dell has shipped WD15 and TB16 docks with universal cables, supporting USB3 and Thunderbolt 3 (recognizable by the bolt and DP logo on the Type-C connector). It makes sense that they ship TB Cable firmware with the WD15.
 
 ## Flashing instructions
 
@@ -46,7 +46,7 @@ While there is a `mst.exe` for manual flashing, that too is unreliable and buggy
 > [!NOTE]
 > The official update tool tends to report versions such as 00.00.fd. These are error codes reported from the `mst.exe` and do not show if you perform a manual version check.
 
-For a few years, it has been possible to flash the chips on Linux. You will need a recent `fwupd` package, e.g., >`v0.8' shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that ships with `fwupd` preinstalled.
+For a few years, it has been possible to flash the chips on Linux. You will need a recent `fwupd` package, e.g., >`v0.8` shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that ships with `fwupd` preinstalled.
 
 Unlike what is suggested online, you MUST have a monitor connected to perform this update on Linux. This means that for MST-1, you'll need a DP or VGA connection; for MST-2, you will need a mini-DP or an HDMI screen.
 To check if both MSTs are running, type the following as root or with `sudo`
@@ -57,7 +57,7 @@ $ fwupdmgr get-devices
 You will see them as Dell TB16/TB18/WD15 Dock or similar.
 
 > [!NOTE]
-> If you don't see both MST devices, check cables and power or perform NVM updates first (see below).
+> If you don't see both MST devices, check cables and power, or perform NVM updates first (see below).
 
 To install, type the following as root or with `sudo`
 
@@ -65,7 +65,7 @@ To install, type the following as root or with `sudo`
 $ fwupdmgr install <cab-file>
 ```
 > [!WARNING]
-> This install may fail at the prompt but continue flashing and succeed in the background. Thus, keep the power to the dock for a minute or two after the command ends.
+> This install may fail at the prompt, but continue flashing and succeed in the background. Thus, keep the power to the dock for a minute or two after the command ends.
 >
 > The flashers `attach()` and `reload()` method calls are done after writing, but they're timeout-based and thus often don't work correctly. You might need to power-cycle the dock to reload new firmware after writing, but wait, as the process is not terminated right after `fwupd` exits. If you want more info about the `attach()` mechanism, check the `fwupdmgr` [docs](https://github.com/fwupd/fwupd/blob/main/docs/tutorial.md). 
 
@@ -95,7 +95,7 @@ Thunderbolt TB16 Dock | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downst
 
 ### Flashing the ASMedia USB Controller
 
-While a [C #—coded Linux tool](https://github.com/smx-smx/ASMTool) exists, I prefer the official ASM flasher. The Thunderbolt controller extends the PCIe bus where the controller is connected and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repos on Windows or a Windows-to-go disk made, e.g., with Rufus, and execute it with the binary file copied into its folder.
+While a [C #—coded Linux tool](https://github.com/smx-smx/ASMTool) exists, I prefer the official ASM flasher. The Thunderbolt controller extends the PCIe bus where the controller is connected and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with Rufus, and execute it with the binary file copied into its folder.
 
 If you use the `cmd` prompt and enter the directory, you can check the installed version with `/version` or force overwrite using the `/f` flag.
 ```
@@ -109,7 +109,7 @@ If there is more than one bin file in the directory, it will take the first one 
 
 ## Official Flashing tools
 
-If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash with version 1.00 and then 1.02 first. These install a Bios-based update file that executes an update at Bios start. It is thus likely not possible to update them without a Dell system.
+If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash with version 1.00 and then 1.02 first. These install a BIOS-based update file that executes an update at BIOS start. It is thus likely not possible to update them without a Dell system.
 
 Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15, and TB18, got a new `Cable.bin` and were released the same day. You can use the WD15s flasher to update the `Cable.bin`.
 
@@ -120,7 +120,7 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 ![TB16 Ports Image](images/ports.png)
 
 ### 1. 	HDMI
-This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not current, it may show black, not always wake up, or not work at all. According to Dell, it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
+This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not current, it may show black, not always wake up, or not work. According to Dell, it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
 
 ### 2. 	VGA
 Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1080 @ 60Hz
@@ -135,10 +135,10 @@ Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have 
 "Slow"-speed port generally intended for input devices such as mouse, keyboard, trackpad, Smart-card readers, etc. No issues
 
 ### 7. 	USB 3.0
-SuperSpeed USB is ideal for, e.g., the monitors USB-HUBs or USB-NAS. No problems
+SuperSpeed USB is ideal for, e.g., the monitors, USB-HUBs, or USB-NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
-Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. You can create an IP over the Thunderbolt tunnel and thus have multiple Gbit speed transfers over the virtual ethernet adapters, which is ideal for some compute-backend connections. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
+Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. You can create an IP over the Thunderbolt tunnel and thus have multiple Gbit speed transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
 
 ### 9. 	7.4 mm DC-in power
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol.
@@ -147,9 +147,9 @@ According to the manual, the Dock does not accept 130W power supplies. However, 
 It works well but may be too sensitive to RF interference, such as mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. Look for a quick guide online, as it seems to be a common problem.
 
 ### 11. 	Dell Docking station connector 
-Dell Proprietary connection to USB Type 3 port on PC. The light does not go on with MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
+Dell Proprietary connection to USB Type-C port on PC. The light does not go on with MacBooks but works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
 
-(These examples use Linux package `lmsensors` and command `sensors`)
+(These examples use the Linux package `lmsensors` and the command `sensors`)
 ```
 Adapter: ISA adapter
 in0:          19.50 V  (min =  +5.00 V, max = +19.50 V)
@@ -169,7 +169,7 @@ However, in my case, where the laptop doesn't require more than 3A, 60W is and s
 The front jack is helpful for wired earplugs and a quick Video Call. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
 
 ### 13. 	USB 3.0 w/PowerShare
-This valid quick-access front port has always-on power. It is ideal for charging phones or plugging hungrier devices. It also works at full power without a laptop being connected, so you can draw 7.5W with or without registering to the hub. I also use it to charge random stuff around the house, which doesn't even use the USB data lines. 
+This valid quick-access front port has always-on power. It is ideal for charging phones or plugging hungry devices. It also works at full power without a laptop being connected, so you can draw 7.5W with or without registering to the hub. I also use it to charge random stuff around the house, which doesn't even use the USB data lines. 
 
 ### 14. 	USB 3.0
 As above, but without always-on power and a typical max of 4.5W, the device must register first to pull the power.
@@ -177,7 +177,7 @@ As above, but without always-on power and a typical max of 4.5W, the device must
 ### 15. 	Power Adapter LED
 
 ### 16. 	Dock Button
-Works with Dell, the same as the power button. No luck otherwise.
+It works with Dell, and it is the same as the power button. No luck otherwise.
 
 ### 17. 	Kensington lock slot
 
@@ -192,5 +192,5 @@ A laptop + dock can support up to 4 screens (panels) if your graphics adapter su
 ```
 grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
 ```
-Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:00\:02.0`. Other graphic adapters should have similar ways to test this.
+Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:00\:02.0`. Other graphics adapters should have similar ways to test this.
 
