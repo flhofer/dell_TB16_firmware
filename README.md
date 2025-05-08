@@ -28,7 +28,7 @@ Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back)
 " | " | 27.00 | Dock_BME_27_00.bin | Thunderbolt security update | Linux |
 ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
  " | " | 131025_10.11_AB aka 131025_10.11_171 | HP_131025_10_11_AB.bin | Unofficial update - HP version - UNTESTED (TBD) | Windows/Linux |
- " | " | 140124_10.10_04_2 (is this older??) | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs, where this problem also does not arise| Windows/Linux |
+ " | " | 140124_10.10_04 (is this older??) | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs, where this problem also does not arise| Windows/Linux |
 TI 1.2.11 Port Controller 1	 | Texas Instruments TB-chip firmware Cable | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
 TI 1.2.32 Port Controller 2	| Texas Instruments TB-chip firmware Dock | 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
 Dock EC | Embedded controller for basic function, e.g. led, fan | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
@@ -102,8 +102,16 @@ If you use the `cmd` prompt and enter the directory, you can check the installed
 ```
 > asm.exe /version
 ```
-The tool will not flash if the bin is older or equal to the installed one and exits (unless run with `/f`).
+The tool will not flash if the bin is older than or equal to the installed one and exits (unless run with `/f`).
 If there is more than one bin file in the directory, it will take the first one using ASCII order, e.g., numbers before letters.
+
+Assumed firmware version scheme by ASMedia, `YYMMDD_VV_NN_FF.bin` where
+* YYear, MMonth, and DDay of the firmware release
+* VV Major of the release
+* NN minor of the release
+* FF feature request or bugfix version
+
+It is still unclear how newer releases have smaller firmware versions, but this could be due to a customer's later feature request on an existing version.
 
 > [!NOTE]
 > The Dell firmware updater checks only the last digits of the firmware version and may thus think the firmware is older. However, `asm.exe` is invoked and does not update.
