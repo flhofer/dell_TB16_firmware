@@ -105,13 +105,12 @@ If you use the `cmd` prompt and enter the directory, you can check the installed
 The tool will not flash if the bin is older than or equal to the installed one and exits (unless run with `/f`).
 If there is more than one bin file in the directory, it will take the first one using ASCII order, e.g., numbers before letters.
 
-Assumed firmware version scheme by ASMedia, `YYMMDD_VV_NN_FF.bin` where
-* YYear, MMonth, and DDay of the firmware release
-* VV Major of the release
-* NN minor of the release
-* FF feature request or bugfix version
+Assumed firmware version scheme by ASMedia, `YYMMDD_VV.VV_FF.bin` where
+* `YYMMDD` date of the firmware release
+* `VV.VV` release version
+* `FF` feature request or bugfix version
 
-It is still unclear how newer releases have smaller firmware versions, but this could be due to a customer's later feature request on an existing version.
+It is still unclear how newer releases have smaller firmware versions, but this could be due to a customer's later feature request on an existing version. Thus, `140124_10.10_04` is possibly older than `131025_10.11_AB`.
 
 > [!NOTE]
 > The Dell firmware updater checks only the last digits of the firmware version and may thus think the firmware is older. However, `asm.exe` is invoked and does not update.
