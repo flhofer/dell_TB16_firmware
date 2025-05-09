@@ -110,10 +110,10 @@ Assumed firmware version scheme by ASMedia, `YYMMDD_VV.VV_FF.bin` where
 * `VV.VV` release version
 * `FF` feature request or bugfix version
 
-It is still unclear how newer releases have smaller firmware versions, but this could be due to a customer's later feature request on an existing version. Thus, `140124_10.10_04` is possibly older than `131025_10.11_AB`.
+It is still unclear how newer releases have smaller firmware versions, but this could be due to a customer's later feature request on an existing version. Thus, `140124_10.10_04` is possibly older than `131025_10.11_AB`. While all of them are made for ASM 1042A (`2104B_RCFG` in the file header), the bin contents in size (using hexdump) are that `10.10_04 < 10.11_A9 < 10.11_AB`, confirming the above versioning.
 
 > [!NOTE]
-> The Dell firmware updater checks only the last digits of the firmware version and may thus think the firmware is older. However, `asm.exe` is invoked and does not update.
+> The Dell firmware updater checks only the last digits of the firmware version and may thus think their included firmware is newer. However, `asm.exe` is invoked and does not update.
 
 ## Official Flashing tools
 
