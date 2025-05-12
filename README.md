@@ -1,6 +1,11 @@
 # Contents
 - [Dell Firmware flashing instructions](#dell-tb16-firmware)
+  - [Firmware versions and status](#firmware-versions-and-status)
+  - [Flashing instructions](#flashing-instructions)
+  - [Official Flashing tools](#official-flashing-tools)
 - [Dock feature description and general detail](#the-dell-tb16-dock)
+  - [Ports and connectors](#whats-there-and-what-works-also-non-windows)
+  - [Video outputs and resolutions](#video-outputs-and-resolutions)
 
 # Dell TB16 Firmware
 Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We are using three of those between home and work because
