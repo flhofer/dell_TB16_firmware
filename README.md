@@ -146,7 +146,9 @@ Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have 
 SuperSpeed USB is ideal for, e.g., the monitors, USB-HUBs, or USB-NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
-Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. You can create an IP over the Thunderbolt tunnel and thus have multiple Gbit speed transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested.
+Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested. 
+
+You can create an IP-over-Thunderbolt tunnel and thus have multiple Gbit speed transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. To do so, however, you need a certified Thunderbolt cable. If longer than 0.5/1 m (3ft), it has to be active (powered circuitry in the connector) and can thus become relatively expensive, e.g., 100 EUR for 1.8m (6ft).
 
 ### 9. 	7.4 mm DC-in power
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol.
@@ -173,6 +175,16 @@ curr1:         3.00 A  (max =  +4.70 A)
 ```
 However, in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
 
+#### Other uses of this connector
+
+It's a programmable PSU, settable to 5-19.5V and up to (at least) 3A. In short, you can power or recharge anything with up to ~60W, like (I did it)
+* Your Bluetooth speaker
+* a Raspberry Pi 4B/5B
+* The fancy wireless headphone battery case
+* ...
+
+I'm curious to know what happens if you connect a modern smartphone or tablet. Does it recognize TB and see the USB ports and the Ethernet connection?
+
 ### 12. 	Headset Jack
 The front jack is helpful for wired earplugs and a quick Video Call. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
 
@@ -194,7 +206,7 @@ It works with Dell, and it is the same as the power button. No luck otherwise.
 
 The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). It needs to be clarified how using the TB3 port for video affects the MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, nothing for the Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
 
-The two MST devices serve two ports each: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both ports are in use, the above limits either halve in frequency, e.g., 3840x2160@30Hz, or reduce the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware.
+Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST ports are in use, the output either halves in frequency, e.g., 3840x2160@30Hz, or reduces resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware.
 
 A laptop + dock can support up to 4 screens (panels) if your graphics adapter supports it. On `i915` compatible systems, you can check how many displays your card supports with
 ```
