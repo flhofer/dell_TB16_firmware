@@ -1,3 +1,7 @@
+# Contents
+- [Dell Firmware flashing instructions](#dell-tb16-firmware)
+- [Dock feature description and general detail](#the-dell-tb16-dock)
+
 # Dell TB16 Firmware
 Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We are using three of those between home and work because
 * low price — got all of them used under 50eur/piece
