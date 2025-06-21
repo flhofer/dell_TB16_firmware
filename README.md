@@ -182,7 +182,7 @@ Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have 
 SuperSpeed USB is ideal for, e.g., the monitors, USB-HUBs, or USB-NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
-Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. DP functionality not tested. 
+Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. Tested DP with a USB-enabled QHD display. Thunderbolt DP functionality not tested.
 
 You can create an IP-over-Thunderbolt tunnel and thus have multiple Gbit speed transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. To do so, however, you need a certified Thunderbolt cable. If longer than 0.5/1 m (3ft), it has to be active (powered circuitry in the connector) and can thus become relatively expensive, e.g., 100 EUR for 1.8m (6ft).
 
