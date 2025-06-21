@@ -1,5 +1,6 @@
 # Contents
 - [Dell Firmware flashing instructions](#dell-tb16-firmware)
+  - [TLDR; Suggested steps](#tldr-suggested-steps)
   - [Firmware versions and status](#firmware-versions-and-status)
   - [Flashing instructions](#flashing-instructions)
   - [Official Flashing tools](#official-flashing-tools)
@@ -16,12 +17,38 @@ Firmware and flashing instructions for the (now) affordable TB16 to fix some maj
   
 makes it an unbeatable bargain.
 
-I've spent some time tweaking and fixing most issues with the Dock, especially finding different ways to flash the firmware with non-Windows and non-Dell hardware.
+I've spent some time tweaking and fixing most issues with the Dock, particularly exploring different methods for flashing the firmware on non-Windows and non-Dell hardware.
 
 The Power button works only on Dell PCs, though. Is there a script somewhere that would also make it work on others?
 
 > [!Note]
 > This procedure may also work for the peers Dell WD15, Dell TB15 (retired), and Dell TB18DC, as they share most of the components. In any case, I'm not responsible for any damages that were caused by following these instructions.
+
+## TLDR; Suggested steps
+(regularly updated)
+To use the latest versions, do the following either with `sudo` or as `root`:
+- Boot into Linux or Linux Live
+  - Connect the Dock with only monitor(s) attached (one on DP or VGA, one on mDP or HDMI). Enter the `bin` directory of this project.
+  - Flash the Cable NVM, use version 26.06 with `fwupdtool install-blob Cable_26_06.bin` and select the number for `Thunderbolt Cable`
+  - Power cycle the dock (optional): unplug power, replug while holding the power button down, once the fan spinns, unplug, wait a second and replug.
+  - Flash the dock NVM, use version 27.00 with `fwupdtool install-blob Dock_BME_27_00.bin` and select the number for `Thunderbolt Dock`
+  - Power cycle the dock (optional)
+  - Update the Display Multi-Stream-Transport devices to version 3.12.002 with `fwupdmgr install mst_03.12.002.cab`
+  - WAIT! At least a minute after the _known_ timeout error appears, before you power cycle (optional)
+  - If you had only one monitor attached, repeat the previous two steps with the monitor connected to the other MST device (see table below for details).
+  - Check firmware versions with `fwupdmgr get-devices`
+- REBOOT using Windows 10 or a bootable Windows 10 made with Rufus
+  - Enter the directory of the ASM tools, in `tools/`
+  - Copy the desired bin into the directory, `HP_131025_10_11_AB.bin` is the latest known to work with PC and MAC
+  - Right-click `asm.exe` and select Run as Administrator.
+  - If that doesn't start updating, proceed.
+  - Open Command line as administrator (Start-> Type `Cmd` -> select Run as Administrator)
+  - Enter the directory of the tool using `cd`
+  - Run `asm.exe /v` to see the version installed
+  - Run `asm.exe /f` to force writing the selected version
+
+Done.
+There are alternatives for the Windows part (see below), but I have not tested them.
 
 ## Firmware versions and status
 
@@ -36,14 +63,14 @@ Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00 | Cable_
 Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00 | Dock_BME_16_00.bin | Unknown benefits | Linux |
 " | " | 27.00 | Dock_BME_27_00.bin | Thunderbolt security update | Linux |
 ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
- " | " | 131025_10.11_AB aka 131025_10.11_171 | HP_131025_10_11_AB.bin | Unofficial update - HP version - UNTESTED (TBD) | Windows/Linux |
+ " | " | 131025_10.11_AB aka 131025_10.11_171 | HP_131025_10_11_AB.bin | Unofficial update - HP version, unclear changes | Windows/Linux |
  " | " | 140124_10.10_04 (is this older??) | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs, where this problem also does not arise| Windows/Linux |
 TI 1.2.11 Port Controller 1	 | Texas Instruments TB-chip firmware Cable | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
 TI 1.2.32 Port Controller 2	| Texas Instruments TB-chip firmware Dock | 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
 Dock EC | Embedded controller for basic function, e.g. led, fan | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
 Cable PD | Power Delivery controller | 00.03.12 | N/A | Updated through BIOS[^1]| none yet | 
 [^1]: These are updated early on and should already be done (Dell Tool v1.00.00 - v1.00.02)
-[^2] Since the summer of 2016, Dell has shipped WD15 and TB16 docks with universal cables, supporting USB3 and Thunderbolt 3 (recognizable by the bolt and DP logo on the Type-C connector). It makes sense that they ship TB Cable firmware with the WD15.
+[^2]: Since the summer of 2016, Dell has shipped WD15 and TB16 docks with universal cables, supporting USB3 and Thunderbolt 3 (recognizable by the bolt and DP logo on the Type-C connector). It makes sense that they ship TB Cable firmware with the WD15.
 
 ## Flashing instructions
 
