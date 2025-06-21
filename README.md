@@ -44,7 +44,7 @@ To use the latest versions, do the following either with `sudo` or as `root`:
   - If that doesn't start updating, proceed.
   - Open Command line as administrator (Start-> Type `Cmd` -> select Run as Administrator)
   - Enter the directory of the tool using `cd`
-  - Run `asm.exe /v` to see the version installed
+  - Run `asm.exe /version` to see the version installed
   - Run `asm.exe /f` to force writing the selected version
 
 Done.
