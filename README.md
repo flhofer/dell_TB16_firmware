@@ -178,8 +178,9 @@ DSL6540 Thunderbolt™ 3 controller (Cable)
 |       ├── Rear USB 3.0 port
 |       ├── Rear USB 2.0 port
 |       ├── Rear USB 2.0 port
-|       └── Realtek ALC4020 & Realtek ALC3263 audio codec USB 2.0
-|           ├── Rear Line Out
+|       └── Realtek ALC4020 USB 2.0
+|           ├── Realtek ALC3263 audio codec
+|           |   └── Rear Line Out
 |           └── Front Headphones (to confirm)
 └── DSL6540 Thunderbolt™ 3 controller (Dock) + USB 3.1
 ```
