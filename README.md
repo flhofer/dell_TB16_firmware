@@ -185,9 +185,13 @@ DSL6540 Thunderbolt™ 3 controller (Cable)
 └── DSL6540 Thunderbolt™ 3 controller (Dock) + USB 3.1
 ```
 
-Datasheets:
-* [Microchip USB5537B](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/00001682C.pdf)
-
+Datasheets and specifications:
+* [Microchip USB5537B](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/00001682C.pdf) is a 4x USB3.0 and 3x USB2.0 hub
+* Realtek ALC4020 is a Dell-custom audio chip that interfaces with the USB bus and the Audio bus (I2S/PCM) and includes Microphone and Headphone amplifiers. Only the Datasheets for the sibling, ALC4042, can be found.
+* Realtek ALC3263 is a Dell-custom Audio bus (I2S/PCM) audio chip that performs audio decoding and encoding on four output streams up to 24-bit 96 kHz. Only the Datasheets for the sibling, ALC3261, can be found.
+* Realtek RTL8152B is one of the most sold USB-based Gigabit Ethernet controllers
+...
+**TBC**
 
 ## What's there and what works (also non-Windows)
 
