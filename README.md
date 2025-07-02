@@ -159,6 +159,35 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 
 # The Dell TB16 Dock
 
+## Hardware specifications
+
+Suggested Hardware Tree:
+```
+DSL6540 Thunderbolt™ 3 controller (Cable)
+├── Synaptics VMM3320BJG
+|   ├── Display Port
+|   └── VGA Monitor
+├── Synaptics VMM3330BJG
+|   ├── Mini Display Port
+|   └── HDMI
+├── ASMedia 1042A PCI-E USB 3.0 Host
+|   └── Microchip USB5537B USB 3.0 7 Port Hub
+|       ├── Realtek RTL8152B Ethernet Controller
+|       ├── Front USB 3.0 port w/ Powershare
+|       ├── Front USB 3.0 port
+|       ├── Rear USB 3.0 port
+|       ├── Rear USB 2.0 port
+|       ├── Rear USB 2.0 port
+|       └── Realtek ALC4020 & Realtek ALC3263 audio codec USB 2.0
+|           ├── Rear Line Out
+|           └── Front Headphones (to confirm)
+└── DSL6540 Thunderbolt™ 3 controller (Dock) + USB 3.1
+```
+
+Datasheets:
+* [Microchip USB5537B](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/00001682C.pdf)
+
+
 ## What's there and what works (also non-Windows)
 
 ![TB16 Ports Image](images/ports.png)
