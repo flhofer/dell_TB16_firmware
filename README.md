@@ -5,6 +5,7 @@
   - [Flashing instructions](#flashing-instructions)
   - [Official Flashing tools](#official-flashing-tools)
 - [Dock feature description and general detail](#the-dell-tb16-dock)
+  - [Hardware specifications](#hardware-specifications)
   - [Ports and connectors](#whats-there-and-what-works-also-non-windows)
   - [Video outputs and resolutions](#video-outputs-and-resolutions)
 
