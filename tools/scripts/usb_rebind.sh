@@ -4,8 +4,10 @@
 SERIAL=$(lspci -Dd "1b21:1142" | awk '{ print $1 }')
 DRIVER="/sys/bus/pci/drivers/xhci_hcd"
 
-echo -n $SERIAL | sudo tee $DRIVER/unbind 
+echo "Unbinding" $( echo -n $SERIAL | sudo tee $DRIVER/unbind ) "..."
 sleep 4
-echo -n $SERIAL | sudo tee $DRIVER/bind
-echo 0 | sudo tee $DRIVER/$SERIAL/d3cold_allowed
+echo "Rebinding" $( echo -n $SERIAL | sudo tee $DRIVER/bind ) "..."
+sleep 4
+echo "Setting power-savig mode 'd3cold' to disallowed for USB controller.."
+echo "d3cold_allowed="$( echo 0 | sudo tee $DRIVER/$SERIAL/d3cold_allowed )
 
