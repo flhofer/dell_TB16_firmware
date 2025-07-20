@@ -172,7 +172,7 @@ DSL6540 Thunderbolt™ 3 controller (Cable)
 |   └── HDMI
 ├── ASMedia 1042A PCI-E USB 3.0 Host
 |   └── Microchip USB5537B USB 3.0 7 Port Hub
-|       ├── Realtek RTL8152B Ethernet Controller
+|       ├── Realtek RTL8153 Ethernet Controller
 |       ├── Front USB 3.0 port w/ Powershare
 |       ├── Front USB 3.0 port
 |       ├── Rear USB 3.0 port
@@ -181,7 +181,7 @@ DSL6540 Thunderbolt™ 3 controller (Cable)
 |       └── Realtek ALC4020 USB 2.0
 |           ├── Realtek ALC3263 audio codec
 |           |   └── Rear Line Out
-|           └── Front Headphones (to confirm)
+|           └── Front Headphones
 └── DSL6540 Thunderbolt™ 3 controller (Dock) + USB 3.1
 ```
 
@@ -189,8 +189,10 @@ Datasheets and specifications:
 * [Microchip USB5537B](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/00001682C.pdf) is a 4x USB3.0 and 3x USB2.0 hub
 * Realtek ALC4020 is a Dell-custom audio chip that interfaces with the USB bus and the Audio bus (I2S/PCM) and includes Microphone and Headphone amplifiers. Only the Datasheets for the sibling, ALC4042, can be found.
 * Realtek ALC3263 is a Dell-custom Audio bus (I2S/PCM) audio chip that performs audio decoding and encoding on four output streams *at* 24-bit 48 kHz (this is strangely fixed). Only the Datasheets for the sibling, ALC3261, can be found.
-* Realtek RTL8152B is one of the most sold USB-based Gigabit Ethernet controllers
+* Realtek RTL8153 is one of the most sold USB-based Gigabit Ethernet controllers
 ...
+
+  
 **TBC**
 
 ## What's there and what works (also non-Windows)
