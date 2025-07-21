@@ -8,6 +8,7 @@
   - [Hardware specifications](#hardware-specifications)
   - [Ports and connectors](#whats-there-and-what-works-also-non-windows)
   - [Video outputs and resolutions](#video-outputs-and-resolutions)
+  - [Audio outputs and resolutions](#audio-outputs-and-resolutions)
 
 # Dell TB16 Firmware
 Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We are using three of those between home and work because
@@ -290,3 +291,22 @@ grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
 ```
 Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:00\:02.0`. Other graphics adapters should have similar ways to test this.
 
+## Audio outputs and resolutions
+
+As discussed above, the Realtek audio controller in the Dock is composed of two ICs, one for interfacing and headphone amplification, the other for the media and ADC/DAC stream decoding. The front connector for a headset features hardware detection and may not appear in your mixer settings unless it is connected. The rear is equipped with a line output connector, which has no amplification. Use it to attach your stereo/hifi device or, like in my case, an external headphone amplifier.
+
+
+### Audio resolutions
+
+If we check the hardware parameters of the device, we see the following (run `cat /proc/asound/card*/pcm*p/sub0/hw_params` in terminal while output is selected)
+```
+access: MMAP_INTERLEAVED
+format: S24_3LE
+subformat: STD
+channels: 2
+rate: 48000 (48000/1)
+period_size: 512
+buffer_size: 32768
+```
+
+This indicates that the hardware is configured at 48 kHz, 24-bit. It is yet unclear if we can change these parameters, as the sibling chips specifications display a default of 48 kHz, but a possible configuration of up to 192kHz. ***TBC..***
