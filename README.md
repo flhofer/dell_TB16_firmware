@@ -309,4 +309,17 @@ period_size: 512
 buffer_size: 32768
 ```
 
-This indicates that the hardware is configured at 48 kHz, 24-bit. It is yet unclear if we can change these parameters, as the sibling chips specifications display a default of 48 kHz, but a possible configuration of up to 192kHz. ***TBC..***
+This indicates that the hardware is configured at 48 kHz, 24-bit. It is yet unclear if we can change these parameters, as the sibling chips' specifications display a default of 48 kHz, but a possible configuration of up to 192kHz. ***TBC..***
+
+### Line out on MAC
+
+On Macs, the audio chip is recognized as a single card with four streams, twice left and right, but only the front stream is selectable. To add the line output, do the following:
+
+* press `cmd`+`space` and run `audio-midi-setup`
+* Add a new composite device with the plus sign, and name it, e.g., Realtek USB Audio Line out
+* Add the Realtek card, and then on the right, choose the second streams for left and right for audio output
+* Optionally, add a second device with a microphone, e.g., the Webcam microphone
+
+Now it should be possible to select the line out when opening the settings top-right and clicking the arrow on the right corner of the sound settings.
+
+
