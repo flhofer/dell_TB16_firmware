@@ -32,16 +32,16 @@ To use the latest versions, do the following either with `sudo` or as `root`:
 - Boot into Linux or Linux Live
   - Connect the Dock with only monitor(s) attached (one on DP or VGA, one on mDP or HDMI). Enter the `bin` directory of this project.
   - Flash the Cable NVM, use version 26.06 with `fwupdtool install-blob Cable_26_06.bin` and select the number for `Thunderbolt Cable`
-  - Power cycle the dock (optional): unplug power, replug while holding the power button down, once the fan spinns, unplug, wait a second and replug.
+  - Power cycle the dock (optional): unplug power, replug while holding the power button down, once the fan spins, unplug, wait a second, and replug.
   - Flash the dock NVM, use version 27.00 with `fwupdtool install-blob Dock_BME_27_00.bin` and select the number for `Thunderbolt Dock`
   - Power cycle the dock (optional)
   - Update the Display Multi-Stream-Transport devices to version 3.12.002 with `fwupdmgr install mst_03.12.002.cab`
   - WAIT! At least a minute after the _known_ timeout error appears, before you power cycle (optional)
   - If you had only one monitor attached, repeat the previous two steps with the monitor connected to the other MST device (see table below for details).
   - Check firmware versions with `fwupdmgr get-devices`
-- REBOOT using Windows 10 or a bootable Windows 10 made with Rufus
+- REBOOT using Windows 10 or a bootable Windows 10 made with [Rufus](https://rufus.ie/en/)
   - Enter the directory of the ASM tools, in `tools/`
-  - Copy the desired bin into the directory, `HP_131025_10_11_AB.bin` is the latest known to work with PC and MAC
+  - Copy the desired bin into the directory. `DELL_131025_10_11_A9.bin` is the latest known to work with PC and MAC, while `140124_10_10_4_2.BIN` is the only one fixing the Ethernet disconnect problem after wakeup.
   - Right-click `asm.exe` and select Run as Administrator.
   - If that doesn't start updating, proceed.
   - Open Command line as administrator (Start-> Type `Cmd` -> select Run as Administrator)
@@ -80,7 +80,7 @@ I will try to find alternative flashing methods for all systems to replace the o
 
 ### Flashing MST chips
 
-While there is a `mst.exe` for manual flashing, that too is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
+Although a `mst.exe` is available for manual flashing, it is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
 
 > [!NOTE]
 > The official update tool tends to report versions such as 00.00.fd. These are error codes reported from the `mst.exe` and do not show if you perform a manual version check.
@@ -134,7 +134,7 @@ Thunderbolt TB16 Dock | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downst
 
 ### Flashing the ASMedia USB Controller
 
-While a [C #—coded Linux tool](https://github.com/smx-smx/ASMTool) exists, I prefer the official ASM flasher. The Thunderbolt controller extends the PCIe bus where the controller is connected and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with Rufus, and execute it with the binary file copied into its folder.
+While a [C #—coded Linux tool](https://github.com/smx-smx/ASMTool) exists, I prefer the official ASM flasher. The Thunderbolt controller extends the PCIe bus where the controller is connected and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with [Rufus](https://rufus.ie/en/), and execute it with the binary file copied into its folder.
 
 If you use the `cmd` prompt and enter the directory, you can check the installed version with `/version` or force overwrite using the `/f` flag.
 ```
@@ -231,7 +231,7 @@ According to the manual, the Dock does not accept 130W power supplies. However, 
 It works well but may be too sensitive to RF interference, such as mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. Look for a quick guide online, as it seems to be a common problem.
 
 ### 11. 	Dell Docking station connector 
-Dell Proprietary connection to USB Type-C port on PC. The light does not go on with MacBooks but works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
+Dell Proprietary connection to USB Type-C port on PC. The light does not go on with MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
 
 (These examples use the Linux package `lmsensors` and the command `sensors`)
 ```
@@ -239,7 +239,7 @@ Adapter: ISA adapter
 in0:          19.50 V  (min =  +5.00 V, max = +19.50 V)
 curr1:         3.00 A  (max =  +3.00 A)
 ```
-Dell likely uses proprietary information in the extended information PDO of USB-PD to identify its systems and deliver more than 3A. Even if I attach a new Dell system, it won't report more than 3A max. By the way, 3A is the maximum limit USB-C can deliver with default specifications. For more current, you need electronics and wiring that support it. It makes sense that Dell limits it to 3A.
+Dell likely uses proprietary information in the extended information PDO of USB-PD to identify its systems and deliver more than 3A. Even if I attach a new Dell system, it won't report more than 3A max. By the way, 3A is the maximum limit USB-C can deliver with default specifications. For more electrical current, you need electronics and wiring that support it. It makes sense that Dell limits it to 3A.
 
 If I connect an Apple adapter, I get the following output.
 ```
@@ -247,7 +247,7 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard Laptops/Ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
+However, in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard laptops and ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
 
 #### Other uses of this connector
 
@@ -278,10 +278,10 @@ It works with Dell, and it is the same as the power button. No luck otherwise.
 
 ## Video outputs and resolutions
 
-The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160(4k) @ 60Hz without any particular configuration. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). It needs to be clarified how using the TB3 port for video affects the MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, nothing for the Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
+The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160 (4 K) @ 60Hz without any particular configuration. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). It needs to be clarified how using the TB3 port for video affects the MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, with no configurations listed for Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
 
 Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST ports are in use, the output either halves in frequency, e.g., 3840x2160@30Hz, or reduces resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware.
-See the following scheenshot from the Dell TB Docks 3/4 user manual
+See the following screenshot from the Dell TB Docks 3/4 user manual:
 
 ![Resolutions screen](images/resolutions.png)
 
@@ -320,6 +320,6 @@ On Macs, the audio chip is recognized as a single card with four streams, twice 
 * Add the Realtek card, and then on the right, choose the second streams for left and right for audio output
 * Optionally, add a second device with a microphone, e.g., the Webcam microphone
 
-Now it should be possible to select the line out when opening the settings top-right and clicking the arrow on the right corner of the sound settings.
+Now, you can select the line out by opening the settings top-right and clicking the arrow on the right corner of the sound settings.
 
 
