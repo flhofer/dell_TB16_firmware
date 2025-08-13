@@ -50,7 +50,7 @@ To use the latest versions, do the following either with `sudo` or as `root`:
   - Run `asm.exe /f` to force writing the selected version
 
 Done.
-There are alternatives for the Windows part (see below), but I have not tested them.
+Unfortunately, there are no firmware write alternatives for the Windows part (see below).
 
 ## Firmware versions and status
 
@@ -64,9 +64,9 @@ Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00 | Cable_
   " | " | 26.06 | Cable_26_06.bin | Unofficial update borrowed from WD15[^2], fixes "DROM data CRC32 mismatch" error and random display malfunction + Thunderbolt security update | Linux |
 Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00 | Dock_BME_16_00.bin | Unknown benefits | Linux |
 " | " | 27.00 | Dock_BME_27_00.bin | Thunderbolt security update | Linux |
-ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows/Linux |
- " | " | 131025_10.11_AB aka 131025_10.11_171 | HP_131025_10_11_AB.bin | Unofficial update - HP version, unclear changes | Windows/Linux |
- " | " | 140124_10.10_04 (is this older?? contains "port warm reset patch") | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs, where this problem also does not arise| Windows/Linux |
+ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows |
+ " | " | 131025_10.11_AB aka 131025_10.11_171 | HP_131025_10_11_AB.bin | Unofficial update - HP version, unclear changes | Windows |
+ " | " | 140124_10.10_04 (this is older, but contains a "port warm reset patch") | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs, where this problem also does not arise | Windows |
 TI 1.2.11 Port Controller 1	 | Texas Instruments TB-chip firmware Cable | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
 TI 1.2.32 Port Controller 2	| Texas Instruments TB-chip firmware Dock | 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
 Dock EC | Embedded controller for basic function, e.g. led, fan | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
@@ -134,7 +134,7 @@ Thunderbolt TB16 Dock | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downst
 
 ### Flashing the ASMedia USB Controller
 
-While a [C #—coded Linux tool](https://github.com/smx-smx/ASMTool) exists, I prefer the official ASM flasher. The Thunderbolt controller extends the PCIe bus where the controller is connected and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with [Rufus](https://rufus.ie/en/), and execute it with the binary file copied into its folder.
+We will do this part using the official ASM flasher. While a [C #—coded Linux tool](https://github.com/smx-smx/ASMTool) exists, it does not allow firmware write yet. The Thunderbolt controller extends the PCIe bus where the controller is connected and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with [Rufus](https://rufus.ie/en/), and execute it with the binary file of your choice (see table) copied into its folder.
 
 If you use the `cmd` prompt and enter the directory, you can check the installed version with `/version` or force overwrite using the `/f` flag.
 ```
@@ -148,10 +148,10 @@ Assumed firmware version scheme by ASMedia, `YYMMDD_VV.VV_FF.bin` where
 * `VV.VV` release version
 * `FF` feature request or bugfix version
 
-It is still unclear how newer releases have smaller firmware versions, but this could be due to a customer's later feature request on an existing version. Thus, `140124_10.10_04` is possibly older than `131025_10.11_AB`. While all of them are made for ASM 1042A (`2104B_RCFG` in the file header), the bin contents in size (using hexdump) are that `10.10_04 < 10.11_A9 < 10.11_AB`, confirming the above versioning.
+It happens that newer release dates have smaller firmware versions, but this is due to a customer's later feature request on an existing version. Thus, `140124_10.10_04` is an older base firmware than `131025_10.11_AB`. While all of them are made for ASM 1042A (`2104B_RCFG` in the file header), the bin contents in size (using hexdump) are that `10.10_04 < 10.11_A9 < 10.11_AB`, confirming the above versioning. I use `140124_10.10_04`, despite being older, because it is the only version that received a warm reset patch later on, solving the Ethernet controller hangup issue after suspend. Without the patch, the controller becomes inactive, and wake-on-LAN functionality is lost. To reconnect the controller without disconnecting the dock, you must run one of the scripts in `tools/`.
 
 > [!NOTE]
-> The Dell firmware updater checks only the last digits of the firmware version and may thus think their included firmware is newer. However, `asm.exe` is invoked and does not update.
+> The Dell firmware updater checks only the last digits of the firmware version (which technically is correct) and would want to update. However, `asm.exe` is invoked and does not update as it considers the release date too. So if you want to update to a newer firmware with an older release date, you need to run a manual force-write as described above.
 
 ## Official Flashing tools
 
