@@ -228,7 +228,7 @@ You can create an IP-over-Thunderbolt tunnel and thus have multiple Gbit speed t
 
 UPDATE!!
 
-Guess what, this neat-looking connector also provides USB-PD! If connected to a capable device, you will note that it can deliver up to 19.5V @3A, or ~60W, in addition to the power already delivered to the main Dock connection. I'm basically charging a Mac and a Dell laptop at the same time right now.
+Guess what, this neat-looking connector also provides USB-PD! If connected to a capable device, you will note that it can deliver up to 19.5V @3A, or ~60W, in addition to the power already delivered to the main Dock connection. I'm basically charging a Mac and a Dell laptop at the same time right now. I also tested the `DRD` capability, i.e., data exchange over directly connected USB-C devices, and unfortunately, it doesn't work. Maybe using a Thunderbolt cable, one can charge and exchange at the same time!
 
 ### 9. 	7.4 mm DC-in power
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol.
