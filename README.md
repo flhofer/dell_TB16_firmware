@@ -153,6 +153,8 @@ It happens that newer release dates have smaller firmware versions, but this is 
 > [!NOTE]
 > The Dell firmware updater checks only the last digits of the firmware version (which technically is correct) and would want to update. However, `asm.exe` is invoked and does not update as it considers the release date too. So if you want to update to a newer firmware with an older release date, you need to run a manual force-write as described above.
 
+If the flashing does not succeed because subsystem-ID (SSID) or system vendor ID (SVID) do not match, you can still flash the controller using the ASM MPTool. Unfortunately, this tool is not freely distributable due to licensing constraints. However, I can reveal that it is found in one of the flash zips on `station-drivers..com` .. ( let's avoid bots 😃 ) 
+
 ## Official Flashing tools
 
 If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash with version 1.00 and then 1.02 first. These install a BIOS-based update file that executes an update at BIOS start. It is thus likely not possible to update them without a Dell system.
@@ -230,7 +232,7 @@ According to the manual, the Dock does not accept 130W power supplies. However, 
 ### 10. 	3.5 mm Speaker-out
 It works well but may be too sensitive to RF interference, such as mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. Look for a quick guide online, as it seems to be a common problem.
 
-### 11. 	Dell Docking station connector 
+### 11. 	Dell Docking Station connector 
 Dell Proprietary connection to USB Type-C port on PC. The light does not go on with MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
 
 (These examples use the Linux package `lmsensors` and the command `sensors`)
