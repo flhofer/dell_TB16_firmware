@@ -226,6 +226,10 @@ Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.
 
 You can create an IP-over-Thunderbolt tunnel and thus have multiple Gbit speed transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. To do so, however, you need a certified Thunderbolt cable. If longer than 0.5/1 m (3ft), it has to be active (powered circuitry in the connector) and can thus become relatively expensive, e.g., 100 EUR for 1.8m (6ft).
 
+UPDATE!!
+
+Guess what, this neat-looking connector also provides USB-PD! If connected to a capable device, you will note that it can deliver up to 19.5V @3A, or ~60W, in addition to the power already delivered to the main Dock connection. I'm basically charging a Mac and a Dell laptop at the same time right now.
+
 ### 9. 	7.4 mm DC-in power
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol.
 
@@ -233,7 +237,7 @@ According to the manual, the Dock does not accept 130W power supplies. However, 
 It works well but may be too sensitive to RF interference, such as mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. Look for a quick guide online, as it seems to be a common problem.
 
 ### 11. 	Dell Docking Station connector 
-Dell Proprietary connection to USB Type-C port on PC. The light does not go on with MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
+Dell Proprietary connection to the USB Type-C port on the PC. The light does not go on with MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
 
 (These examples use the Linux package `lmsensors` and the command `sensors`)
 ```
@@ -249,7 +253,7 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard laptops and ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
+However, like in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard laptops and ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The only difficulty I noted is that when the battery is completely drained, the MAC won't charge. This, however, might be due to the high power required when doing a charge from that low. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
 
 #### Other uses of this connector
 
