@@ -106,7 +106,7 @@ $ fwupdmgr install <cab-file>
 > [!WARNING]
 > This install may fail at the prompt, but continue flashing and succeed in the background. Thus, keep the power to the dock for a minute or two after the command ends.
 >
-> The flashers `attach()` and `reload()` method calls are done after writing, but they're timeout-based and thus often don't work correctly. You might need to power-cycle the dock to reload new firmware after writing, but wait, as the process is not terminated right after `fwupd` exits. If you want more info about the `attach()` mechanism, check the `fwupdmgr` [docs](https://github.com/fwupd/fwupd/blob/main/docs/tutorial.md). 
+> The flashers `attach()` and `reload()` method calls are done after writing, but they're timeout-based and thus often don't work correctly. You might need to power-cycle the dock to reload the firmware after writing, but wait: the process isn't terminated immediately after `fwupd` exits. If you want more info about the `attach()` mechanism, check the `fwupdmgr` [docs](https://github.com/fwupd/fwupd/blob/main/docs/tutorial.md). 
 
 ### Flashing TB16's NVM
 
@@ -151,7 +151,7 @@ Assumed firmware version scheme by ASMedia, `YYMMDD_VV.VV_FF.bin` where
 It happens that newer release dates have smaller firmware versions, but this is due to a customer's later feature request on an existing version. Thus, `140124_10.10_04` is an older base firmware than `131025_10.11_AB`. While all of them are made for ASM 1042A (`2104B_RCFG` in the file header), the bin contents in size (using hexdump) are that `10.10_04 < 10.11_A9 < 10.11_AB`, confirming the above versioning. I use `140124_10.10_04`, despite being older, because it is the only version that received a warm reset patch later on, solving the Ethernet controller hangup issue after suspend. Without the patch, the controller becomes inactive, and wake-on-LAN functionality is lost. To reconnect the controller without disconnecting the dock, you must run one of the scripts in `tools/`.
 
 > [!NOTE]
-> The Dell firmware updater checks only the last digits of the firmware version (which technically is correct) and would want to update. However, `asm.exe` is invoked and does not update as it considers the release date too. So if you want to update to a newer firmware with an older release date, you need to run a manual force-write as described above.
+> The Dell firmware updater checks only the last digits of the firmware version (which is technically correct) and would update. However, `asm.exe` is invoked but does not update because it also considers the release date. If you want to update to a *newer* firmware version with an *older* release date, you need to run a manual force-write as described above.
 
 If the flashing does not succeed because subsystem-ID (SSID) or system vendor ID (SVID) do not match, you can still flash the controller using the ASM MPTool. Unfortunately, this tool is not freely distributable due to licensing constraints. However, I can reveal that it is found in one of the flash zips on `station-drivers..com` .. ( let's avoid bots 😃 ) 
 
@@ -165,8 +165,10 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 
 ## Hardware specifications
 
-Suggested Hardware Tree:
+Suggested Hardware Tree (trial and error results):
 ```
+Laptop facing connector TB3/USB type C connector (NO USB capability!)
+|
 DSL6540 Thunderbolt™ 3 controller (Cable)
 ├── Synaptics VMM3320BJG
 |   ├── Display Port
@@ -186,13 +188,14 @@ DSL6540 Thunderbolt™ 3 controller (Cable)
 |           ├── Realtek ALC3263 audio codec
 |           |   └── Rear Line Out
 |           └── Front Headphones
-└── DSL6540 Thunderbolt™ 3 controller (Dock) + USB 3.1
+└── DSL6540 Thunderbolt™ 3 controller (Dock)
+    └── Rear TB3/USB 3.1 on USB-C 
 ```
 
 Datasheets and specifications:
 * [Microchip USB5537B](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/00001682C.pdf) is a 4x USB3.0 and 3x USB2.0 hub
-* Realtek ALC4020 is a Dell-custom audio chip that interfaces with the USB bus and the Audio bus (I2S/PCM) and includes Microphone and Headphone amplifiers. Only the Datasheets for the sibling, ALC4042, can be found.
-* Realtek ALC3263 is a Dell-custom Audio bus (I2S/PCM) audio chip that performs audio decoding and encoding on four output streams *at* 24-bit 48 kHz (this is strangely fixed). Only the Datasheets for the sibling, ALC3261, can be found.
+* Realtek ALC4020 is a Dell-custom audio chip that interfaces with the USB bus and the Audio bus (I2S/PCM) and includes Microphone and Headphone amplifiers. Only the Datasheets for the sibling, ALC4042, are available.
+* Realtek ALC3263 is a Dell-custom Audio bus (I2S/PCM) audio chip that performs audio decoding and encoding on four output streams *at* 24-bit 48 kHz (this is strangely fixed). Only the Datasheets for the sibling, ALC3261, are available.
 * [Realtek RTL8153](https://www.olimex.com/Products/USB-Modules/Ethernet/USB-GIGABIT/resources/rtl8153.pdf) is one of the most sold USB-based Gigabit Ethernet controllers
 ...
 
@@ -204,31 +207,29 @@ Datasheets and specifications:
 ![TB16 Ports Image](images/ports.png)
 
 ### 1. 	HDMI
-This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not current, it may show black, not always wake up, or not work. According to Dell, it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
+This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not current, it may show black, not always wake up, or not work. According to Dell, it does not support HDCP, but the kernel output shows `HDCP version: HDCP1.4`. **To be checked**
 
 ### 2. 	VGA
 Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1080 @ 60Hz
 
 ### 3. + 4. 	DisplayPort (DP) and mini-DisplayPort (mDP)
-These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM. Again, Dell says it does not support HDCP, while kernel output says `HDCP version: HDCP1.4`. To be checked
+These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM. Again, Dell states it does not support HDCP, while the kernel output reports `HDCP version: HDCP1.4`. **To be checked**
 
 ### 5. 	RJ45 Gigabit Ethernet
-Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have issues waking up from deep sleep (suspension) if the ASMedia USB controller firmware is not up-to-date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via script (you can find an example in `tools/scripts`.
+Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have difficulty waking from deep sleep (suspension) if the ASMedia USB controller firmware is not up to date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via a script (see an example in `tools/scripts`).
 
 ### 6. 	USB 2.0 (2 ports)
 "Slow"-speed port generally intended for input devices such as mouse, keyboard, trackpad, Smart-card readers, etc. No issues
 
 ### 7. 	USB 3.0
-SuperSpeed USB is ideal for, e.g., the monitors, USB-HUBs, or USB-NAS. No problems
+SuperSpeed USB is ideal for, e.g., monitors, USB hubs, or USB NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
-Limited (intended, reduced lanes by upstream) Thunderbolt is available for, e.g.,  Daisy-chain DP via tunneling onto Multiple USB-C monitors or USB 3.1 Superspeed devices. In particular configurations, monitors may reach 5120 x 2880 @ 60 Hz for a single display. Tested DP with a USB-enabled QHD display. Thunderbolt DP functionality not tested.
+Limited (intended; reduced lanes by upstream) Thunderbolt is available for, e.g., Daisy-Chaining DP via tunneling to multiple USB-C monitors or USB 3.1 SuperSpeed devices. In certain configurations, monitors may support 5120 x 2880 @ 60 Hz on a single display. Tested DP with a USB-enabled QHD display. Thunderbolt DP functionality not tested.
 
-You can create an IP-over-Thunderbolt tunnel and thus have multiple Gbit speed transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. To do so, however, you need a certified Thunderbolt cable. If longer than 0.5/1 m (3ft), it has to be active (powered circuitry in the connector) and can thus become relatively expensive, e.g., 100 EUR for 1.8m (6ft).
+You can create an IP-over-Thunderbolt tunnel, enabling multiple Gbit/s transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. To do so, however, you need a certified Thunderbolt cable. If longer than 0.5/1 m (3ft), it has to be active (powered circuitry in the connector) and can thus become relatively expensive, e.g., 100 EUR for 1.8m (6ft).
 
-UPDATE!!
-
-Guess what, this neat-looking connector also provides USB-PD! If connected to a capable device, you will note that it can deliver up to 19.5V @3A, or ~60W, in addition to the power already delivered to the main Dock connection. I'm basically charging a Mac and a Dell laptop at the same time right now. I also tested the `DRD` capability, i.e., data exchange over directly connected USB-C devices, and unfortunately, it doesn't work. Maybe using a Thunderbolt cable, one can charge and exchange at the same time!
+Guess what? This neat-looking connector also supports USB-PD! If connected to a capable device, it can deliver up to 19.5V at 3A (~60W), in addition to the power already delivered to the main Dock connection. I'm charging a Mac and a Dell laptop simultaneously right now. I also tested the `DRD` capability, i.e., data exchange over directly connected USB-C devices, and unfortunately, it doesn't work. **TBD**: Maybe using a Thunderbolt cable, one can charge and transfer data simultaneously.
 
 ### 9. 	7.4 mm DC-in power
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol.
