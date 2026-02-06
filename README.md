@@ -14,8 +14,9 @@
 Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We are using three of those between home and work because
 * low price — got all of them used under 50eur/piece
 * Up-to-date performance—Thunderbolt 3 has the same interface and speeds as TB4, where TB4 adds mainly some security features/restrictions, whatever you want to call it.
-* When fixed, works with MacBooks and all types of Windows/Linux PCs
+* When fixed, it works with MacBooks and all types of Windows/Linux PCs
 * One of the few Docks that can deliver more than 100W on the cable
+* PD also works on the rear connector, allowing an extra ~60W to be delivered to any other device connected, e.g., a partners/second laptop.
   
 makes it an unbeatable bargain.
 
@@ -32,7 +33,7 @@ To use the latest versions, do the following either with `sudo` or as `root`:
 - Boot into Linux or Linux Live
   - Connect the Dock with only monitor(s) attached (one on DP or VGA, one on mDP or HDMI). Enter the `bin` directory of this project.
   - Flash the Cable NVM, use version 26.06 with `fwupdtool install-blob Cable_26_06.bin` and select the number for `Thunderbolt Cable`
-  - Power cycle the dock (optional): unplug power, replug while holding the power button down, once the fan spins, unplug, wait a second, and replug.
+  - Power cycle the dock (optional): unplug the power, replug while holding the power button down, once the fan spins, unplug, wait a second, and replug.
   - Flash the dock NVM, use version 27.00 with `fwupdtool install-blob Dock_BME_27_00.bin` and select the number for `Thunderbolt Dock`
   - Power cycle the dock (optional)
   - Update the Display Multi-Stream-Transport devices to version 3.12.002 with `fwupdmgr install mst_03.12.002.cab`
@@ -232,10 +233,10 @@ You can create an IP-over-Thunderbolt tunnel, enabling multiple Gbit/s transfers
 Guess what? This neat-looking connector also supports USB-PD! If connected to a capable device, it can deliver up to 19.5V at 3A (~60W), in addition to the power already delivered to the main Dock connection. I'm charging a Mac and a Dell laptop simultaneously right now. I also tested the `DRD` capability, i.e., data exchange over directly connected USB-C devices, and unfortunately, it doesn't work. **TBD**: Maybe using a Thunderbolt cable, one can charge and transfer data simultaneously.
 
 ### 9. 	7.4 mm DC-in power
-According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the energy that can be supplied to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell proprietary protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol.
+According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the power available to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell's proprietary USB-PD protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol. A higher-power PSU may, however, be useful if you use the rear USB-C port to charge a second device.
 
 ### 10. 	3.5 mm Speaker-out
-It works well but may be too sensitive to RF interference, such as mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. Look for a quick guide online, as it seems to be a common problem.
+It works well but may be too sensitive to RF interference, such as mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. See [below](#line-out-on-mac) for some quick instructions.
 
 ### 11. 	Dell Docking Station connector 
 Dell Proprietary connection to the USB Type-C port on the PC. The light does not go on with MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
