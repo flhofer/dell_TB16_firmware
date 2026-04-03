@@ -31,12 +31,12 @@ The Power button works only on Dell PCs, though. Is there a script somewhere tha
 (regularly updated)
 To use the latest versions, do the following either with `sudo` or as `root`:
 - Boot into Linux or Linux Live
-  - Connect the Dock with only monitor(s) attached (one on DP or VGA, one on mDP or HDMI). Enter the `bin` directory of this project.
+  - Connect the Dock with only monitor(s) attached (one on DP or VGA, one on mDP or HDMI). Enter the `bins` directory of this project.
   - Flash the Cable NVM, use version 26.06 with `fwupdtool install-blob Cable_26_06.bin` and select the number for `Thunderbolt Cable`
   - Power cycle the dock (optional): unplug the power, replug while holding the power button down, once the fan spins, unplug, wait a second, and replug.
   - Flash the dock NVM, use version 27.00 with `fwupdtool install-blob Dock_BME_27_00.bin` and select the number for `Thunderbolt Dock`
   - Power cycle the dock (optional)
-  - Update the Display Multi-Stream-Transport devices to version 3.12.002 with `fwupdmgr install mst_03.12.002.cab`
+  - Update the Display Multi-Stream-Transport devices to version 3.12.002 with `fwupdmgr install mst_03_12_002.cab`
   - WAIT! At least a minute after the _known_ timeout error appears, before you power cycle (optional)
   - If you had only one monitor attached, repeat the previous two steps with the monitor connected to the other MST device (see table below for details).
   - Check firmware versions with `fwupdmgr get-devices`
