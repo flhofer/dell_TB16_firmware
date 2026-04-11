@@ -128,11 +128,11 @@ It will prompt you to select the correct device to flash. Select the device name
 
 ### Which NVM controller firmware to flash?
 
-I kept the latest and the previous versions in this repository for a straightforward reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter doesn't allow communication without a security authorization mechanism. This means legacy devices (first-gen TB3 and Thunderbolt 1 - 2 adapters) can no longer communicate with updated controllers. With the v16.xx NVM, selecting a security mode in the BIOS was still possible, optionally disabling Thunderbolt security. In short, unless you want to connect to some legacy Thunderbolt device up and/or downstream, use the latest v2x.xx firmware. It is less buggy and has a better user experience (see table above).
+I kept the latest and the previous versions in this repository for a straightforward reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter doesn't allow communication without a security authorization mechanism. This means legacy devices (first-gen TB3 and Thunderbolt 1-2 adapters) can no longer communicate with updated controllers. With the v16.xx NVM, selecting a security mode in the BIOS was still possible, optionally disabling Thunderbolt security. In short, unless you want to connect to a legacy Thunderbolt device upstream or downstream, use the latest v2x.xx firmware. It is less buggy and has a better user experience (see table above).
 
 ### Alternate NVMs (untested)
 
-While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't have such a function. A TB3 to TB2 adapter is one such device. Apple MACs have special firmware to make those work; PCs need a special NVM. Unfortunately, you can not flash these firmware files with a TB security-enabled device. If you do, the flashing starts but returns an error after a minute. Please report back if you manage to flash the firmware.
+While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't support this function. A TB3-to-TB2 adapter is one such device. Apple Macs have special firmware to make those work; PCs need a special NVM. Unfortunately, you can not flash these firmware files with a TB security-enabled device. If you do, the flashing starts but returns an error after a minute. Please report back if you manage to flash the firmware.
 
 System | version | file | fixes? |
 --- | --- | --- | --- 
@@ -141,9 +141,9 @@ Thunderbolt TB16 Dock | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downst
 
 ### Flashing the ASMedia USB Controller
 
-We will do this part using the official ASM flasher. While a [C #—coded Linux tool](https://github.com/smx-smx/ASMTool) exists, it does not allow firmware write yet. The Thunderbolt controller extends the PCIe bus where the controller is connected and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with [Rufus](https://rufus.ie/en/), and execute it with the binary file of your choice (see table) copied into its folder.
+We will do this part using the official ASM flasher. While a [C#— coded Linux tool](https://github.com/smx-smx/ASMTool) exists, it does not yet allow firmware writing. The Thunderbolt controller extends the PCIe bus to the controller and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with [Rufus](https://rufus.ie/en/), and execute it with the binary file of your choice (see table) copied into its folder.
 
-If you use the `cmd` prompt and enter the directory, you can check the installed version with `/version` or force overwrite using the `/f` flag.
+If you use the `cmd` prompt and change to the directory, you can check the installed version with `/version` or force an overwrite with the `/f` flag.
 ```
 > asm.exe /version
 ```
@@ -155,18 +155,18 @@ Assumed firmware version scheme by ASMedia, `YYMMDD_VV.VV_FF.bin` where
 * `VV.VV` release version
 * `FF` feature request or bugfix version
 
-It happens that newer release dates have smaller firmware versions, but this is due to a customer's later feature request on an existing version. Thus, `140124_10.10_04` is an older base firmware than `131025_10.11_AB`. While all of them are made for ASM 1042A (`2104B_RCFG` in the file header), the bin contents in size (using hexdump) are that `10.10_04 < 10.11_A9 < 10.11_AB`, confirming the above versioning. I use `140124_10.10_04`, despite being older, because it is the only version that received a warm reset patch later on, solving the Ethernet controller hangup issue after suspend. Without the patch, the controller becomes inactive, and wake-on-LAN functionality is lost. To reconnect the controller without disconnecting the dock, you must run one of the scripts in `tools/`.
+It happens that newer release dates have smaller firmware versions, but this is due to a customer's later feature request on an existing version. Thus, `140124_10.10_04` is an older base firmware than `131025_10.11_AB`. While all of them are made for ASM 1042A (`2104B_RCFG` in the file header), the bin contents in size (using hexdump) are that `10.10_04 < 10.11_A9 < 10.11_AB`, confirming the above versioning. I use `140124_10.10_04`, despite it being older, because it is the only version that received a warm reset patch later on, which solved the Ethernet controller hangup issue after suspend. Without the patch, the controller becomes inactive, and wake-on-LAN functionality is lost. To reconnect the controller without disconnecting the dock, you must run one of the scripts in `tools/`.
 
 > [!NOTE]
-> The Dell firmware updater checks only the last digits of the firmware version (which is technically correct) and would update. However, `asm.exe` is invoked but does not update because it also considers the release date. If you want to update to a *newer* firmware version with an *older* release date, you need to run a manual force-write as described above.
+> The Dell firmware updater checks only the last digits of the firmware version (which is technically correct) and would update. However, `asm.exe` is invoked but does not update because it also takes the release date into account. If you want to update to a *newer* firmware version with an *older* release date, you need to run a manual force-write as described above.
 
-If the flashing does not succeed because subsystem-ID (SSID) or system vendor ID (SVID) do not match, you can still flash the controller using the ASM MPTool. Unfortunately, this tool is not freely distributable due to licensing constraints. However, I can reveal that it is found in one of the flash zips on `station-drivers..com` .. ( let's avoid bots 😃 ) 
+If the flashing does not succeed because the subsystem-ID (SSID) or system vendor ID (SVID) does not match, you can still flash the controller using the ASM MPTool. Unfortunately, this tool is not freely distributable due to licensing constraints. However, I can reveal that it is found in one of the flash zips on `station-drivers..com` .. ( let's avoid bots 😃 ) 
 
 ## Official Flashing tools
 
-If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash with version 1.00 and then 1.02 first. These install a BIOS-based update file that executes an update at BIOS start. It is thus likely not possible to update them without a Dell system.
+If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash version 1.00 first, then 1.02. These install a BIOS-based update file that executes an update at BIOS start. It is thus likely that they cannot be updated without a Dell system.
 
-Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15, and TB18, got a new `Cable.bin` and were released the same day. You can use the WD15s flasher to update the `Cable.bin`.
+Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15 and TB18DC, got a new `Cable.bin` and were released the same day. You can use the WD15s flasher to update the `Cable.bin`.
 
 # The Dell TB16 Dock
 
@@ -206,10 +206,10 @@ Datasheets and specifications:
 * [Realtek RTL8153](https://www.olimex.com/Products/USB-Modules/Ethernet/USB-GIGABIT/resources/rtl8153.pdf) is one of the most sold USB-based Gigabit Ethernet controllers
 ...
 
-Differences between TB15, TB16, WD15, and TB18:
+Differences between TB15, TB16, WD15, and TB18DC:
 * TB15 was a previous release of TB16, which was then recalled due to overheating issues. The only reported difference is an added cooling system with a temperature-controlled fan, affecting only the Dock's EC controller. Users (@bovvski) reported successful flashing.
 * WD15 uses the same Dock case and, in later releases, the same Dock cable. The Cable binary should thus be the same. It is, however, unclear to me how a USB-C can be effectively translated to a PCI bus. My guess is that the ASM USB controller, Ethernet controller, and Audio Media components are the same. The only component I'm not sure of is the Dock's bin. Be careful!
-*  The TB18 has a double-TB connector for power-hungry laptops. Apparently, the second connector is only for power delivery. Therefore, it is my opinion that the Cable's internals may be different, but the rest is identical. Power delivery and control are managed by Cable-PD and should thus, however, not change the Cable's function - and bin - on the TB side.
+*  The TB18DC has a double-TB connector for power-hungry laptops. Apparently, the second connector is only for power delivery. Therefore, it is my opinion that the Cable's internals may be different, but the rest is identical. Power delivery and control are managed by Cable-PD and should thus, however, not change the Cable's function - and bin - on the TB side.
   
 **TBC**
 
