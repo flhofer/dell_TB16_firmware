@@ -25,7 +25,7 @@ I've spent some time tweaking and fixing most issues with the Dock, particularly
 The Power button works only on Dell PCs, though. Is there a script somewhere that would also make it work on others?
 
 > [!Note]
-This procedure also works for Dell TB15 (retired due to overheating issues - tested by @bovvski) and may work for the peers Dell WD15 (same dock, USB upstream) and Dell TB18DC (same dock, double TB upstream), as they share most components. In any case, I'm not responsible for any damage caused by following these instructions.
+> This procedure also works for Dell TB15 (retired due to overheating issues - tested by @bovvski) and may work for the peers Dell WD15 (same dock, USB upstream) and Dell TB18DC (same dock, double TB upstream), as they share most components. In any case, I'm not responsible for any damage caused by following these instructions.
 
 ## TLDR; Suggested steps
 (regularly updated)
@@ -52,6 +52,9 @@ To use the latest versions, do the following either with `sudo` or as `root`:
 
 Done.
 Unfortunately, there are no firmware write alternatives for the Windows part (see below).
+
+> [!Note]
+> You clearly need a Thunderbolt 3/4+ capable device to flash and use the dock. The connector can be confusing, but Thunderbolt uses different lanes and protocols than USB and thus would not be accessible without a TB controller.
 
 ## Firmware versions and status
 
