@@ -292,8 +292,7 @@ It works with Dell, and it is the same as the power button. No luck otherwise.
 
 The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160 (4K) @ 60Hz without any special configuration. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). We need to clarify how using the TB3 port for video affects MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, with no configurations listed for Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
 
-Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST ports are in use, the output either halves the frequency (e.g., 3840x2160@30Hz) or reduces the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware.
-See the following screenshot from the Dell TB Docks 3/4 user manual:
+Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST's ports are in use, the output either halves the frequency (e.g., 3840x2160@30Hz) or reduces the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware. Frequency-wise, Users report successful output at up to 1080p@165Hz (the monitor's max). See the following screenshot from the Dell TB Docks 3/4 user manual:
 
 ![Resolutions screen](images/resolutions.png)
 
