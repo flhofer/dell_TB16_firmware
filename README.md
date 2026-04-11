@@ -199,6 +199,11 @@ Datasheets and specifications:
 * Realtek ALC3263 is a Dell-custom Audio bus (I2S/PCM) audio chip that performs audio decoding and encoding on four output streams *at* 24-bit 48 kHz (this is strangely fixed). Only the Datasheets for the sibling, ALC3261, are available.
 * [Realtek RTL8153](https://www.olimex.com/Products/USB-Modules/Ethernet/USB-GIGABIT/resources/rtl8153.pdf) is one of the most sold USB-based Gigabit Ethernet controllers
 ...
+
+Differences between TB15, TB16, WD15, and TB18:
+* TB15 was a previous release of TB16, which was then recalled due to overheating issues. The only reported difference is an added cooling system with a temperature-controlled fan, affecting only the Dock's EC controller. Users (@bovvski) reported successful flashing.
+* WD15 uses the same Dock case and, in later releases, the same Dock cable. The Cable binary should thus be the same. It is, however, unclear to me how a USB-C can be effectively translated to a PCI bus. My guess is that the ASM USB controller, Ethernet controller, and Audio Media components are the same. The only component I'm not sure of is the Dock's bin. Be careful!
+*  The TB18 has a double-TB connector for power-hungry laptops. Apparently, the second connector is only for power delivery. Therefore, it is my opinion that the Cable's internals may be different, but the rest is identical. Power delivery and control are managed by Cable-PD and should thus, however, not change the Cable's function - and bin - on the TB side.
   
 **TBC**
 
