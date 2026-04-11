@@ -199,7 +199,6 @@ Datasheets and specifications:
 * Realtek ALC3263 is a Dell-custom Audio bus (I2S/PCM) audio chip that performs audio decoding and encoding on four output streams *at* 24-bit 48 kHz (this is strangely fixed). Only the Datasheets for the sibling, ALC3261, are available.
 * [Realtek RTL8153](https://www.olimex.com/Products/USB-Modules/Ethernet/USB-GIGABIT/resources/rtl8153.pdf) is one of the most sold USB-based Gigabit Ethernet controllers
 ...
-
   
 **TBC**
 
@@ -217,13 +216,13 @@ Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Ful
 These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM. Again, Dell states it does not support HDCP, while the kernel output reports `HDCP version: HDCP1.4`. **To be checked**
 
 ### 5. 	RJ45 Gigabit Ethernet
-Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have difficulty waking from deep sleep (suspension) if the ASMedia USB controller firmware is not up to date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via a script (see an example in `tools/scripts`).
+Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have difficulty waking from deep sleep (suspension) if the ASMedia USB controller firmware is out of date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via a script (see an example in `tools/scripts`).
 
 ### 6. 	USB 2.0 (2 ports)
 "Slow"-speed port generally intended for input devices such as mouse, keyboard, trackpad, Smart-card readers, etc. No issues
 
 ### 7. 	USB 3.0
-SuperSpeed USB is ideal for, e.g., monitors, USB hubs, or USB NAS. No problems
+SuperSpeed USB is ideal for devices such as monitors, USB hubs, and USB NAS. No problems
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
 Limited (intended; reduced lanes by upstream) Thunderbolt is available for, e.g., Daisy-Chaining DP via tunneling to multiple USB-C monitors or USB 3.1 SuperSpeed devices. In certain configurations, monitors may support 5120 x 2880 @ 60 Hz on a single display. Tested DP with a USB-enabled QHD display. Thunderbolt DP functionality not tested.
@@ -236,10 +235,10 @@ Guess what? This neat-looking connector also supports USB-PD! If connected to a 
 According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the power available to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell's proprietary USB-PD protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol. A higher-power PSU may, however, be useful if you use the rear USB-C port to charge a second device.
 
 ### 10. 	3.5 mm Speaker-out
-It works well but may be too sensitive to RF interference, such as mobile phones (missing shielding). On MACs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. See [below](#line-out-on-mac) for some quick instructions.
+It works well but may be too sensitive to RF interference, such as from mobile phones (due to missing shielding). On Macs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. See [below](#line-out-on-mac) for some quick instructions.
 
 ### 11. 	Dell Docking Station connector 
-Dell Proprietary connection to the USB Type-C port on the PC. The light does not go on with MacBooks, but it works and charges. Some users say the TB16 will only deliver up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems, too. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) of 3A max current and 5 to 19.5V (the Dock's power supply voltage).
+Dell has a proprietary connection to the USB Type-C port on the PC. The light does not turn on on MacBooks, but it still works and charges. Some users say the TB16 will deliver only up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems as well. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) with a maximum current of 3A and a voltage range of 5 to 19.5V (the Dock's power supply voltage).
 
 (These examples use the Linux package `lmsensors` and the command `sensors`)
 ```
@@ -247,7 +246,7 @@ Adapter: ISA adapter
 in0:          19.50 V  (min =  +5.00 V, max = +19.50 V)
 curr1:         3.00 A  (max =  +3.00 A)
 ```
-Dell likely uses proprietary information in the extended information PDO of USB-PD to identify its systems and deliver more than 3A. Even if I attach a new Dell system, it won't report more than 3A max. By the way, 3A is the maximum limit USB-C can deliver with default specifications. For more electrical current, you need electronics and wiring that support it. It makes sense that Dell limits it to 3A.
+Dell likely uses proprietary information in the extended information PDO of USB-PD to identify its systems and deliver more than 3A. Even if I attach a new Dell system, it won't report more than 3A max. By the way, 3A is the maximum USB-C power limit under default specifications. For more electrical current, you need electronics and wiring capable of handling it. It makes sense that Dell limits it to 3A.
 
 If I connect an Apple adapter, I get the following output.
 ```
@@ -255,7 +254,7 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, like in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard laptops and ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The only difficulty I noted is that when the battery is completely drained, the MAC won't charge. This, however, might be due to the high power required when doing a charge from that low. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
+However, like in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard laptops and ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The only difficulty I noted is that the MAC won't charge when the battery is completely drained. This glitch, however, might be due to the high power required to charge from such a low level. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
 
 #### Other uses of this connector
 
@@ -268,10 +267,10 @@ It's a programmable PSU, settable to 5-19.5V and up to (at least) 3A. In short, 
 I'm curious to know what happens if you connect a modern smartphone or tablet. Does it recognize TB and see the USB ports and the Ethernet connection?
 
 ### 12. 	Headset Jack
-The front jack is helpful for wired earplugs and a quick Video Call. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
+The front jack is useful for wired earplugs and quick Video Calls. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
 
 ### 13. 	USB 3.0 w/PowerShare
-This valid quick-access front port has always-on power. It is ideal for charging phones or plugging hungry devices. It also works at full power without a laptop being connected, so you can draw 7.5W with or without registering to the hub. I also use it to charge random stuff around the house, which doesn't even use the USB data lines. 
+This valid quick-access front port has always-on power. It is ideal for charging phones or plugging hungry devices. It also works at full power without connecting a laptop, so you can draw 7.5W with or without registering to the hub. I also use it to charge random stuff around the house, which doesn't even use the USB data lines. 
 
 ### 14. 	USB 3.0
 As above, but without always-on power and a typical max of 4.5W, the device must register first to pull the power.
@@ -286,14 +285,14 @@ It works with Dell, and it is the same as the power button. No luck otherwise.
 
 ## Video outputs and resolutions
 
-The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160 (4 K) @ 60Hz without any particular configuration. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). It needs to be clarified how using the TB3 port for video affects the MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, with no configurations listed for Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
+The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160 (4K) @ 60Hz without any special configuration. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). We need to clarify how using the TB3 port for video affects MST performance. The possible graphics mode table lists only a single-screen configuration for USB-C, with no configurations listed for Thunderbolt mode. (I will test as soon as I have a USB-C/TB3 monitor)
 
-Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST ports are in use, the output either halves in frequency, e.g., 3840x2160@30Hz, or reduces resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware.
+Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST ports are in use, the output either halves the frequency (e.g., 3840x2160@30Hz) or reduces the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware.
 See the following screenshot from the Dell TB Docks 3/4 user manual:
 
 ![Resolutions screen](images/resolutions.png)
 
-A laptop + dock can support up to 4 screens (panels) if your graphics adapter supports it. On `i915` compatible systems, you can check how many displays your card supports with
+A laptop + Dock can support up to 4 screens (panels) if your graphics adapter supports it. On `i915` compatible systems, you can check how many displays your card supports with
 ```
 grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
 ```
@@ -301,7 +300,7 @@ Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:
 
 ## Audio outputs and resolutions
 
-As discussed above, the Realtek audio controller in the Dock is composed of two ICs, one for interfacing and headphone amplification, the other for the media and ADC/DAC stream decoding. The front connector for a headset features hardware detection and may not appear in your mixer settings unless it is connected. The rear is equipped with a line output connector, which has no amplification. Use it to attach your stereo/hifi device or, like in my case, an external headphone amplifier.
+As discussed above, the Realtek audio controller in the Dock comprises two ICs: one for interfacing and headphone amplification, and the other for media and ADC/DAC stream decoding. The front connector for a headset features hardware detection and may not appear in your mixer settings unless it is connected. The rear provides a line output connector that provides no amplification. Use it to connect your stereo/hifi device, or, as in my case, an external headphone amplifier.
 
 
 ### Audio resolutions
@@ -317,11 +316,11 @@ period_size: 512
 buffer_size: 32768
 ```
 
-This indicates that the hardware is configured at 48 kHz, 24-bit. It is yet unclear if we can change these parameters, as the sibling chips' specifications display a default of 48 kHz, but a possible configuration of up to 192kHz. ***TBC..***
+This output indicates a hardware configuration at 48 kHz, 24-bit. While it is still unclear whether we can change these parameters, as the sibling chips' specifications list a default of 48 kHz, with a possible configuration up to 192kHz, the change will require firmware adaptation, which is out of scope.
 
 ### Line out on MAC
 
-On Macs, the audio chip is recognized as a single card with four streams, twice left and right, but only the front stream is selectable. To add the line output, do the following:
+Macs detect the audio chip as a single card with four streams, twice left and right, but only the front stream is selectable. To add the line output, do the following:
 
 * press `cmd`+`space` and run `audio-midi-setup`
 * Add a new composite device with the plus sign, and name it, e.g., Realtek USB Audio Line out
