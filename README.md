@@ -218,13 +218,13 @@ Differences between TB15, TB16, WD15, and TB18DC:
 ![TB16 Ports Image](images/ports.png)
 
 ### 1. 	HDMI
-This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not current, it may show black, not always wake up, or not work. According to Dell, it does not support HDCP, but the kernel output shows `HDCP version: HDCP1.4`. **To be checked**
+This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz. I tested QHD (2560x1440@60Hz). If MST and Cable NVM are not current, it may show black, not always wake up, or not work. According to Dell, it does not support HDCP, but the kernel output shows `HDCP version: HDCP1.4`. Tested with HD 1080p video on free streaming services.
 
 ### 2. 	VGA
 Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1080 @ 60Hz
 
 ### 3. + 4. 	DisplayPort (DP) and mini-DisplayPort (mDP)
-These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM. Again, Dell states it does not support HDCP, while the kernel output reports `HDCP version: HDCP1.4`. **To be checked**
+These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM. Again, Dell states it does not support HDCP, while the kernel output reports `HDCP version: HDCP1.4`. Tested with HD 1080p video on free streaming services.
 
 ### 5. 	RJ45 Gigabit Ethernet
 Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have difficulty waking from deep sleep (suspension) if the ASMedia USB controller firmware is out of date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via a script (see an example in `tools/scripts`).
@@ -307,6 +307,8 @@ A laptop + Dock can support up to 4 screens (panels) if your graphics adapter su
 grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
 ```
 Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:00\:02.0`. Other graphics adapters should have similar ways to test this.
+
+As said previously, Dell states that the Dock does not support HDCP; however, the kernel reports HDCP 1.4. I've tested it on TubiTV with 720p and 1080p movies, and it works correctly, using about 4 MB/s as expected. Other streaming services, such as Hulu and Netflix, require HDCP 2.x for its stronger protections and thus cap the output at 576p for our dock.
 
 ## Audio outputs and resolutions
 
