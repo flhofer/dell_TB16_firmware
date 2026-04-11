@@ -12,7 +12,7 @@
 
 # Dell TB16 Firmware
 Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We are using three of those between home and work because
-* low price — got all of them used under 50eur/piece
+* low price — got all of them used under 50€/piece
 * Up-to-date performance—Thunderbolt 3 has the same interface and speeds as TB4, where TB4 adds mainly some security features/restrictions, whatever you want to call it.
 * When fixed, it works with MacBooks and all types of Windows/Linux PCs
 * One of the few Docks that can deliver more than 100W on the cable
@@ -25,7 +25,7 @@ I've spent some time tweaking and fixing most issues with the Dock, particularly
 The Power button works only on Dell PCs, though. Is there a script somewhere that would also make it work on others?
 
 > [!Note]
-> This procedure may also work for the peers Dell WD15, Dell TB15 (retired), and Dell TB18DC, as they share most of the components. In any case, I'm not responsible for any damages that were caused by following these instructions.
+This procedure also works for Dell TB15 (retired due to overheating issues - tested by @bovvski) and may work for the peers Dell WD15 (same dock, USB upstream) and Dell TB18DC (same dock, double TB upstream), as they share most components. In any case, I'm not responsible for any damage caused by following these instructions.
 
 ## TLDR; Suggested steps
 (regularly updated)
@@ -55,7 +55,7 @@ Unfortunately, there are no firmware write alternatives for the Windows part (se
 
 ## Firmware versions and status
 
-The following table contains a list of known and working firmware versions. (Files are in the `bins` subfolder)
+The following table lists known and working firmware versions. (Files are in the `bins` subfolder)
 
 System | probable function | newest/available version | file | fixes? | alt flashing |
 --- | --- | --- | --- | --- | ---
@@ -81,10 +81,10 @@ I will try to find alternative flashing methods for all systems to replace the o
 
 ### Flashing MST chips
 
-Although a `mst.exe` is available for manual flashing, it is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
+Although an `mst.exe` is available for manual flashing, it is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
 
 > [!NOTE]
-> The official update tool tends to report versions such as 00.00.fd. These are error codes reported from the `mst.exe` and do not show if you perform a manual version check.
+> The official update tool tends to report versions like 00.00.fd. These are error codes reported by `mst.exe` and do not appear when you perform a manual version check.
 
 For a few years, it has been possible to flash the chips on Linux. You will need a recent `fwupd` package, e.g., >`v0.8` shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that ships with `fwupd` preinstalled.
 
