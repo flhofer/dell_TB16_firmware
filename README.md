@@ -310,6 +310,12 @@ Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:
 
 As said previously, Dell states that the Dock does not support HDCP; however, the kernel reports HDCP 1.4. I've tested it on TubiTV with 720p and 1080p movies, and it works correctly, using about 4 MB/s as expected. Other streaming services, such as Hulu and Netflix, require HDCP 2.x for its stronger protections and thus cap the output at 576p for our dock.
 
+### Limitations - also by the Laptop
+
+During tests with different monitors and setups I noticed the following (expanding list):
+- An Apple M2 (not MAX, PRO or ULTRA) can not manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1) and HDMI (MST-2) and all worked, but only one at a time. Even if I closed the laptop lid, thus one pane less to manage, the only external screen that worked was the last used.
+
+
 ## Audio outputs and resolutions
 
 As discussed above, the Realtek audio controller in the Dock comprises two ICs: one for interfacing and headphone amplification, and the other for media and ADC/DAC stream decoding. The front connector for a headset features hardware detection and may not appear in your mixer settings unless it is connected. The rear provides a line output connector that provides no amplification. Use it to connect your stereo/hifi device, or, as in my case, an external headphone amplifier.
