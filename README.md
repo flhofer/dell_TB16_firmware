@@ -27,6 +27,8 @@ The Power button works only on Dell PCs, though. Is there a script somewhere tha
 > [!Note]
 > This procedure also works for Dell TB15 (retired due to overheating issues - tested by @bovvski) and may work for the peers Dell WD15 (same dock, USB upstream) and Dell TB18DC (same dock, double TB upstream), as they share most components. In any case, I'm not responsible for any damage caused by following these instructions.
 
+Skills required for the flashing: a basic understanding of *nix Bash systems, and maybe a basic understanding of the Windows command line. The capability of either creating a live Linux and/or Windows 10 setup, or the availability of both on a system with a Thunderbolt 3+ controller.
+
 ## TLDR; Suggested steps
 (regularly updated)
 To use the latest versions, do the following either with `sudo` or as `root`:
