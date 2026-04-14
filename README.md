@@ -315,6 +315,7 @@ As said previously, Dell states that the Dock does not support HDCP; however, th
 
 During tests with different monitors and setups I noticed the following (expanding list):
 - An Apple M2 (not MAX, PRO or ULTRA) can not manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1) and HDMI (MST-2) and all worked, but only one at a time. Even if I closed the laptop lid, thus one pane less to manage, the only external screen that worked was the last used.
+- A WD15 Dock, also with the Universal Cable, uses the DisplayPort alternate mode, caping throughput at 10Gbit, and thus limiting screen number and resolutions (see table above).
 
 
 ## Audio outputs and resolutions
