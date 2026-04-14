@@ -317,8 +317,7 @@ As said previously, Dell states that the Dock does not support HDCP; however, th
 
 During tests with different monitors and setups, I noticed the following (expanding list):
 - An Apple M2 (not MAX, PRO, or ULTRA) can not manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1), and HDMI (MST-2), and all worked, but only one at a time. Even if I closed the laptop lid, with one pane less to manage, the only external screen that worked was the last used one.
-- The Synaptics MSTs apparently support their patented ViewXpand™ technology, meaning you can use two monitors connected to the same MST and it will use only one pane => may help with the problem above (to test)
-- An Apple M2 does not support Variable Refresh Rate (VRR) over HDMI, despite DP 1.2a technically providing it (to test).
+- The Synaptics MSTs apparently support their patented ViewXpand™ technology, meaning you can use two monitors connected to the same MST, and it will use only one pane => may help with the problem above (to test)
 - A WD15 Dock, also with the Universal Cable, uses the DisplayPort alternate mode, capping throughput at 10Gbit, and thus limiting screen number and resolutions (see table above).
 
 
