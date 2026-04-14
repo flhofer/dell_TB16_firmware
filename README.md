@@ -200,7 +200,7 @@ DSL6540 Thunderbolt™ 3 controller (Cable)
 ```
 
 Datasheets and specifications:
-* [Intel DSL6540](https://www.intel.com/content/www/us/en/products/sku/87402/intel-dsl6540-thunderbolt-3-controller/specifications.html) is a Thunderbolt to PCIe bus bridge. It transparently transforms PCIe lanes into a serial bus for a high speed single connector extension - and transforms them back, making the host (laptop) PCIe lanes available also outside the mainboard for high speed interconnectivity.
+* [Intel DSL6540](https://www.intel.com/content/www/us/en/products/sku/87402/intel-dsl6540-thunderbolt-3-controller/specifications.html) is a Thunderbolt to PCIe bus bridge. It transparently transforms PCIe lanes into a serial bus for a high-speed single connector extension - and transforms them back, making the host (laptop) PCIe lanes available also outside the mainboard for high-speed interconnectivity.
 * [Microchip USB5537B](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/00001682C.pdf) is a 4x USB3.0 and 3x USB2.0 hub
 * Realtek ALC4020 is a Dell-custom audio chip that interfaces with the USB bus and the Audio bus (I2S/PCM) and includes Microphone and Headphone amplifiers. Only the Datasheets for the sibling, ALC4042, are available.
 * Realtek ALC3263 is a Dell-custom Audio bus (I2S/PCM) audio chip that performs audio decoding and encoding on four output streams *at* 24-bit 48 kHz (this is strangely fixed). Only the Datasheets for the sibling, ALC3261, are available.
@@ -313,9 +313,9 @@ As said previously, Dell states that the Dock does not support HDCP; however, th
 
 ### Limitations - also by the Laptop
 
-During tests with different monitors and setups I noticed the following (expanding list):
-- An Apple M2 (not MAX, PRO or ULTRA) can not manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1) and HDMI (MST-2) and all worked, but only one at a time. Even if I closed the laptop lid, thus one pane less to manage, the only external screen that worked was the last used.
-- A WD15 Dock, also with the Universal Cable, uses the DisplayPort alternate mode, caping throughput at 10Gbit, and thus limiting screen number and resolutions (see table above).
+During tests with different monitors and setups, I noticed the following (expanding list):
+- An Apple M2 (not MAX, PRO, or ULTRA) can not manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1), and HDMI (MST-2), and all worked, but only one at a time. Even if I closed the laptop lid, thus one pane less to manage, the only external screen that worked was the last used.
+- A WD15 Dock, also with the Universal Cable, uses the DisplayPort alternate mode, capping throughput at 10Gbit, and thus limiting screen number and resolutions (see table above).
 
 
 ## Audio outputs and resolutions
