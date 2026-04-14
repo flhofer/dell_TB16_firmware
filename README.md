@@ -280,6 +280,14 @@ It's a programmable PSU, settable to 5-19.5V and up to (at least) 3A. In short, 
 
 I'm curious to know what happens if you connect a modern smartphone or tablet. Does it recognize TB and see the USB ports and the Ethernet connection?
 
+#### Connector versions
+
+Dell WD15, TB15, and TB16 may be shipped with one of these versions (source: dell.com):
+
+![Dock Cables](images/dock_cables.png)
+
+The first cable applies only to WD15, while the second works only for the Thunderbolt versions. Check your version to see if flashing the cable firmware may improve your dock's functionality.
+
 ### 12. 	Headset Jack
 The front jack is useful for wired earplugs and quick Video Calls. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
 
@@ -301,7 +309,7 @@ It works with Dell, and it is the same as the power button. No luck otherwise.
 
 The device has three video sources: MST-1, MST-2, and the TB3 port on the back. Each can deliver 3840x2160 (4K) @ 60Hz without any special configuration. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). We need to clarify how using the TB3 port for video affects MST performance. The possible graphics mode table lists only single- and dual-screen configurations for USB-C, with no configurations listed for Thunderbolt mode. The resolutions table below would suggest that an attached USB-C display replaces the MST2 stream. (I will test as soon as I have a USB-C/TB3 monitor)
 
-Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST's ports are in use, the output either halves the frequency (e.g., 3840x2160@30Hz) or reduces the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware. Frequency-wise, Users report successful output at up to 1080p@165Hz (the monitor's max). See the following screenshot from the Dell TB Docks 3/4 user manual:
+Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST's ports are in use, the output either halves the frequency (e.g., 3840x2160@30Hz) or reduces the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware. Frequency-wise, Users report successful output at up to 1080p@165Hz (the monitor's max). See the following screenshot from the Dell TB Docks 3/4 user manual (source: dell.com):
 
 ![Resolutions screen](images/resolutions.png)
 
