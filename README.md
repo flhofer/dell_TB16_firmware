@@ -321,14 +321,22 @@ Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:
 
 As said previously, Dell states that the Dock does not support HDCP; however, the kernel reports HDCP 1.4. I've tested it on TubiTV with 720p and 1080p movies over HDMI, and it works correctly, using about 4 MB/s as expected. Other streaming services, such as Hulu and Netflix, require HDCP 2.x for its stronger protections and thus cap the output at 576p for our dock.
 
-### Limitations - also by the Laptop
+### Tested resolution combinations by me or user feedback
+
+- VGA + HDMI + Laptop: 1920x1080@60Hz + 1920x1080@60Hz + 1920x1200@60Hz
+- DisplayPort + HDMI + Laptop: 2560x1440@60Hz + 2560x1440@60Hz + 1920x1200@60Hz
+- DisplayPort + HDMI: 1920x1080@165Hz + 1920x1080@75Hz
+- DisplayPort: 4k@30Hz (only unfortunately -> to be verified)
+- HDMI: 4k@30Hz (max for HDMI 1.4a)
+
+### Limitations and frequent issues - also by the Laptop
 
 During tests with different monitors and setups, I noticed the following (expanding list):
 - An Apple M2 (not MAX, PRO, or ULTRA) can not manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1), and HDMI (MST-2), and all worked, but only one at a time. Even if I closed the laptop lid, with one pane less to manage, the only external screen that worked was the last used one.
 - The Synaptics MSTs apparently support their patented ViewXpand™ technology, meaning you can use two monitors connected to the same MST, and it will use only one pane => may help with the problem above (to test)
 - A WD15 Dock, also with the Universal Cable, uses the DisplayPort alternate mode, capping throughput at 10Gbit, and thus limiting screen number and resolutions (see table above).
 - Attaching a display to USB-C (not sure about TB displays) effectively steals one of the MSTs, i.e., the one not in use. If both are in use, the USB-C display is not activated.
-
+- The mDP is a hard one to make work. I did multiple flashes and reboots on the dock to finally get it to go, in different orders for MST, Cable, and Dock. I don't really know what and why, but not every Dock has the mDP working right away
 
 ## Audio outputs and resolutions
 
