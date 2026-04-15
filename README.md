@@ -102,7 +102,28 @@ To check if both MSTs are running, type the following as root or with `sudo`
 ```
 $ fwupdmgr get-devices
 ```
-You will see them as Dell TB16/TB18/WD15 Dock or similar.
+You will see them as Dell TB16/TB18/WD15 Dock or similar, example:
+
+```
+├─Dell WD15/TB16/TB18 wired Dock:
+│     Device ID:          585c346c009da3cc19a400fb59a4ed8d0cbd0151
+│     Summary:            Multi-stream transport device
+│     Current version:    3.12.02
+│     Vendor:             Synaptics (DRM_DP_AUX_DEV:0x06CB, DRM_DP_AUX_DEV:0x8086)
+│     GUIDs:              87f8cd71-1e6b-5622-94e9-0e9d11bdde33 ← MST-274
+│                         c1e81f96-234e-597d-b9cb-6477d0652868 ← MST-wd15-274
+│                         c0f73159-4fc0-509b-80f8-5f871f3751a8 ← MST-wd15-vmm3330-274
+│                         c1e2bea5-4cf2-5f84-b965-533e8e5fea45 ← MST-tb16-274
+│                         be025b25-ca5c-546c-97c6-ee2160ba489d ← MST-tb16-vmm3330-274
+│                         82460515-30d3-5cdf-be4c-571340842a10 ← MST-tb18-274
+│                         190e8d7c-6bcf-5fab-94e7-4f8739eb90aa ← MST-tb18-vmm3330-274
+│                         6ca2b423-3cc7-509a-89fd-3329e244e11f ← MST-leaf-vmm3330-274
+│                         4e4e06b6-8217-5cf0-8eff-ce5e987d531a ← MST-leaf-274
+│     Device Flags:       • Updatable
+│                         • Unsigned Payload
+│     Device Requests:    • Message
+│   
+```
 
 > [!NOTE]
 > If you don't see both MST devices, check cables and power, or perform NVM updates first (see below).
