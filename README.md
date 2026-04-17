@@ -25,7 +25,7 @@ I've spent some time tweaking and fixing most issues with the Dock, particularly
 The Power button works only on Dell PCs, though. Is there a script somewhere that would also make it work on others?
 
 > [!Note]
-> This procedure also works for Dell TB15 (retired due to overheating issues - tested by @bovvski) and may work for the peers Dell WD15 (same dock, USB upstream) and Dell TB18DC (same dock, double TB upstream), as they share most components. In any case, I'm not responsible for any damage caused by following these instructions.
+> This procedure also works for Dell TB15 (retired due to overheating issues - tested by @bovvski) and may work for the related models Dell WD15 (same dock, USB upstream) and Dell TB18DC (same dock, dual TB upstream), as they share most components. In any case, I'm not responsible for any damage caused by following these instructions.
 
 Skills required for the flashing: a basic understanding of *nix Bash systems, and maybe a basic understanding of the Windows command line. The capability of either creating a live Linux and/or Windows 10 setup, or the availability of both on a system with a Thunderbolt 3+ controller.
 
@@ -55,7 +55,7 @@ To use the latest versions, do the following either with `sudo` or as `root`:
   - Copy the desired bin into the directory. `DELL_131025_10_11_A9.bin` is the latest known to work with PC and Mac, while `140124_10_10_4_2.BIN` is the only one fixing the Ethernet disconnect problem after wakeup.
   - Right-click `asm.exe` and select Run as Administrator.
   - If that doesn't start updating, proceed.
-  - Open Command line as administrator (Start-> Type `Cmd` -> select Run as Administrator)
+  - Open Command Prompt as administrator (Start -> type `Cmd` -> select Run as Administrator)
   - Enter the directory of the tool using `cd`
   - Run `asm.exe /version` to see the version installed
   - Run `asm.exe /f` to force writing the selected version
@@ -127,7 +127,7 @@ Compare the output with the values in `bins/SHA256SUMS` before flashing.
 
 ## Flashing instructions
 
-I will try to find alternative flashing methods for all systems to replace the original Dell tool, which is limited and buggy. Also, while the original tool works ONLY with Dell PCs, these instructions should work on all Thunderbolt-equipped systems.
+I will try to find alternative flashing methods for all systems to replace the original Dell tool, which is limited and buggy. Also, while the original tool works only with Dell PCs, these instructions should work on all Thunderbolt-equipped systems.
 For Linux recovery and diagnostics helper scripts, see [`tools/scripts/README.md`](tools/scripts/README.md).
 
 ### Recovery if flashing appears to fail
@@ -216,7 +216,7 @@ I kept the latest and the previous versions in this repository for a straightfor
 
 ### Alternate NVMs (untested)
 
-While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't support this function. A TB3-to-TB2 adapter is one such device. Apple Macs have special firmware to make those work; PCs need a special NVM. Unfortunately, you can not flash these firmware files with a TB security-enabled device. If you do, the flashing starts but returns an error after a minute. Please report back if you manage to flash the firmware.
+While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't support this function. A TB3-to-TB2 adapter is one such device. Apple Macs have special firmware to make those work; PCs need a special NVM. Unfortunately, you cannot flash these firmware files with a TB security-enabled device. If you do, the flashing starts but returns an error after a minute. Please report back if you manage to flash the firmware.
 
 System | version | file | fixes? |
 --- | --- | --- | --- 
@@ -244,13 +244,13 @@ It happens that newer release dates have smaller firmware versions, but this is 
 > [!NOTE]
 > The Dell firmware updater checks only the last digits of the firmware version (which is technically correct) and would update. However, `asm.exe` is invoked but does not update because it also takes the release date into account. If you want to update to a *newer* firmware version with an *older* release date, you need to run a manual force-write as described above.
 
-If the flashing does not succeed because the subsystem-ID (SSID) or system vendor ID (SVID) does not match, you can still flash the controller using the ASM MPTool. Unfortunately, this tool is not freely distributable due to licensing constraints. However, I can reveal that it is found in one of the flash zips on `station-drivers..com` .. ( let's avoid bots 😃 ) 
+If the flashing does not succeed because the subsystem-ID (SSID) or system vendor ID (SVID) does not match, you can still flash the controller using the ASM MPTool. Unfortunately, this tool is not freely distributable due to licensing constraints. However, it can be found in one of the flash zip packages on `station-drivers..com` (intentionally obfuscated to reduce scraping).
 
 ## Official Flashing tools
 
 If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash version 1.00 first, then 1.02. These install a BIOS-based update file that executes an update at BIOS start. It is thus likely that they cannot be updated without a Dell system.
 
-Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock companions of that generation, the WD15 and TB18DC, got a new `Cable.bin` and were released the same day. You can use the WD15s flasher to update the `Cable.bin`.
+Furthermore, Dell messed up the firmware packaging for 1.05. The dock companions of that generation, the WD15 and TB18DC, got a new `Cable.bin` and were released on the same day. You can use the WD15 flasher to update `Cable.bin`.
 
 # The Dell TB16 Dock
 
@@ -258,7 +258,7 @@ Furthermore, Dell messed up the firmware packaging for the 1.05. The Dock compan
 
 Suggested Hardware Tree (trial and error results):
 ```
-Laptop facing connector TB3/USB type C connector (NO USB capability!)
+Laptop-facing connector: TB3/USB Type-C connector (no USB capability!)
 |
 DSL6540 Thunderbolt™ 3 controller (Cable)
 ├── Synaptics VMM3320BJG
@@ -309,16 +309,16 @@ This HDMI 1.4a standard port supports up to 4K (3840x2160) resolution at 24/30Hz
 Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Full-HD 1920 x 1080 @ 60Hz
 
 ### 3. + 4. 	DisplayPort (DP) and mini-DisplayPort (mDP)
-These ports are v1.2 compliant and typically support Full-HD 3840 x 2160 @ 60Hz and Daisy Chaining. Mini-DP or DP may casually stop working without the latest Cable NVM.
+These ports are v1.2 compliant and typically support up to 3840 x 2160 @ 60Hz and daisy-chaining. Mini-DP or DP may intermittently stop working without the latest Cable NVM.
 
 ### 5. 	RJ45 Gigabit Ethernet
 Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have difficulty waking from deep sleep (suspension) if the ASMedia USB controller firmware is out of date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via a script (see an example in `tools/scripts`).
 
 ### 6. 	USB 2.0 (2 ports)
-"Slow"-speed port generally intended for input devices such as mouse, keyboard, trackpad, Smart-card readers, etc. No issues
+"Slow"-speed port generally intended for input devices such as mouse, keyboard, trackpad, smart-card readers, etc. No major issues observed.
 
 ### 7. 	USB 3.0
-SuperSpeed USB is ideal for devices such as monitors, USB hubs, and USB NAS. No problems
+SuperSpeed USB is ideal for devices such as monitors, USB hubs, and USB NAS. No major issues observed.
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
 Limited (intended; reduced lanes by upstream) Thunderbolt is available for, e.g., Daisy-Chaining DP via tunneling to multiple USB-C monitors or USB 3.1 SuperSpeed devices. In certain configurations, monitors may support 5120 x 2880 @ 60 Hz on a single display. Tested DP with a USB-enabled QHD display. Thunderbolt DP functionality not tested.
@@ -350,7 +350,7 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, like in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard laptops and ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The only difficulty I noted is that the Mac won't charge when the battery is completely drained. This glitch, however, might be due to the high power required to charge from such a low level. The `Cable PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
+However, like in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard laptops and ultrabooks (non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max CPU, and she uses it regularly with no issues. The only difficulty I noted is that the Mac won't charge when the battery is completely drained. This glitch, however, might be due to the high power required to charge from such a low level. The `Cable PD` firmware is likely responsible for this negotiation mechanism, assuming that PD stands for power delivery, as in USB-PD. I will investigate.
 
 #### Other uses of this connector
 
@@ -371,7 +371,7 @@ Dell WD15, TB15, and TB16 may be shipped with one of these versions (source: del
 The first cable applies only to WD15, while the second works only for the Thunderbolt versions. Check your version to see if flashing the cable firmware may improve your dock's functionality.
 
 ### 12. 	Headset Jack
-The front jack is useful for wired earplugs and quick Video Calls. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list. 
+The front jack is useful for wired earplugs and quick video calls. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list.
 
 ### 13. 	USB 3.0 w/PowerShare
 This valid quick-access front port has always-on power. It is ideal for charging phones or plugging hungry devices. It also works at full power without connecting a laptop, so you can draw 7.5W with or without registering to the hub. I also use it to charge random stuff around the house, which doesn't even use the USB data lines. 
@@ -415,7 +415,7 @@ As said previously, Dell states that the Dock does not support HDCP; however, th
 ### Limitations and frequent issues - also by the Laptop
 
 During tests with different monitors and setups, I noticed the following (expanding list):
-- An Apple M2 (not MAX, PRO, or ULTRA) can not manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1), and HDMI (MST-2), and all worked, but only one at a time. Even if I closed the laptop lid, with one pane less to manage, the only external screen that worked was the last used one.
+- An Apple M2 (not Max, Pro, or Ultra) cannot manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1), and HDMI (MST-2), and all worked, but only one at a time. Even if I closed the laptop lid, with one panel less to manage, the only external screen that worked was the last used one.
 - The Synaptics MSTs apparently support their patented ViewXpand™ technology, meaning you can use two monitors connected to the same MST, and it will use only one pane => may help with the problem above (to test)
 - A WD15 Dock, also with the Universal Cable, uses the DisplayPort alternate mode, capping throughput at 10Gbit, and thus limiting screen number and resolutions (see table above).
 - Attaching a display to USB-C (not sure about TB displays) effectively steals one of the MSTs, i.e., the one not in use. If both are in use, the USB-C display is not activated.
