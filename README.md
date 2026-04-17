@@ -98,6 +98,22 @@ Cable PD | Power Delivery controller | 00.03.12 | N/A | Updated through BIOS[^1]
 [^1]: These are updated early on and should already be done (Dell Tool v1.00.00 - v1.00.02)
 [^2]: Since the summer of 2016, Dell has shipped WD15 and TB16 docks with universal cables, supporting USB3 and Thunderbolt 3 (recognizable by the bolt and DP logo on the Type-C connector). It makes sense that they ship TB Cable firmware with the WD15.
 
+### File integrity (SHA-256)
+
+Checksums for all firmware files are listed in `bins/SHA256SUMS`.
+
+macOS/Linux:
+```bash
+cd bins
+shasum -a 256 -c SHA256SUMS
+```
+
+Windows (PowerShell):
+```powershell
+Get-FileHash .\bins\* -Algorithm SHA256
+```
+Compare the output with the values in `bins/SHA256SUMS` before flashing.
+
 ## Flashing instructions
 
 I will try to find alternative flashing methods for all systems to replace the original Dell tool, which is limited and buggy. Also, while the original tool works ONLY with Dell PCs, these instructions should work on all Thunderbolt-equipped systems.
