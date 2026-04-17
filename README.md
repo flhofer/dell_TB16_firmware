@@ -86,9 +86,9 @@ Unfortunately, there are no firmware write alternatives for the Windows part (se
 
 > [!IMPORTANT]
 > Known limitations (short version):
-> - Some non-Dell systems may negotiate only up to ~60W (USB-PD 20V/3A) on the main dock cable.
+> - Non-Dell systems may negotiate only up to ~60W (USB-PD 19.5/3A) on the main dock cable.
 > - Mac charging from a fully drained battery can be unreliable in some setups.
-> - mDP initialization can be inconsistent until all firmware updates are fully applied and power-cycled.
+> - mDP initialization can be inconsistent until all firmware (repeated) updates are fully applied and power-cycled.
 > - Streaming services that require HDCP 2.x may be limited to low resolutions on this dock.
 
 ## Firmware versions and status
@@ -432,7 +432,7 @@ As said previously, Dell states that the Dock does not support HDCP; however, th
 
 During tests with different monitors and setups, I noticed the following (expanding list):
 - An Apple M2 (not Max, Pro, or Ultra) cannot manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1), and HDMI (MST-2), and all worked, but only one at a time. Even if I closed the laptop lid, with one panel less to manage, the only external screen that worked was the last used one.
-- The Synaptics MSTs apparently support their patented ViewXpand™ technology, meaning you can use two monitors connected to the same MST, and it will use only one pane => may help with the problem above (to test)
+- The Synaptics MSTs apparently support their patented ViewXpand™ technology, meaning you can use two monitors connected to the same MST, and it will use only one pane as SST, a DP v1.1a feature => may help with the problem above (to test)
 - A WD15 Dock, also with the Universal Cable, uses the DisplayPort alternate mode, capping throughput at 10Gbit, and thus limiting screen number and resolutions (see table above).
 - Attaching a display to USB-C (not sure about TB displays) effectively steals one of the MSTs, i.e., the one not in use. If both are in use, the USB-C display is not activated.
 - The mDP is a hard one to make work. I did multiple flashes and reboots on the dock to finally get it to go, in different orders for MST, Cable, and Dock. I don't really know what and why, but not every Dock has the mDP working right away
