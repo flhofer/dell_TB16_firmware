@@ -408,6 +408,9 @@ Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for 
 
 ![Resolutions screen](images/resolutions.png)
 
+> [!NOTE]
+> Dell documents a 5K (5120x2880) limitation on TB16 over dual DP/mDP (first one in single display list) for some systems with switchable graphics as a design limitation, with workarounds such as disabling switchable graphics (where supported) or using TB3-to-dual-DP adapters (KB `000175286`).
+
 A laptop + Dock can support up to 4 screens (panels) if your graphics adapter supports it. On `i915` compatible systems, you can check how many displays your card supports with
 ```
 grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
