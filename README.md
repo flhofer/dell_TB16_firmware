@@ -43,7 +43,7 @@ To use the latest versions, do the following either with `sudo` or as `root`:
   - If you had only one monitor attached, repeat the previous two steps with the monitor connected to the other MST device (see table below for details).
   - Check firmware versions with `fwupdmgr get-devices`
 - REBOOT using Windows 10 or a bootable Windows 10 made with [Rufus](https://rufus.ie/en/)
-  - Enter the directory of the ASM tools, in `tools/`
+  - Enter the directory of the ASM tools, in `tools/ASMedia_win`
   - Copy the desired bin into the directory. `DELL_131025_10_11_A9.bin` is the latest known to work with PC and MAC, while `140124_10_10_4_2.BIN` is the only one fixing the Ethernet disconnect problem after wakeup.
   - Right-click `asm.exe` and select Run as Administrator.
   - If that doesn't start updating, proceed.
@@ -67,8 +67,8 @@ The following table lists known and working firmware versions. (Files are in the
 
 System | probable function | newest/available version | file | fixes? | alt flashing |
 --- | --- | --- | --- | --- | ---
-Synaptics MST-1 VMM3320 | DP + VGA stream processing | 03.12.002 | mst_03.12.002.cab | Glitches on screens, compatibility for MacBooks | Linux |
-Synaptics MST-2 VMM3330 | mini-DP + HDMI stream processing | 03.12.002 | mst_03.12.002.cab | " "  | Linux |
+Synaptics MST-1 VMM3320 | DP + VGA stream processing | 03.12.002 | mst_03_12_002.cab | Glitches on screens, compatibility for MacBooks | Linux |
+Synaptics MST-2 VMM3330 | mini-DP + HDMI stream processing | 03.12.002 | mst_03_12_002.cab | " "  | Linux |
 Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00 | Cable_16_00.bin | Fixes MacBook charging problem (to confirm) | Linux |
   " | " | 26.06 | Cable_26_06.bin | Unofficial update borrowed from WD15[^2], fixes "DROM data CRC32 mismatch" error and random display malfunction + Thunderbolt security update | Linux |
 Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00 | Dock_BME_16_00.bin | Unknown benefits | Linux |
@@ -390,5 +390,4 @@ Macs detect the audio chip as a single card with four streams, twice left and ri
 * Optionally, add a second device with a microphone, e.g., the Webcam microphone
 
 Now, you can select the line out by opening the settings top-right and clicking the arrow on the right corner of the sound settings.
-
 
