@@ -408,6 +408,13 @@ Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for 
 
 ![Resolutions screen](images/resolutions.png)
 
+### Architecture and bandwidth model
+
+The TB16 uses DP 1.2-class video paths on dock outputs (Dell TB16 docs and resolution table). The Alpine Ridge TB3 generation used here supports two DP inputs to the TB controller (`DisplayPort 1.2`, `Port Configuration: Dual`), i.e., architecturally up to `2 x (HBR2 x4)` from host to dock. In practice, this means the dock can usually do combinations around `1x 4K@60 + 2x 4K@30` (host/monitor dependent), but not `3x 4K@60`.
+
+Inferred (not from a public Synaptics VMM33x0 datasheet):
+A reference architecture sketch by Phiarc (community reverse engineering [Lenovo Thunderbolt 3 Dock block diagram](https://commons.wikimedia.org/wiki/File:Lenovo_Thunderbolt_3_Dock_40AC_block_diagram.svg)) shows how a MST VMM3320 can handle two DisplayPorts, a VGA and an HDMI connector all in one device; this also matches the leaked specs for a VMM5320, the chip's sucessor for DP1.4 and HDMI 2.x. The Dell dock instead used a VMM3320 with native VGA and a VMM3330 with native HDMI. A plausible reason for separate VMM3320/VMM3330 paths is to avoid one shared MST branch becoming the bottleneck for all legacy ports. It makes the design mode expensive, but allows now for higher throughput.
+
 > [!NOTE]
 > Dell documents a 5K (5120x2880) limitation on TB16 over dual DP/mDP (first one in single display list) for some systems with switchable graphics as a design limitation, with workarounds such as disabling switchable graphics (where supported) or using TB3-to-dual-DP adapters (KB `000175286`).
 
