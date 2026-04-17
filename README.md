@@ -68,6 +68,14 @@ Post-flash verification:
 - Windows (`asm.exe /version`) or running `asm.exe` again should display the ASMedia firmware you selected.
 
 Done.
+
+Official Dell post-install hard reset sequence (recommended, source: [Dell TB16 Driver Details](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=6ykv0)):
+- Remove the docking station cable from the system.
+- Unplug the AC power adapter from the dock.
+- Press and hold the dock power button for 30 seconds.
+- Reconnect AC power to the dock.
+- Reconnect the dock cable to the system.
+
 Unfortunately, there are no firmware write alternatives for the Windows part (see below).
 
 > [!TIP]
@@ -249,6 +257,11 @@ If the flashing does not succeed because the subsystem-ID (SSID) or system vendo
 ## Official Flashing tools
 
 If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash version 1.00 first, then 1.02. These install a BIOS-based update file that executes an update at BIOS start. It is thus likely that they cannot be updated without a Dell system.
+
+According to [Dell's TB16 updater page](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=6ykv0), the supported operating systems are Windows 10 variants (e.g., Windows 10 64-bit and Windows 10 IoT Enterprise LTSC 2019), which matches the Windows 10 recommendation in this guide.
+
+For reference, the latest official TB16 updater package listed by Dell is `DellDockingStationFwUp_1.0.5_TB16_20210716.exe`, and Dell publishes this SHA-256 checksum for it ([source](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=6ykv0)):
+`5d4faf79b61b0ff4b2b02d36e8ee4451f6d6893a4117ac738cbf0e1c55e3a699`
 
 Furthermore, Dell messed up the firmware packaging for 1.05. The dock companions of that generation, the WD15 and TB18DC, got a new `Cable.bin` and were released on the same day. You can use the WD15 flasher to update `Cable.bin`.
 
