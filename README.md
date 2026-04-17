@@ -118,6 +118,24 @@ Compare the output with the values in `bins/SHA256SUMS` before flashing.
 
 I will try to find alternative flashing methods for all systems to replace the original Dell tool, which is limited and buggy. Also, while the original tool works ONLY with Dell PCs, these instructions should work on all Thunderbolt-equipped systems.
 
+### Recovery if flashing appears to fail
+
+If a flashing step times out or a device disappears, do the following before retrying random combinations:
+
+1. Wait 60-120 seconds after a timeout/error before unplugging anything.
+2. Power-cycle the dock:
+   - Unplug dock AC power.
+   - Hold the dock power button while replugging AC power.
+   - Wait until the fan spins.
+   - Unplug again, wait 5-10 seconds, then plug back in.
+3. Re-enumerate devices with `fwupdmgr get-devices` and check whether versions changed.
+4. If an MST target is missing, connect a monitor to the matching path and retry only that MST flash:
+   - MST-1 requires `DP` or `VGA`
+   - MST-2 requires `mDP` or `HDMI`
+5. If Cable/Dock NVM targets are missing, reconnect the TB cable to the host, reboot once, then retry `fwupdtool install-blob <bin-file>`.
+6. If ASMedia update did not apply on Windows, keep only one `.bin` in `tools/ASMedia_win`, then run `asm.exe /version` and `asm.exe /f` as Administrator.
+7. If targets still do not enumerate after two full retry cycles, stop and collect verbose output with `fwupdmgr --verbose get-devices` before further attempts.
+
 ### Flashing MST chips
 
 Although an `mst.exe` is available for manual flashing, it is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
