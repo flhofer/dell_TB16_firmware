@@ -29,6 +29,14 @@ The Power button works only on Dell PCs, though. Is there a script somewhere tha
 
 Skills required for the flashing: a basic understanding of *nix Bash systems, and maybe a basic understanding of the Windows command line. The capability of either creating a live Linux and/or Windows 10 setup, or the availability of both on a system with a Thunderbolt 3+ controller.
 
+## Pre-flight checklist
+Before flashing, verify all of the following:
+- Host laptop has Thunderbolt 3/4 support enabled in BIOS/UEFI
+- Dock is connected to AC power and the TB upstream cable is attached to the host
+- Linux step: at least one monitor is connected to each MST path when updating MST (`DP/VGA` and `mDP/HDMI`)
+- `fwupdmgr get-devices` lists your TB dock/cable targets before starting
+- You are running commands as `root` or with `sudo`
+
 ## TLDR; Suggested steps
 (regularly updated)
 To use the latest versions, do the following either with `sudo` or as `root`:
@@ -44,13 +52,20 @@ To use the latest versions, do the following either with `sudo` or as `root`:
   - Check firmware versions with `fwupdmgr get-devices`
 - REBOOT using Windows 10 or a bootable Windows 10 made with [Rufus](https://rufus.ie/en/)
   - Enter the directory of the ASM tools, in `tools/ASMedia_win`
-  - Copy the desired bin into the directory. `DELL_131025_10_11_A9.bin` is the latest known to work with PC and MAC, while `140124_10_10_4_2.BIN` is the only one fixing the Ethernet disconnect problem after wakeup.
+  - Copy the desired bin into the directory. `DELL_131025_10_11_A9.bin` is the latest known to work with PC and Mac, while `140124_10_10_4_2.BIN` is the only one fixing the Ethernet disconnect problem after wakeup.
   - Right-click `asm.exe` and select Run as Administrator.
   - If that doesn't start updating, proceed.
   - Open Command line as administrator (Start-> Type `Cmd` -> select Run as Administrator)
   - Enter the directory of the tool using `cd`
   - Run `asm.exe /version` to see the version installed
   - Run `asm.exe /f` to force writing the selected version
+
+Post-flash verification:
+- Linux (`fwupdmgr get-devices`) should show:
+  - Thunderbolt TB16 Cable: `26.06` (if you flashed `Cable_26_06.bin`)
+  - Thunderbolt TB16 Dock/BME: `27.00` (if you flashed `Dock_BME_27_00.bin`)
+  - Synaptics MST devices: `03.12.002`
+- Windows (`asm.exe /version`) or running `asm.exe` again should display the ASMedia firmware you selected.
 
 Done.
 Unfortunately, there are no firmware write alternatives for the Windows part (see below).
@@ -164,7 +179,7 @@ Thunderbolt TB16 Dock | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downst
 
 ### Flashing the ASMedia USB Controller
 
-We will do this part using the official ASM flasher. While a [C#— coded Linux tool](https://github.com/smx-smx/ASMTool) exists, it does not yet allow firmware writing. The Thunderbolt controller extends the PCIe bus to the controller and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with [Rufus](https://rufus.ie/en/), and execute it with the binary file of your choice (see table) copied into its folder.
+We will do this part using the official ASM flasher. While a [C#-based Linux tool](https://github.com/smx-smx/ASMTool) exists, it does not yet allow firmware writing. The Thunderbolt controller extends the PCIe bus to the controller and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with [Rufus](https://rufus.ie/en/), and execute it with the binary file of your choice (see table) copied into its folder.
 
 If you use the `cmd` prompt and change to the directory, you can check the installed version with `/version` or force an overwrite with the `/f` flag.
 ```
@@ -289,7 +304,7 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, like in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard laptops and ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The only difficulty I noted is that the MAC won't charge when the battery is completely drained. This glitch, however, might be due to the high power required to charge from such a low level. The `Calble PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
+However, like in my case, where the laptop doesn't require more than 3A, 60W is and should also be enough for most standard laptops and ultrabooks (Non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max top-notch CPU, and she uses it regularly with no issues. The only difficulty I noted is that the Mac won't charge when the battery is completely drained. This glitch, however, might be due to the high power required to charge from such a low level. The `Cable PD` firmware is likely responsible for this negotiation mechanism -- assuming that PD stands for power delivery, as in USB-PD. I will investigate!
 
 #### Other uses of this connector
 
@@ -380,7 +395,7 @@ buffer_size: 32768
 
 This output indicates a hardware configuration at 48 kHz, 24-bit. While it is still unclear whether we can change these parameters, as the sibling chips' specifications list a default of 48 kHz, with a possible configuration up to 192kHz, the change will require firmware adaptation, which is out of scope.
 
-### Line out on MAC
+### Line out on Mac
 
 Macs detect the audio chip as a single card with four streams, twice left and right, but only the front stream is selectable. To add the line output, do the following:
 
@@ -390,4 +405,3 @@ Macs detect the audio chip as a single card with four streams, twice left and ri
 * Optionally, add a second device with a microphone, e.g., the Webcam microphone
 
 Now, you can select the line out by opening the settings top-right and clicking the arrow on the right corner of the sound settings.
-
