@@ -76,6 +76,13 @@ Unfortunately, there are no firmware write alternatives for the Windows part (se
 > [!Note]
 > You clearly need a Thunderbolt 3/4+ capable device to flash and use the dock. The connector can be confusing, but Thunderbolt uses different lanes and protocols than USB and thus would not be accessible without a TB controller.
 
+> [!IMPORTANT]
+> Known limitations (short version):
+> - Some non-Dell systems may negotiate only up to ~60W (USB-PD 20V/3A) on the main dock cable.
+> - Mac charging from a fully drained battery can be unreliable in some setups.
+> - mDP initialization can be inconsistent until all firmware updates are fully applied and power-cycled.
+> - Streaming services that require HDCP 2.x may be limited to low resolutions on this dock.
+
 ## Firmware versions and status
 
 The following table lists known and working firmware versions. (Files are in the `bins` subfolder)
@@ -101,6 +108,10 @@ Cable PD | Power Delivery controller | 00.03.12 | N/A | Updated through BIOS[^1]
 ### File integrity (SHA-256)
 
 Checksums for all firmware files are listed in `bins/SHA256SUMS`.
+To regenerate the checksum file after adding/replacing firmware blobs, run:
+```bash
+./tools/update_sha256sums.sh
+```
 
 macOS/Linux:
 ```bash
