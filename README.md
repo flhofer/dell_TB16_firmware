@@ -128,6 +128,7 @@ Compare the output with the values in `bins/SHA256SUMS` before flashing.
 ## Flashing instructions
 
 I will try to find alternative flashing methods for all systems to replace the original Dell tool, which is limited and buggy. Also, while the original tool works ONLY with Dell PCs, these instructions should work on all Thunderbolt-equipped systems.
+For Linux recovery and diagnostics helper scripts, see [`tools/scripts/README.md`](tools/scripts/README.md).
 
 ### Recovery if flashing appears to fail
 
