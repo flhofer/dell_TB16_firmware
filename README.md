@@ -402,7 +402,7 @@ It works with Dell, and it is the same as the power button. No luck otherwise.
 
 ## Video outputs and resolutions
 
-The device has three video sources: MST-1's ports, MST-2's ports, and the TB3 port on the back. Each can deliver 3840x2160 (4K) @ 60Hz without any special configuration. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (to be verified). We need to clarify how using the TB3 port for video affects MST performance. (I will test as soon as I have a TB3 monitor) The possible graphics mode table lists only single- and dual-screen configurations for USB-C, with no configurations listed for Thunderbolt mode. Note: an attached USB-C display steals one of the MST streams. 
+The device has three video sources: MST-1's ports, MST-2's ports, and the TB3 port on the back. Each can deliver 3840x2160 (4K) @ 60Hz. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (see [Architecture and bandwidth model](#architecture-and-bandwidth-model)). We need to clarify how using the TB3 port for video affects MST performance. (I will test as soon as I have a TB3 monitor) The possible graphics mode table lists only single- and dual-screen configurations for USB-C, with no configurations listed for Thunderbolt mode. Note: an attached USB-C display steals one of the MST streams. 
 
 Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST's ports are in use, the output either halves the frequency (e.g., 3840x2160@30Hz) or reduces the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware. Frequency-wise, Users report successful output at up to 1080p@165Hz (the monitor's max). See the following screenshot from the Dell TB Docks 3/4 user manual (source: dell.com):
 
@@ -410,10 +410,9 @@ Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for 
 
 ### Architecture and bandwidth model
 
-The TB16 uses DP 1.2-class video paths on dock outputs (Dell TB16 docs and resolution table). The Alpine Ridge TB3 generation used here supports two DP inputs to the TB controller (`DisplayPort 1.2`, `Port Configuration: Dual`), i.e., architecturally up to `2 x (HBR2 x4)` from host to dock. In practice, this means the dock can usually do combinations around `1x 4K@60 + 2x 4K@30` (host/monitor dependent), but not `3x 4K@60`.
+The TB16 uses DP 1.2-class video paths on dock outputs (Dell TB16 docs and resolution table). The Alpine Ridge TB3 generation used here supports two DP inputs to be channeled through the TB controller (`DisplayPort 1.2`, `Port Configuration: Dual`), i.e., architecturally up to `2 x (HBR2 x4)` from host to dock. In practice, this means the dock can usually do combinations around `1x 4K@60 + 2x 4K@30` (host/monitor dependent), but not `3x 4K@60` as that would require three DP flows.
 
-Inferred (not from a public Synaptics VMM33x0 datasheet):
-A reference architecture sketch by Phiarc (community reverse engineering [Lenovo Thunderbolt 3 Dock block diagram](https://commons.wikimedia.org/wiki/File:Lenovo_Thunderbolt_3_Dock_40AC_block_diagram.svg)) shows how a MST VMM3320 can handle two DisplayPorts, a VGA and an HDMI connector all in one device; this also matches the leaked specs for a VMM5320, the chip's sucessor for DP1.4 and HDMI 2.x. The Dell dock instead used a VMM3320 with native VGA and a VMM3330 with native HDMI. A plausible reason for separate VMM3320/VMM3330 paths is to avoid one shared MST branch becoming the bottleneck for all legacy ports. It makes the design mode expensive, but allows now for higher throughput.
+A reference architecture sketch by Phiarc (community reverse engineering [Lenovo Thunderbolt 3 Dock block diagram](https://commons.wikimedia.org/wiki/File:Lenovo_Thunderbolt_3_Dock_40AC_block_diagram.svg)) shows how a MST VMM3320 can handle two DisplayPorts, a VGA and an HDMI connector all in one device; this also matches the leaked specs for a VMM5320, the chip's sucessor for DP1.4 and HDMI 2.x. The Dell dock instead used a VMM3320 with native VGA and a VMM3330 with native HDMI. A plausible reason for separate VMM3320/VMM3330 paths is to avoid one shared MST becoming the bottleneck for all legacy ports. It makes the design mode expensive, but allows now for higher throughput.
 
 > [!NOTE]
 > Dell documents a 5K (5120x2880) limitation on TB16 over dual DP/mDP (first one in single display list) for some systems with switchable graphics as a design limitation, with workarounds such as disabling switchable graphics (where supported) or using TB3-to-dual-DP adapters (KB `000175286`).
@@ -439,10 +438,10 @@ As said previously, Dell states that the Dock does not support HDCP; however, th
 
 During tests with different monitors and setups, I noticed the following (expanding list):
 - An Apple M2 (not Max, Pro, or Ultra) cannot manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1), and HDMI (MST-2), and all worked, but only one at a time. Even if I closed the laptop lid, with one panel less to manage, the only external screen that worked was the last used one.
-- The Synaptics MSTs apparently support their patented ViewXpand™ technology, meaning you can use two monitors connected to the same MST, and it will use only one pane as SST, a DP v1.1a feature => may help with the problem above (to test)
+- The Synaptics MSTs apparently support their patented ViewXpand™ technology, meaning you can use two monitors connected to the same MST, and it will use only one pane as if it were SST, a DP v1.1a mode-switch feature => may help with the problem above (to test)
 - A WD15 Dock, also with the Universal Cable, uses the DisplayPort alternate mode, capping throughput at 10Gbit, and thus limiting screen number and resolutions (see table above).
-- Attaching a display to USB-C (not sure about TB displays) effectively steals one of the MSTs, i.e., the one not in use. If both are in use, the USB-C display is not activated.
-- The mDP is a hard one to make work. I did multiple flashes and reboots on the dock to finally get it to go, in different orders for MST, Cable, and Dock. I don't really know what and why, but not every Dock has the mDP working right away
+- Attaching a display to USB-C (not sure about TB displays) effectively "steals" one of the MSTs, i.e., the one not in use. If both are in use, the USB-C display is not activated. This limitation is due to the amount DP flows available from the host to the dock, capped at two by the installed thunderbolt architecture.
+- The mDP is a hard one to make work. I did multiple flashes and reboots on the dock to finally get it to go, in different orders for MST, Cable, and Dock. I don't really know what and why, but not every Dock has the mDP working right away. I will investigate.
 
 ## Audio outputs and resolutions
 
