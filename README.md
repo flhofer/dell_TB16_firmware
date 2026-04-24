@@ -305,9 +305,14 @@ Datasheets and specifications:
 ...
 
 Differences between TB15, TB16, WD15, and TB18DC:
-* TB15 was a previous release of TB16, which was then recalled due to overheating issues. The only reported difference is an added cooling system with a temperature-controlled fan, affecting only the Dock's EC controller. Users (@bovvski) reported successful flashing.
-* WD15 uses the same Dock case and, in later releases, the same Dock cable. The Cable binary should thus be the same. It is, however, unclear to me how a USB-C can be effectively translated to a PCI bus. My guess is that the ASM USB controller, Ethernet controller, and Audio Media components are the same. The only component I'm not sure of is the Dock's bin. Be careful!
-*  The TB18DC has a double-TB connector for power-hungry laptops. Apparently, the second connector is only for power delivery. Therefore, it is my opinion that the Cable's internals may be different, but the rest is identical. Power delivery and control are managed by Cable-PD and should thus, however, not change the Cable's function - and bin - on the TB side.
+* TB15 was a previous release of TB16, which was then recalled due to overheating issues. The main reported hardware change in TB16 is improved thermal handling (fan + venting), while the general dock architecture stayed very similar. Users (@bovvski) reported successful cross-flashing.
+* WD15 is a USB-C dock (DisplayPort Alt Mode), not a Thunderbolt dock. Dell documents WD15 as compatible with systems that support DP over USB-C, with video ports `mDP + HDMI + VGA` (no full-size DP and no downstream TB3 port as on TB16). This strongly suggests shared internal building blocks with TB16 (USB hub/audio/Ethernet/MST style pipeline), but a different upstream transport profile by default.
+* WD15 display behavior depends on host link bandwidth: on non-Thunderbolt USB-C hosts (typical DP Alt Mode x2), practical limits are lower (commonly single 4K@30 or dual FHD class modes) than TB16. This matches field behavior where WD15 is more bandwidth-constrained but functionally similar.
+* TB18DC has a dual upstream connector for high-power Precision systems. Public compatibility docs and firmware lineage suggest it remains very close to TB16 internally, with the second connector mainly extending power and platform support constraints.
+
+Reference links for WD15/TB16/TB18DC comparison:
+* [Dell WD15/TB15 FAQ (platform behavior and limits)](https://www.dell.com/community/General/FAQ-WD15-TB15/td-p/5042187)
+
   
 **TBC**
 
