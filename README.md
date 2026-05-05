@@ -265,6 +265,10 @@ For reference, the latest official TB16 updater package listed by Dell is `DellD
 
 Furthermore, Dell messed up the firmware packaging for 1.05. The dock companions of that generation, the WD15 and TB18DC, got a new `Cable.bin` and were released on the same day. You can use the WD15 flasher to update `Cable.bin`.
 
+### Synaptics MST flashing on non-Dell systems
+
+I added the Multi-Transport-Stream flash utility distributed with the official packages above to the folder. This is mainly because the flasher aborts if the system detected is not a Dell. You will find two exe's, both supposedly `3.12.002`, but one of them was distributed in the TB15/16/18DC package with version `1.05`, and the other was distributed in the WD15 package with version `1.07`. They differ, so I added both. I guess the latter has the program code to write the MST firmware over USB in addition to TB - would explain the 0.5MB extra. The files were designed to run as a command-line tool on Windows 10 and should flash without active DP streams. So keep that in mind when preparing for a flash (i.e., Rufus). **TBC with short command example**
+
 # The Dell TB16 Dock
 
 ## Hardware specifications
