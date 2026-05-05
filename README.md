@@ -32,7 +32,7 @@ Skills required for the flashing: a basic understanding of *nix Bash systems, an
 ## Pre-flight checklist
 Before flashing, verify all of the following:
 - Host laptop has Thunderbolt 3/4 support enabled in BIOS/UEFI
-- Dock is connected to AC power and the TB upstream cable is attached to the host
+- Dock is connected to AC power, and the TB upstream cable is attached to the host
 - Linux step: at least one monitor is connected to each MST path when updating MST (`DP/VGA` and `mDP/HDMI`)
 - `fwupdmgr get-devices` lists your TB dock/cable targets before starting
 - You are running commands as `root` or with `sudo`
@@ -144,8 +144,8 @@ If a flashing step times out or a device disappears, do the following before ret
 
 1. Wait 60-120 seconds after a timeout/error before unplugging anything.
 2. Power-cycle the dock:
-   - Unplug dock AC power.
-   - Hold the dock power button while replugging AC power.
+   - Unplug the dock AC power.
+   - Hold the dock power button while replugging the AC power.
    - Wait until the fan spins.
    - Unplug again, wait 5-10 seconds, then plug back in.
 3. Re-enumerate devices with `fwupdmgr get-devices` and check whether versions changed.
@@ -153,7 +153,7 @@ If a flashing step times out or a device disappears, do the following before ret
    - MST-1 requires `DP` or `VGA`
    - MST-2 requires `mDP` or `HDMI`
 5. If Cable/Dock NVM targets are missing, reconnect the TB cable to the host, reboot once, then retry `fwupdtool install-blob <bin-file>`.
-6. If ASMedia update did not apply on Windows, keep only one `.bin` in `tools/ASMedia_win`, then run `asm.exe /version` and `asm.exe /f` as Administrator.
+6. If the ASMedia update did not apply on Windows, keep only one `.bin` in `tools/ASMedia_win`, then run `asm.exe /version` and `asm.exe /f` as Administrator.
 7. If targets still do not enumerate after two full retry cycles, stop and collect verbose output with `fwupdmgr --verbose get-devices` before further attempts.
 
 ### Flashing MST chips
@@ -343,7 +343,7 @@ Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have 
 SuperSpeed USB is ideal for devices such as monitors, USB hubs, and USB NAS. No major issues observed.
 
 ### 8. 	Thunderbolt 3 (USB Type-C)
-Limited (intended; reduced lanes by upstream) Thunderbolt is available for, e.g., Daisy-Chaining DP via tunneling to multiple USB-C monitors or USB 3.1 SuperSpeed devices. In certain configurations, monitors may support 5120 x 2880 @ 60 Hz on a single display. Tested DP with a USB-enabled QHD display. Thunderbolt DP functionality not tested.
+Limited (intended) Thunderbolt is available for, e.g., [Daisy-Chaining ThunderBolt](https://media.owcnow.com/image/upload/v1663360253/thunderbolt-daisy-chain-inforgraphic.pdf), Daisy-Chaining DP via tunneling to multiple USB-C monitors or USB 3.1 SuperSpeed devices. In certain configurations, monitors may support 5120 x 2880 @ 60 Hz on a single display. Tested DP with a USB-enabled QHD display. Thunderbolt DP functionality not tested.
 
 You can create an IP-over-Thunderbolt tunnel, enabling multiple Gbit/s transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. To do so, however, you need a certified Thunderbolt cable. If longer than 0.5/1 m (3ft), it has to be active (powered circuitry in the connector) and can thus become relatively expensive, e.g., 100 EUR for 1.8m (6ft).
 
