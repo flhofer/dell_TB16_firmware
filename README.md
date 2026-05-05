@@ -13,7 +13,7 @@
 # Dell TB16 Firmware
 Firmware and flashing instructions for the (now) affordable TB16 to fix some major issues. We are using three of those between home and work because
 * low price — got all of them used under 50€/piece
-* Up-to-date performance—Thunderbolt 3 has the same interface and speeds as TB4, where TB4 adds mainly some security features/restrictions, whatever you want to call it.
+* Up-to-date performance—Thunderbolt 3 has the same interface and speeds as TB4, where TB4 adds mainly some security features/restrictions, whatever you want to call it, BUT it is even FASTer in many cases [see OWC explanation](https://www.youtube.com/watch?v=F9Jyloas2GU)
 * When fixed, it works with MacBooks and all types of Windows/Linux PCs
 * One of the few Docks that can deliver more than 100W on the cable
 * PD also works on the rear connector, allowing an extra ~60W to be delivered to any other device connected, e.g., a partners/second laptop.
