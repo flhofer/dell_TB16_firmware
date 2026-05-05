@@ -48,7 +48,7 @@ To use the latest versions, do the following either with `sudo` or as `root`:
   - Power cycle the dock (optional)
   - Update the Display Multi-Stream-Transport devices to version 3.12.002 with `fwupdmgr install mst_03_12_002.cab`
   - WAIT! At least a minute after the _known_ timeout error appears, before you power cycle (optional)
-  - If you had only one monitor attached, repeat the previous two steps with the monitor connected to the other MST device (see table below for details).
+  - If you had only one monitor attached, or two and it fails after the first flash, repeat the previous two steps with the monitor connected to the other MST device (or MST2 only if both were connected, see table below for details).
   - Check firmware versions with `fwupdmgr get-devices`
 - REBOOT using Windows 10 or a bootable Windows 10 made with [Rufus](https://rufus.ie/en/)
   - Enter the directory of the ASM tools, in `tools/ASMedia_win`
