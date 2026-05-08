@@ -156,6 +156,7 @@ If a flashing step times out or a device disappears, do the following before ret
 5. If Cable/Dock NVM targets are missing, reconnect the TB cable to the host, reboot once, then retry `fwupdtool install-blob <bin-file>`.
 6. If the ASMedia update did not apply on Windows, keep only one `.bin` in `tools/ASMedia_win`, then run `asm.exe /version` and `asm.exe /f` as Administrator.
 7. If targets still do not enumerate after two full retry cycles, stop and collect verbose output with `fwupdmgr --verbose get-devices` before further attempts.
+8. If you get `unable to autodetect chip family`, use the `mst-*.exe` official Windows flasher only with the problematic device. MST update status stays inconsistent until it is the only active device, and Windows flashing might need to be repeated. Reported: @kwuw
 
 ### Flashing MST chips
 
