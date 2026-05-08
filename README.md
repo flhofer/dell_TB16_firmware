@@ -303,7 +303,7 @@ DSL6540 Thunderbolt™ 3 controller (Cable)
 
 Datasheets and specifications:
 * [Intel DSL6540](https://www.intel.com/content/www/us/en/products/sku/87402/intel-dsl6540-thunderbolt-3-controller/specifications.html) is a Thunderbolt to PCIe bus bridge. It transparently transforms PCIe lanes into a serial bus for a high-speed single connector extension - and transforms them back, making the host (laptop) PCIe lanes available also outside the mainboard for high-speed interconnectivity.
-* [Microchip USB5537B](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/00001682C.pdf) is a 4x USB3.0 and 3x USB2.0 hub
+* [Microchip USB5537B](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/00001682C.pdf) is a 4x USB3.0 (devid 5807) and 3x USB2.0 (devid 2807) hub
 * Realtek ALC4020 is a Dell-custom audio chip that interfaces with the USB bus and the Audio bus (I2S/PCM) and includes Microphone and Headphone amplifiers. Only the Datasheets for the sibling, ALC4042, are available.
 * Realtek ALC3263 is a Dell-custom Audio bus (I2S/PCM) audio chip that performs audio decoding and encoding on four output streams *at* 24-bit 48 kHz (this is strangely fixed). Only the Datasheets for the sibling, ALC3261, are available.
 * [Realtek RTL8153](https://www.olimex.com/Products/USB-Modules/Ethernet/USB-GIGABIT/resources/rtl8153.pdf) is one of the most sold USB-based Gigabit Ethernet controllers
@@ -320,6 +320,96 @@ Reference links for WD15/TB16/TB18DC comparison:
 
   
 **TBC**
+
+## Identifiers and structure
+
+Sample output, `lspci`,  Dock section only
+```
+0000:01:00.0 PCI bridge: Intel Corporation DSL6540 Thunderbolt 3 Bridge [Alpine Ridge 4C 2015]
+0000:02:01.0 PCI bridge: Intel Corporation DSL6540 Thunderbolt 3 Bridge [Alpine Ridge 4C 2015]
+0000:02:04.0 PCI bridge: Intel Corporation DSL6540 Thunderbolt 3 Bridge [Alpine Ridge 4C 2015]
+0000:04:00.0 PCI bridge: Intel Corporation DSL6540 Thunderbolt 3 Bridge [Alpine Ridge 4C 2015]
+0000:05:01.0 PCI bridge: Intel Corporation DSL6540 Thunderbolt 3 Bridge [Alpine Ridge 4C 2015]
+0000:05:04.0 PCI bridge: Intel Corporation DSL6540 Thunderbolt 3 Bridge [Alpine Ridge 4C 2015]
+0000:06:00.0 USB controller: ASMedia Technology Inc. ASM1042A USB 3.0 Host Controller
+0000:07:00.0 USB controller: Intel Corporation DSL6540 USB 3.1 Controller [Alpine Ridge]
+```
+
+Sample output `lspci -vvv -t`, Dock section only
+```
+ +-07.0-[01-3f]----00.0-[02-3f]--+-01.0-[03]--
+ |                               \-04.0-[04-3f]----00.0-[05-3f]--+-01.0-[06]----00.0  ASMedia Technology Inc. ASM1042A USB 3.0 Host Controller
+ |                                                               \-04.0-[07-3f]----00.0  Intel Corporation DSL6540 USB 3.1 Controller [Alpine Ridge]
+```
+
+Sample output, `lsusb`, Dock section only
+```
+Bus 005 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 005 Device 002: ID 0424:2807 Microchip Technology, Inc. (formerly SMSC) Hub
+Bus 005 Device 003: ID 413c:c022 Dell Computer Corp. Dell Webcam WB5023
+Bus 005 Device 004: ID 0bda:4014 Realtek Semiconductor Corp. USB Audio
+Bus 005 Device 005: ID 046d:c077 Logitech, Inc. Mouse
+Bus 005 Device 006: ID 0461:0010 Primax Electronics, Ltd HP PR1101U / Primax PMX-KPR1101U Keyboard
+Bus 006 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 006 Device 002: ID 0424:5807 Microchip Technology, Inc. (formerly SMSC) Hub
+Bus 006 Device 003: ID 0bda:8153 Realtek Semiconductor Corp. RTL8153 Gigabit Ethernet Adapter
+```
+
+Sample output, `lsusb -vvv -t`, Dock section only, attached KB+Mouse and Webcam
+```
+/:  Bus 005.Port 001: Dev 001, Class=root_hub, Driver=xhci_hcd/2p, 480M
+    ID 1d6b:0002 Linux Foundation 2.0 root hub
+    /sys/bus/usb/devices/usb5  /dev/bus/usb/005/001
+    |__ Port 001: Dev 002, If 0, Class=Hub, Driver=hub/7p, 480M
+        ID 0424:2807 Microchip Technology, Inc. (formerly SMSC) Hub
+        /sys/bus/usb/devices/5-1  /dev/bus/usb/005/002
+        |__ Port 001: Dev 003, If 0, Class=Video, Driver=uvcvideo, 480M
+            ID 413c:c022 Dell Computer Corp. 
+            /sys/bus/usb/devices/5-1.1  /dev/bus/usb/005/003
+        |__ Port 001: Dev 003, If 1, Class=Video, Driver=uvcvideo, 480M
+            ID 413c:c022 Dell Computer Corp. 
+            /sys/bus/usb/devices/5-1.1  /dev/bus/usb/005/003
+        |__ Port 001: Dev 003, If 2, Class=Audio, Driver=snd-usb-audio, 480M
+            ID 413c:c022 Dell Computer Corp. 
+            /sys/bus/usb/devices/5-1.1  /dev/bus/usb/005/003
+        |__ Port 001: Dev 003, If 3, Class=Audio, Driver=snd-usb-audio, 480M
+            ID 413c:c022 Dell Computer Corp. 
+            /sys/bus/usb/devices/5-1.1  /dev/bus/usb/005/003
+        |__ Port 001: Dev 003, If 5, Class=Human Interface Device, Driver=usbhid, 480M
+            ID 413c:c022 Dell Computer Corp. 
+            /sys/bus/usb/devices/5-1.1  /dev/bus/usb/005/003
+        |__ Port 005: Dev 004, If 0, Class=Audio, Driver=snd-usb-audio, 480M
+            ID 0bda:4014 Realtek Semiconductor Corp. 
+            /sys/bus/usb/devices/5-1.5  /dev/bus/usb/005/004
+        |__ Port 005: Dev 004, If 1, Class=Audio, Driver=snd-usb-audio, 480M
+            ID 0bda:4014 Realtek Semiconductor Corp. 
+            /sys/bus/usb/devices/5-1.5  /dev/bus/usb/005/004
+        |__ Port 005: Dev 004, If 2, Class=Audio, Driver=snd-usb-audio, 480M
+            ID 0bda:4014 Realtek Semiconductor Corp. 
+            /sys/bus/usb/devices/5-1.5  /dev/bus/usb/005/004
+        |__ Port 005: Dev 004, If 3, Class=Audio, Driver=snd-usb-audio, 480M
+            ID 0bda:4014 Realtek Semiconductor Corp. 
+            /sys/bus/usb/devices/5-1.5  /dev/bus/usb/005/004
+        |__ Port 006: Dev 005, If 0, Class=Human Interface Device, Driver=usbhid, 1.5M
+            ID 046d:c077 Logitech, Inc. Mouse
+            /sys/bus/usb/devices/5-1.6  /dev/bus/usb/005/005
+        |__ Port 007: Dev 006, If 0, Class=Human Interface Device, Driver=usbhid, 1.5M
+            ID 0461:0010 Primax Electronics, Ltd HP PR1101U / Primax PMX-KPR1101U Keyboard
+            /sys/bus/usb/devices/5-1.7  /dev/bus/usb/005/006
+        |__ Port 007: Dev 006, If 1, Class=Human Interface Device, Driver=usbhid, 1.5M
+            ID 0461:0010 Primax Electronics, Ltd HP PR1101U / Primax PMX-KPR1101U Keyboard
+            /sys/bus/usb/devices/5-1.7  /dev/bus/usb/005/006
+/:  Bus 006.Port 001: Dev 001, Class=root_hub, Driver=xhci_hcd/2p, 5000M
+    ID 1d6b:0003 Linux Foundation 3.0 root hub
+    /sys/bus/usb/devices/usb6  /dev/bus/usb/006/001
+    |__ Port 001: Dev 002, If 0, Class=Hub, Driver=hub/7p, 5000M
+        ID 0424:5807 Microchip Technology, Inc. (formerly SMSC) Hub
+        /sys/bus/usb/devices/6-1  /dev/bus/usb/006/002
+        |__ Port 002: Dev 003, If 0, Class=Vendor Specific Class, Driver=r8152, 5000M
+            ID 0bda:8153 Realtek Semiconductor Corp. RTL8153 Gigabit Ethernet Adapter
+            /sys/bus/usb/devices/6-1.2  /dev/bus/usb/006/003
+```
+The Webcam is connected to a USB 3.0 port, but is mapped to the 2.0 HUB by the Microchip USB5537B device because it is a lower-speed device.
 
 ## What's there and what works (also non-Windows)
 
