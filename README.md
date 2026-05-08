@@ -155,7 +155,7 @@ If a flashing step gives errors, times out, or a device disappears, do the follo
    - MST-2 requires `mDP` or `HDMI`
 5. If Cable/Dock NVM targets are missing, reconnect the TB cable to the host, reboot once, then retry `fwupdtool install-blob <bin-file>`.
 6. If targets still do not enumerate after two full retry cycles, stop and collect verbose output with `fwupdmgr --verbose get-devices` before further attempts.
-7. If you still get an `unable to autodetect chip family` when flashing MST (timeouts seem to be normal), use the `mst-*.exe` official Windows flasher only with the problematic device. MST update status stays inconsistent until it is the only active device, and Windows flashing might need to be repeated. Reported: @kwuw
+7. If you still get an `unable to autodetect chip family` when flashing MST (timeouts seem to be normal), use the `mst-*.exe` official Windows flasher only with the problematic device. MST update status stays inconsistent until it is the only active device, and Windows flashing might need to be repeated. Reported: @kwuw, [#20](https://github.com/flhofer/dell_TB16_firmware/issues/20)
 
 ### Flashing MST chips
 
@@ -344,7 +344,7 @@ Sample output `lspci -vvv -t`, Dock section only
  |                                                               \-04.0-[07-3f]----00.0  Intel Corporation DSL6540 USB 3.1 Controller [Alpine Ridge]
 ```
 
-Sample output, `lsusb`, Dock section only
+Sample output, `lsusb`, Dock section only, attached KB+Mouse and Webcam
 ```
 Bus 005 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 Bus 005 Device 002: ID 0424:2807 Microchip Technology, Inc. (formerly SMSC) Hub
