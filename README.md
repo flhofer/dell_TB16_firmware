@@ -141,7 +141,7 @@ For Linux recovery and diagnostics helper scripts, see [`tools/scripts/README.md
 
 ### Recovery if flashing appears to fail
 
-If a flashing step times out or a device disappears, do the following before retrying random combinations:
+If a flashing step gives errors, times out, or a device disappears, do the following before retrying random combinations:
 
 1. Wait 60-120 seconds after a timeout/error before unplugging anything.
 2. Power-cycle the dock:
@@ -154,9 +154,8 @@ If a flashing step times out or a device disappears, do the following before ret
    - MST-1 requires `DP` or `VGA`
    - MST-2 requires `mDP` or `HDMI`
 5. If Cable/Dock NVM targets are missing, reconnect the TB cable to the host, reboot once, then retry `fwupdtool install-blob <bin-file>`.
-6. If the ASMedia update did not apply on Windows, keep only one `.bin` in `tools/ASMedia_win`, then run `asm.exe /version` and `asm.exe /f` as Administrator.
-7. If targets still do not enumerate after two full retry cycles, stop and collect verbose output with `fwupdmgr --verbose get-devices` before further attempts.
-8. If you get `unable to autodetect chip family`, use the `mst-*.exe` official Windows flasher only with the problematic device. MST update status stays inconsistent until it is the only active device, and Windows flashing might need to be repeated. Reported: @kwuw
+6. If targets still do not enumerate after two full retry cycles, stop and collect verbose output with `fwupdmgr --verbose get-devices` before further attempts.
+7. If you still get an `unable to autodetect chip family` when flashing MST (timeouts seem to be normal), use the `mst-*.exe` official Windows flasher only with the problematic device. MST update status stays inconsistent until it is the only active device, and Windows flashing might need to be repeated. Reported: @kwuw
 
 ### Flashing MST chips
 
@@ -207,7 +206,9 @@ $ fwupdmgr install <cab-file>
 > [!WARNING]
 > This install may fail at the prompt, but continue flashing and succeed in the background. Thus, keep the power to the dock for a minute or two after the command ends.
 >
-> The flashers `attach()` and `reload()` method calls are done after writing, but they're timeout-based and thus often don't work correctly. You might need to power-cycle the dock to reload the firmware after writing, but wait: the process isn't terminated immediately after `fwupd` exits. If you want more info about the `attach()` mechanism, check the `fwupdmgr` [docs](https://github.com/fwupd/fwupd/blob/main/docs/tutorial.md). 
+> The flashers `attach()` and `reload()` method calls are done after writing, but they're timeout-based and thus often don't work correctly. You might need to power-cycle the dock to reload the firmware after writing, but wait: the process isn't terminated immediately after `fwupd` exits. If you want more info about the `attach()` mechanism, check the `fwupdmgr` [docs](https://github.com/fwupd/fwupd/blob/main/docs/tutorial.md).
+
+If it fails due to a timeout, and it most likely will, the second MST is unlikely to be flashed. Therefore, to flash also the second MST, disconnect monitors from MST-1 and make sure to attach a monitor to MST-2 and repeat.
 
 ### Flashing TB16's NVM
 
