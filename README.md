@@ -87,10 +87,10 @@ Unfortunately, there are no firmware write alternatives for the Windows part (se
 > [!IMPORTANT]
 > Known limitations (short version):
 > - Non-Dell systems may negotiate only up to ~60W (USB-PD 19.5/3A) on the main dock cable.
-> - Mac charging from a fully drained battery can be unreliable in some setups.
+> - Mac or other high-capacity laptop charging from a fully drained battery can be unreliable in some setups.
 > - mDP initialization can be inconsistent until all firmware (repeated) updates are fully applied and power-cycled.
 > - Streaming services that require HDCP 2.x may be limited to low resolutions on this dock
-> - Using two MST devices at the same time may depend on your laptop, i.e., if it supports two DP streams per TB port
+> - Using two MST devices at the same time may depend on your laptop, i.e., if it supports two DP streams per TB port, and thus only mDP+HDMI or DP+VGA may work
 
 ## Firmware versions and status
 
