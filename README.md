@@ -33,7 +33,7 @@ Skills required for the flashing: a basic understanding of *nix Bash systems, an
 Before flashing, verify all of the following:
 - Host laptop has Thunderbolt 3/4 support enabled in BIOS/UEFI
 - Dock is connected to AC power, and the TB upstream cable is attached to the host
-- Linux step: at least one monitor is connected to each MST path when updating MST (`DP/VGA` and `mDP/HDMI`)
+- Linux step: at least one monitor is (ready to be) connected to each MST path when updating MST (`DP/VGA` and `mDP/HDMI` - see steps)
 - `fwupdmgr get-devices` lists your TB dock/cable targets before starting
 - You are running commands as `root` or with `sudo`
 
@@ -46,9 +46,9 @@ To use the latest versions, do the following either with `sudo` or as `root`:
   - Power cycle the dock (optional): unplug the power, replug while holding the power button down, once the fan spins, unplug, wait a second, and replug.
   - Flash the dock NVM, use version 27.00 with `fwupdtool install-blob Dock_BME_27_00.bin` and select the number for `Thunderbolt Dock`
   - Power cycle the dock (optional)
-  - Update the Display Multi-Stream-Transport devices to version 3.12.002 with `fwupdmgr install mst_03_12_002.cab`
+  - Update the Display Multi-Stream-Transport devices to version 3.12.002 with `fwupdmgr install mst_03_12_002.cab` and at least one monitor connected
   - WAIT! At least a minute after the _known_ timeout error appears, before you power cycle (optional)
-  - If you had only one monitor attached, or two and it fails after the first flash, repeat the previous two steps with the monitor connected to the other MST device (or MST2 only if both were connected, see table below for details).
+  - If you had only one monitor attached, or two and it fails after the first flash (it apparently always does), repeat the previous two steps with the monitor connected to the other MST device (or MST2 only if both were connected, see table below for details).
   - Check firmware versions with `fwupdmgr get-devices`
 - REBOOT using Windows 10 or a bootable Windows 10 made with [Rufus](https://rufus.ie/en/)
   - Enter the directory of the ASM tools, in `tools/ASMedia_win`
@@ -89,7 +89,8 @@ Unfortunately, there are no firmware write alternatives for the Windows part (se
 > - Non-Dell systems may negotiate only up to ~60W (USB-PD 19.5/3A) on the main dock cable.
 > - Mac charging from a fully drained battery can be unreliable in some setups.
 > - mDP initialization can be inconsistent until all firmware (repeated) updates are fully applied and power-cycled.
-> - Streaming services that require HDCP 2.x may be limited to low resolutions on this dock.
+> - Streaming services that require HDCP 2.x may be limited to low resolutions on this dock
+> - Using two MST devices at the same time may depend on your laptop, i.e., if it supports two DP streams per TB port
 
 ## Firmware versions and status
 
