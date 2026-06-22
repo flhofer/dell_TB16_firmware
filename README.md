@@ -79,7 +79,7 @@ Official Dell post-install hard reset sequence (recommended, source: [Dell TB16 
 Unfortunately, there are no firmware write alternatives for the Windows part (see below).
 
 > [!TIP]
-> Some users reported needing to repower the dock multiple times before a newly flashed firmware loaded. It apparently needs patience.
+> Some users reported needing to repower the dock multiple times before a newly flashed firmware loaded. It apparently needs patience. Also, there seem to be situations, where one TB port of the laptop, i.e. Port 0, works better than another.
 
 > [!Note]
 > You clearly need a Thunderbolt 3/4+ capable device to flash and use the dock. The connector can be confusing, but Thunderbolt uses different lanes and protocols than USB and thus would not be accessible without a TB controller.
@@ -164,7 +164,7 @@ Although an `mst.exe` is available for manual flashing, it is unreliable and bug
 > [!NOTE]
 > The official update tool tends to report versions like 00.00.fd. These are error codes reported by `mst.exe` and do not appear when you perform a manual version check.
 
-For a few years, it has been possible to flash the chips on Linux. You will need a recent `fwupd` package, e.g., >`v0.8` shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that ships with `fwupd` preinstalled. Fedora 43 has reportedly also worked.
+For a few years, it has been possible to flash the chips on Linux. You will need a recent `fwupd` package, e.g., >`v0.8` shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that ships with `fwupd` preinstalled. Fedora 43 has reportedly also worked, in some cases it turned out to work better than on Ubuntu distros.
 
 Unlike what is suggested online, you MUST have a monitor connected to perform this update on Linux. This means that for MST-1, you'll need a DP or VGA connection; for MST-2, you will need a mini-DP or an HDMI screen.
 To check if both MSTs are running, type the following as root or with `sudo`
