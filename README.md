@@ -533,7 +533,7 @@ As said previously, Dell states that the Dock does not support HDCP; however, th
 - (DisplayPort / HDMI / USB-C) <= any 2 + Laptop: 2560x1440@75Hz + 2560x1440@75Hz + 1920x1200@60Hz
 - mDP + HDMI + Mac M2 MAX: 2560x1440@60Hz + 2560x1440@60Hz + 2560x1664@60Hz
 - DisplayPort + HDMI: 1920x1080@165Hz + 1920x1080@75Hz
-- DisplayPort: 4k@30Hz (only unfortunately -> to be verified)
+- DisplayPort: 4k@60Hz (user report on XPS 9720, MacOS limited to 30Hz, see limitations)
 - HDMI: 4k@30Hz (max for HDMI 1.4a)
 
 ### Limitations and frequent issues - also by the Laptop
