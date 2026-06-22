@@ -546,6 +546,7 @@ During tests with different monitors and setups, I noticed the following (expand
 - Attaching a display to USB-C (not sure about TB displays) effectively "steals" one of the MSTs, i.e., the one not in use. If both are in use, the USB-C display is not activated. This limitation is due to the number of DP flows available from the host to the dock, which is capped at 2 by the installed Thunderbolt architecture.
 - The mDP is a hard one to make work. I did multiple flashes and reboots on one dock to finally get it to go, in different orders for MST, Cable, and Dock. I don't really know what and why, but not every Dock has the mDP working right away. Port function seems quite inconsistent. I have three docks, one I use with mDP, one with HDMI and VGA, and the last with USB-C. On the  first two, all ports now work. On the third, however, mDP won't work, even after many retries. I will investigate.
 - Sometimes handshakes go wrong. What does that mean? It means, e.g., that you attach a powered system to the powered dock, particularly after a write, and the system just won't recognize, let's say, HDMI. If you attach another laptop, without changing anything, the port works. Once you reboot the dock and the first system, the port finally works here, too. In short, the whole system is a bit wobbly.
+- MacOS does [NOT support MST configuration](https://www.reddit.com/r/mac/s/ZYVqpMWHU1). This means, display setups like 4k@60Hz or maybe even two displays on the same MST may not work on a Mac.
   
 ## Audio outputs and resolutions
 
