@@ -1,3 +1,5 @@
+## [Buy me a ☕?](https://www.paypal.com/donate/?hosted_button_id=7X35TPY8WY5UJ)
+
 # Contents
 - [Dell Firmware flashing instructions](#dell-tb16-firmware)
   - [TLDR; Suggested steps](#tldr-suggested-steps)
