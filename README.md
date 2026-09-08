@@ -29,7 +29,7 @@ makes it an unbeatable bargain.
 
 I've spent some time tweaking and fixing most issues with the Dock, particularly exploring different methods for flashing the firmware on non-Windows and non-Dell hardware.
 
-The Power button works only on Dell PCs, though. Is there a script somewhere that would also make it work on others?
+The Power button works only on Dell PCs, though. Is there a script somewhere that would make it work on others too?
 
 > [!Note]
 > This procedure also works for Dell TB15 (retired due to overheating issues - tested by @bovvski) and may work for the related models Dell WD15 (same dock, USB upstream) and Dell TB18DC (same dock, dual TB upstream), as they share most components. In any case, I'm not responsible for any damage caused by following these instructions.
@@ -86,15 +86,15 @@ Official Dell post-install hard reset sequence (recommended, source: [Dell TB16 
 Unfortunately, there are no firmware write alternatives for the Windows part (see below).
 
 > [!TIP]
-> Some users reported needing to repower the dock multiple times before a newly flashed firmware loaded. It apparently needs patience. Also, there seem to be situations, where one TB port of the laptop, i.e. Port 0, works better than another.
+> Some users reported needing to repower the dock multiple times before a newly flashed firmware loaded. It apparently needs patience. Also, there seem to be situations where one TB port of the laptop, i.e., Port 0, works better than another.
 
 > [!Note]
-> You clearly need a Thunderbolt 3/4+ capable device to flash and use the dock. The connector can be confusing, but Thunderbolt uses different lanes and protocols than USB and thus would not be accessible without a TB controller.
+> You clearly need a Thunderbolt 3/4+ capable device to flash and use the dock. The connector can be confusing, but Thunderbolt uses different lanes and protocols than USB, so it won't be accessible without a TB controller.
 
 > [!IMPORTANT]
 > Known limitations (short version):
 > - Non-Dell systems may negotiate only up to ~60W (USB-PD 19.5/3A) on the main dock cable.
-> - Mac or other high-capacity laptop charging from a fully drained battery can be unreliable in some setups.
+> - Charging a Mac or other high-capacity laptop from a fully drained battery can be unreliable in some setups.
 > - mDP initialization can be inconsistent until all firmware (repeated) updates are fully applied and power-cycled.
 > - Streaming services that require HDCP 2.x may be limited to low resolutions on this dock
 > - Using two MST devices at the same time may depend on your laptop, i.e., if it supports two DP streams per TB port, and thus only mDP+HDMI or DP+VGA may work
@@ -169,9 +169,9 @@ If a flashing step gives errors, times out, or a device disappears, do the follo
 Although an `mst.exe` is available for manual flashing, it is unreliable and buggy. For starters, it only sometimes reports the installed firmware version correctly.
 
 > [!NOTE]
-> The official update tool tends to report versions like 00.00.fd. These are error codes reported by `mst.exe` and do not appear when you perform a manual version check.
+> The official update tool often reports versions like 00.00.fd. These are error codes reported by `mst.exe` and do not appear when you perform a manual version check.
 
-For a few years, it has been possible to flash the chips on Linux. You will need a recent `fwupd` package, e.g., >`v0.8` shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that ships with `fwupd` preinstalled. Fedora 43 has reportedly also worked, in some cases it turned out to work better than on Ubuntu distros.
+For a few years, you could flash the chips on Linux. You will need a recent `fwupd` package, e.g., >`v0.8` shipped in Ubuntu 23.10 or newer. If you don't use Linux, you can use a live USB using an official Ubuntu that ships with `fwupd` preinstalled. Fedora 43 has reportedly also worked; in some cases, it turned out to work better than on Ubuntu distros.
 
 Unlike what is suggested online, you MUST have a monitor connected to perform this update on Linux. This means that for MST-1, you'll need a DP or VGA connection; for MST-2, you will need a mini-DP or an HDMI screen.
 To check if both MSTs are running, type the following as root or with `sudo`
@@ -213,15 +213,15 @@ $ fwupdmgr install <cab-file>
 > [!WARNING]
 > This install may fail at the prompt, but continue flashing and succeed in the background. Thus, keep the power to the dock for a minute or two after the command ends.
 >
-> The flashers `attach()` and `reload()` method calls are done after writing, but they're timeout-based and thus often don't work correctly. You might need to power-cycle the dock to reload the firmware after writing, but wait: the process isn't terminated immediately after `fwupd` exits. If you want more info about the `attach()` mechanism, check the `fwupdmgr` [docs](https://github.com/fwupd/fwupd/blob/main/docs/tutorial.md).
+> The flashers' `attach()` and `reload()` method calls are done after writing, but they're timeout-based and thus often don't work correctly. You might need to power-cycle the dock to reload the firmware after writing, but wait: the process isn't terminated immediately after `fwupd` exits. If you want more info about the `attach()` mechanism, check the `fwupdmgr` [docs](https://github.com/fwupd/fwupd/blob/main/docs/tutorial.md).
 
-If it fails due to a timeout, and it most likely will, the second MST is unlikely to be flashed. Therefore, to flash also the second MST, disconnect monitors from MST-1 and make sure to attach a monitor to MST-2 and repeat.
+If it fails due to a timeout (which it likely will), the second MST is unlikely to flash. Therefore, to flash also the second MST, disconnect monitors from MST-1 and make sure to attach a monitor to MST-2 and repeat.
 
 ### Flashing TB16's NVM
 
-The requirements for the two following, the `Cable` and `Dock/BME`'s NonVolatile Memory, are identical: Linux and a recent `fwupd` package.
+The requirements for the following two, the `Cable` and `Dock/BME`'s NonVolatile Memory, are identical: Linux and a recent `fwupd` package.
 
-To update Thunderbolt Cable or Dock NVM, type as root/`sudo`
+To update the Thunderbolt Cable or Dock NVM, type as root/`sudo`
 ```
 $ fwupdtool install-blob <bin-file>
 ```
@@ -230,43 +230,43 @@ It will prompt you to select the correct device to flash. Select the device name
 
 ### Which NVM controller firmware to flash?
 
-I kept the latest and the previous versions in this repository for a straightforward reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter doesn't allow communication without a security authorization mechanism. This means legacy devices (first-gen TB3 and Thunderbolt 1-2 adapters) can no longer communicate with updated controllers. With the v16.xx NVM, selecting a security mode in the BIOS was still possible, optionally disabling Thunderbolt security. In short, unless you want to connect to a legacy Thunderbolt device upstream or downstream, use the latest v2x.xx firmware. It is less buggy and has a better user experience (see table above).
+I kept the latest and the previous versions in this repository for a straightforward reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter doesn't allow communication without a security authorization mechanism. This means legacy devices (first-gen TB3 and Thunderbolt 1-2 adapters) can no longer communicate with updated controllers. With v16.xx NVM, selecting a security mode in the BIOS was still possible, optionally disabling Thunderbolt security. In short, unless you want to connect to a legacy Thunderbolt device upstream or downstream, use the latest v2x.xx firmware. It is less buggy and has a better user experience (see table above).
 
 ### Alternate NVMs (untested)
 
-While searching for better bins, I stumbled upon some hidden images in one of the flashing tools that should not include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't support this function. A TB3-to-TB2 adapter is one such device. Apple Macs have special firmware to make those work; PCs need a special NVM. Unfortunately, you cannot flash these firmware files with a TB security-enabled device. If you do, the flashing starts but returns an error after a minute. Please report back if you manage to flash the firmware.
+While searching for better bins, I found some hidden images in one of the flashing tools that don't include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't support this function. A TB3-to-TB2 adapter is one such device. Apple Macs have special firmware to make those work; PCs need a special NVM. Unfortunately, you cannot flash these firmware files with a TB security-enabled device. If you do, the flashing starts but returns an error after a minute. Please report back if you manage to flash the firmware.
 
 System | version | file | fixes? |
 --- | --- | --- | --- 
 Thunderbolt TB16 Cable | 16.00_nosec | Cable_16_00_nosec.bin | Disables upstream security (Laptop) and allows the use of legacy TB3 controllers |
-Thunderbolt TB16 Dock | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downstream security, allows the use of legacy devices such as TB3 to TB1/2 adapters |
+Thunderbolt TB16 Dock | 16.00_nosec | Dock_BME_16_00_nosec.bin | Disables downstream security and allows the use of legacy devices such as TB3 to TB1/2 adapters |
 
 ### Flashing the ASMedia USB Controller
 
-We will do this part using the official ASM flasher. While a [C#-based Linux tool](https://github.com/smx-smx/ASMTool) exists, it does not yet allow firmware writing. The Thunderbolt controller extends the PCIe bus to the controller and allows us to use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with [Rufus](https://rufus.ie/en/), and execute it with the binary file of your choice (see table) copied into its folder.
+We will do this part using the official ASM flasher. While a [C#-based Linux tool](https://github.com/smx-smx/ASMTool) exists, it does not yet allow firmware writing. The Thunderbolt controller extends the PCIe bus to the controller, letting us use the standard PCIe flashing tool. Use the `exe` found in `tools/ASMedia_win` of this repo on Windows or a Windows-to-go disk made, e.g., with [Rufus](https://rufus.ie/en/), and execute it with the binary file of your choice (see table) copied into its folder.
 
 If you use the `cmd` prompt and change to the directory, you can check the installed version with `/version` or force an overwrite with the `/f` flag.
 ```
 > asm.exe /version
 ```
-The tool will not flash if the bin is older than or equal to the installed one and exits (unless run with `/f`).
-If there is more than one bin file in the directory, it will take the first one using ASCII order, e.g., numbers before letters.
+The tool will not flash if the bin is older than or equal to the installed version and will exit (unless run with `/f`).
+If there is more than one bin file in the directory, it takes the first one in ASCII order (e.g., numbers before letters).
 
-Assumed firmware version scheme by ASMedia, `YYMMDD_VV.VV_FF.bin` where
+Assumed firmware version scheme by ASMedia: `YYMMDD_VV.VV_FF.bin` where
 * `YYMMDD` date of the firmware release
 * `VV.VV` release version
 * `FF` feature request or bugfix version
 
-It happens that newer release dates have smaller firmware versions, but this is due to a customer's later feature request on an existing version. Thus, `140124_10.10_04` is an older base firmware than `131025_10.11_AB`. While all of them are made for ASM 1042A (`2104B_RCFG` in the file header), the bin contents in size (using hexdump) are that `10.10_04 < 10.11_A9 < 10.11_AB`, confirming the above versioning. I use `140124_10.10_04`, despite it being older, because it is the only version that received a warm reset patch later on, which solved the Ethernet controller hangup issue after suspend. Without the patch, the controller becomes inactive, and wake-on-LAN functionality is lost. To reconnect the controller without disconnecting the dock, you must run one of the scripts in `tools/`.
+Newer release dates can have smaller firmware versions, but this is because a customer later requested a feature on an existing version. Thus, `140124_10.10_04` is an older base firmware than `131025_10.11_AB`. While all of them are made for ASM 1042A (`2104B_RCFG` in the file header), the bin contents differ in size (using hexdump): `10.10_04 < 10.11_A9 < 10.11_AB`, confirming the above versioning. I use `140124_10.10_04`, despite it being older, because it is the only version that later received a warm reset patch that solved the Ethernet controller hangup issue after suspend. Without the patch, the controller becomes inactive, and wake-on-LAN functionality is lost. To reconnect the controller without disconnecting the dock, you must run one of the scripts in `tools/`.
 
 > [!NOTE]
-> The Dell firmware updater checks only the last digits of the firmware version (which is technically correct) and would update. However, `asm.exe` is invoked but does not update because it also takes the release date into account. If you want to update to a *newer* firmware version with an *older* release date, you need to run a manual force-write as described above.
+> The Dell firmware updater checks only the last digits of the firmware version (which is technically correct) and would update. However, `asm.exe` is invoked but doesn't update because it also considers the release date. If you want to update to a *newer* firmware version with an *older* release date, you need to run a manual force-write as described above.
 
-If the flashing does not succeed because the subsystem-ID (SSID) or system vendor ID (SVID) does not match, you can still flash the controller using the ASM MPTool. Unfortunately, this tool is not freely distributable due to licensing constraints. However, it can be found in one of the flash zip packages on `station-drivers..com` (intentionally obfuscated to reduce scraping).
+If flashing fails because the subsystem-ID (SSID) or system vendor ID (SVID) doesn't match, you can still flash the controller using the ASM MPTool. Unfortunately, this tool is not freely distributable due to licensing constraints. However, you can find it in one of the flash zip packages on `station-drivers...com` (intentionally obfuscated to reduce scraping).
 
 ## Official Flashing tools
 
-If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash version 1.00 first, then 1.02. These install a BIOS-based update file that executes an update at BIOS start. It is thus likely that they cannot be updated without a Dell system.
+If you prefer to use the official Flash tool, you can find a copy in the `official` folder. However, it works only on Dell laptops. If your device doesn't have the controller, EC, and PD updates listed above, you may need to flash version 1.00 first, then 1.02. These install a BIOS-based update file that runs at BIOS start. They likely can't be updated without a Dell system.
 
 According to [Dell's TB16 updater page](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=6ykv0), the supported operating systems are Windows 10 variants (e.g., Windows 10 64-bit and Windows 10 IoT Enterprise LTSC 2019), which matches the Windows 10 recommendation in this guide.
 
@@ -277,7 +277,7 @@ Furthermore, Dell messed up the firmware packaging for 1.05. The dock companions
 
 ### Synaptics MST flashing on non-Dell systems
 
-I added the Multi-Transport-Stream flash utility distributed with the official packages above to the folder. This is mainly because the flasher aborts if the system detected is not a Dell. You will find two exe's, both supposedly `3.12.002`, but one of them was distributed in the TB15/16/18DC package with version `1.05`, and the other was distributed in the WD15 package with version `1.07`. They differ, so I added both. I guess the latter has the program code to write the MST firmware over USB in addition to TB - would explain the 0.5MB extra. The files were designed to run as a command-line tool on Windows 10 and should flash without active DP streams. So keep that in mind when preparing for a flash (i.e., Rufus). **TBC with short command example**
+I added the Multi-Transport-Stream flash utility distributed with the official packages above to the folder. This is mainly because the flasher aborts if it detects a system that isn't Dell. You will find two EXEs, both supposedly `3.12.002`, but one was distributed in the TB15/16/18DC package as `1.05`, and the other in the WD15 package as `1.07`. They differ, so I added both. I guess the latter has the program code to write the MST firmware over USB in addition to TB- which would explain the 0.5MB extra. The files were designed to run as a command-line tool on Windows 10 and should flash without active DP streams. So keep that in mind when preparing for a flash (i.e., Rufus). **TBC with short command example**
 
 # The Dell TB16 Dock
 
@@ -311,7 +311,7 @@ DSL6540 Thunderbolt™ 3 controller (Cable)
 ```
 
 Datasheets and specifications:
-* [Intel DSL6540](https://www.intel.com/content/www/us/en/products/sku/87402/intel-dsl6540-thunderbolt-3-controller/specifications.html) is a Thunderbolt to PCIe bus bridge. It transparently transforms PCIe lanes into a serial bus for a high-speed single connector extension - and transforms them back, making the host (laptop) PCIe lanes available also outside the mainboard for high-speed interconnectivity.
+* [Intel DSL6540](https://www.intel.com/content/www/us/en/products/sku/87402/intel-dsl6540-thunderbolt-3-controller/specifications.html) is a Thunderbolt to PCIe bus bridge. It transparently transforms PCIe lanes into a serial bus for a high-speed single-connector extension - and transforms them back, making the host (laptop) PCIe lanes available also outside the mainboard for high-speed interconnectivity.
 * [Microchip USB5537B](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/00001682C.pdf) is a 4x USB3.0 (devid 5807) and 3x USB2.0 (devid 2807) hub
 * Realtek ALC4020 is a Dell-custom audio chip that interfaces with the USB bus and the Audio bus (I2S/PCM) and includes Microphone and Headphone amplifiers. Only the Datasheets for the sibling, ALC4042, are available.
 * Realtek ALC3263 is a Dell-custom Audio bus (I2S/PCM) audio chip that performs audio decoding and encoding on four output streams *at* 24-bit 48 kHz (this is strangely fixed). Only the Datasheets for the sibling, ALC3261, are available.
@@ -332,7 +332,7 @@ Reference links for WD15/TB16/TB18DC comparison:
 
 ## Identifiers and structure
 
-Sample output, `lspci`,  Dock section only
+Sample output: `lspci`,  Dock section only
 ```
 0000:01:00.0 PCI bridge: Intel Corporation DSL6540 Thunderbolt 3 Bridge [Alpine Ridge 4C 2015]
 0000:02:01.0 PCI bridge: Intel Corporation DSL6540 Thunderbolt 3 Bridge [Alpine Ridge 4C 2015]
@@ -351,7 +351,7 @@ Sample output `lspci -vvv -t`, Dock section only
  |                                                               \-04.0-[07-3f]----00.0  Intel Corporation DSL6540 USB 3.1 Controller [Alpine Ridge]
 ```
 
-Sample output, `lsusb`, Dock section only, attached KB+Mouse and Webcam
+Sample output from `lsusb`, Dock section only; attached KB+Mouse and Webcam
 ```
 Bus 005 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 Bus 005 Device 002: ID 0424:2807 Microchip Technology, Inc. (formerly SMSC) Hub
@@ -418,7 +418,7 @@ Sample output, `lsusb -vvv -t`, Dock section only, attached KB+Mouse and Webcam
             ID 0bda:8153 Realtek Semiconductor Corp. RTL8153 Gigabit Ethernet Adapter
             /sys/bus/usb/devices/6-1.2  /dev/bus/usb/006/003
 ```
-The Webcam is connected to a USB 3.0 port, but is mapped to the 2.0 HUB by the Microchip USB5537B device because it is a lower-speed device.
+The Webcam is connected to a USB 3.0 port, but the Microchip USB5537 B maps it to the 2.0 hub because it is a lower-speed device.
 
 ## What's there and what works (also non-Windows)
 
@@ -434,7 +434,7 @@ Standard traditional VGA, up to Wide-Full-HD 1920 x 1200 @ 60. Works, tested Ful
 These ports are v1.2 compliant and typically support up to 3840 x 2160 @ 60Hz and daisy-chaining. Mini-DP or DP may intermittently stop working without the latest Cable NVM.
 
 ### 5. 	RJ45 Gigabit Ethernet
-Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have difficulty waking from deep sleep (suspension) if the ASMedia USB controller firmware is out of date. The problem can also be solved by detaching and re-registering the controller on the PCI bus via a script (see an example in `tools/scripts`).
+Generic RTL8153 Gigabit Ethernet controller. No surprises. However, it may have difficulty waking from deep sleep (suspension) if the ASMedia USB controller firmware is out of date. You can also solve the problem by detaching and re-registering the controller on the PCI bus via a script (see an example in `tools/scripts`).
 
 ### 6. 	USB 2.0 (2 ports)
 "Slow"-speed port generally intended for input devices such as mouse, keyboard, trackpad, smart-card readers, etc. No major issues observed.
@@ -445,18 +445,18 @@ SuperSpeed USB is ideal for devices such as monitors, USB hubs, and USB NAS. No 
 ### 8. 	Thunderbolt 3 (USB Type-C)
 Limited (intended) Thunderbolt is available for, e.g., [Daisy-Chaining ThunderBolt](https://media.owcnow.com/image/upload/v1663360253/thunderbolt-daisy-chain-inforgraphic.pdf), Daisy-Chaining DP via tunneling to multiple USB-C monitors or USB 3.1 SuperSpeed devices. In certain configurations, monitors may support 5120 x 2880 @ 60 Hz on a single display. Tested DP with a USB-enabled QHD display. Thunderbolt DP functionality not tested.
 
-You can create an IP-over-Thunderbolt tunnel, enabling multiple Gbit/s transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. To do so, however, you need a certified Thunderbolt cable. If longer than 0.5/1 m (3ft), it has to be active (powered circuitry in the connector) and can thus become relatively expensive, e.g., 100 EUR for 1.8m (6ft).
+You can create an IP-over-Thunderbolt tunnel, enabling multiple Gbit/s transfers over the virtual Ethernet adapters, which is ideal for some compute-backend connections. To do so, however, you need a certified Thunderbolt cable. If it's longer than 0.5/1 m (3ft), it must be active (with powered circuitry in the connector) and can be relatively expensive, e.g., 100 EUR for 1.8m (6ft).
 
-Guess what? This neat-looking connector also supports USB-PD! If connected to a capable device, it can deliver up to 19.5V at 3A (~60W), in addition to the power already delivered to the main Dock connection. I'm charging a Mac and a Dell laptop simultaneously right now. I also tested the `DRD` capability, i.e., data exchange over directly connected USB-C devices, and unfortunately, it doesn't work. **TBD**: Maybe using a Thunderbolt cable, one can charge and transfer data simultaneously.
+Guess what? This neat-looking connector also supports USB-PD! If connected to a capable device, it can deliver up to 19.5V at 3A (~60W), in addition to the power already delivered to the main Dock connection. I'm charging a Mac and a Dell laptop simultaneously. I also tested the `DRD` capability (i.e., data exchange over directly connected USB-C devices), and unfortunately, it doesn't work. **TBD**: Maybe using a Thunderbolt cable lets you charge and transfer data simultaneously.
 
 ### 9. 	7.4 mm DC-in power
-According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the power available to the laptop. Unless you have a specific Dell Model, you should not need the 240W power supply, as the 100W limit can only be waived by Dell's proprietary USB-PD protocols. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol. A higher-power PSU may, however, be useful if you use the rear USB-C port to charge a second device.
+According to the manual, the Dock does not accept 130W power supplies. However, viable power options are 130W, 180W, or 240W. The power supply limits the power available to the laptop. Unless you have a specific Dell Model, you shouldn't need the 240W power supply, since Dell's proprietary USB-PD protocols are the only way to waive the 100W limit. Power limits are 40-60W with a 130W PSU, 60-90W with a 180W PSU, and up to 130W with a 240W PSU. The Dock identifies the connected power supply through a [one-wire](https://hclxing.wordpress.com/2014/02/06/hacking-the-dell-laptop-power-adapter/) protocol. A higher-power PSU may help if you use the rear USB-C port to charge a second device.
 
 ### 10. 	3.5 mm Speaker-out
 It works well but may be too sensitive to RF interference, such as from mobile phones (due to missing shielding). On Macs, you need to edit the advanced MIDI/Audio device config to add the second (either front or back) stream to the outputs in the quick bar at the top right. See [below](#line-out-on-mac) for some quick instructions.
 
 ### 11. 	Dell Docking Station connector 
-Dell has a proprietary connection to the USB Type-C port on the PC. The light does not turn on on MacBooks, but it still works and charges. Some users say the TB16 will deliver only up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems as well. The Dock negotiates over USB-PD the quantity it can deliver to the desktop, and when attached, it only reports a programmable power supply (PPS) with a maximum current of 3A and a voltage range of 5 to 19.5V (the Dock's power supply voltage).
+Dell has a proprietary connection to the USB Type-C port on the PC. The light does not turn on on MacBooks, but it still works and charges. Some users say the TB16 will deliver only up to 60W (20V @3A) for non-Dell systems. Unfortunately, this seems true and applies to new Dell systems as well. The Dock negotiates over USB-PD how much power it can deliver to the desktop, and when attached, it reports only a programmable power supply (PPS) with a maximum current of 3A and a voltage range of 5 to 19.5V (the Dock's power supply voltage).
 
 (These examples use the Linux package `lmsensors` and the command `sensors`)
 ```
@@ -464,7 +464,7 @@ Adapter: ISA adapter
 in0:          19.50 V  (min =  +5.00 V, max = +19.50 V)
 curr1:         3.00 A  (max =  +3.00 A)
 ```
-Dell likely uses proprietary information in the extended information PDO of USB-PD to identify its systems and deliver more than 3A. Even if I attach a new Dell system, it won't report more than 3A max. By the way, 3A is the maximum USB-C power limit under default specifications. For more electrical current, you need electronics and wiring capable of handling it. It makes sense that Dell limits it to 3A.
+Dell likely uses proprietary information in the extended information PDO of USB-PD to identify its systems and deliver more than 3A. Even if I attach a new Dell system, it won't report more than 3A max. By the way, 3A is the maximum USB-C power limit under default specifications. To handle more current, you need electronics and wiring capable of supporting it. It makes sense that Dell limits it to 3A.
 
 If I connect an Apple adapter, I get the following output.
 ```
@@ -472,7 +472,7 @@ Adapter: ISA adapter
 in0:          20.00 V  (min =  +5.00 V, max = +20.00 V)
 curr1:         3.00 A  (max =  +4.70 A)
 ```
-However, like in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard laptops and ultrabooks (non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max CPU, and she uses it regularly with no issues. The only difficulty I noted is that the Mac won't charge when the battery is completely drained. This glitch, however, might be due to the high power required to charge from such a low level. The `Cable PD` firmware is likely responsible for this negotiation mechanism, assuming that PD stands for power delivery, as in USB-PD. I will investigate.
+However, like in my case, where the laptop doesn't require more than 3A, 60W should be enough for most standard laptops and ultrabooks (non-gaming, etc.). I also tested it with my wife's MacBook Pro 16" with an M2 Max CPU, and she uses it regularly with no issues. The only difficulty I noted is that the Mac won't charge when the battery is completely drained. This glitch, however, might be due to the high power required to charge from such a low level. The `Cable PD` firmware likely handles this negotiation mechanism, assuming PD stands for power delivery, as in USB-PD. I will investigate.
 
 #### Other uses of this connector
 
@@ -493,10 +493,10 @@ Dell WD15, TB15, and TB16 may be shipped with one of these versions (source: del
 The first cable applies only to WD15, while the second works only for the Thunderbolt versions. Check your version to see if flashing the cable firmware may improve your dock's functionality.
 
 ### 12. 	Headset Jack
-The front jack is useful for wired earplugs and quick video calls. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects if a jack is not plugged in and removes it from the output list.
+The front jack is useful for wired earplugs and quick video calls. Linux works without a problem. Since Ubuntu LTS 24.04, it also detects when a jack isn't plugged in and removes it from the output list.
 
 ### 13. 	USB 3.0 w/PowerShare
-This valid quick-access front port has always-on power. It is ideal for charging phones or plugging hungry devices. It also works at full power without connecting a laptop, so you can draw 7.5W with or without registering to the hub. I also use it to charge random stuff around the house, which doesn't even use the USB data lines. 
+This valid quick-access front port has always-on power. It is ideal for charging phones or plugging in hungry devices. It also works at full power without connecting a laptop, so you can draw 7.5W with or without registering to the hub. I also use it to charge random stuff around the house, which doesn't even use the USB data lines. 
 
 ### 14. 	USB 3.0
 As above, but without always-on power and a typical max of 4.5W, the device must register first to pull the power.
@@ -511,20 +511,20 @@ It works with Dell, and it is the same as the power button. No luck otherwise.
 
 ## Video outputs and resolutions
 
-The device has three video sources: MST-1's ports, MST-2's ports, and the TB3 port on the back. Each can deliver 3840x2160 (4K) @ 60Hz. While chip-wise, 3x4k @ 60Hz is possible, upstream bandwidth limits cap such a configuration to 1x @ 60Hz + 2x @ 30Hz (see [Architecture and bandwidth model](#architecture-and-bandwidth-model)). We need to clarify how using the TB3 port for video affects MST performance. (I will test as soon as I have a TB3 monitor) The possible graphics mode table lists only single- and dual-screen configurations for USB-C, with no configurations listed for Thunderbolt mode. Note: an attached USB-C display steals one of the MST streams. 
+The device has three video sources: MST-1's ports, MST-2's ports, and the TB3 port on the back. Each can deliver 3840x2160 (4K) @ 60Hz. While the chip supports 3x4K @ 60Hz, upstream bandwidth limits cap this configuration to 1x @ 60Hz + 2x @ 30Hz (see [Architecture and bandwidth model](#architecture-and-bandwidth-model)). We need to clarify how using the TB3 port for video affects MST performance. (I will test as soon as I have a TB3 monitor) The possible graphics mode table lists only single- and dual-screen configurations for USB-C, with no configurations listed for Thunderbolt mode. Note: an attached USB-C display steals one of the MST streams. 
 
-Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST's ports are in use, the output either halves the frequency (e.g., 3840x2160@30Hz) or reduces the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most, three monitors may be in operation simultaneously. Unique modes are possible with proprietary Dell hardware. Frequency-wise, Users report successful output at up to 1080p@165Hz (the monitor's max). See the following screenshot from the Dell TB Docks 3/4 user manual (source: dell.com):
+Each MST device serves two ports: DP and VGA for MST-1 and mini-DP and HDMI for MST-2. If both MST ports are in use, the output either halves the frequency (e.g., 3840x2160@30Hz) or reduces the resolution to 2560x1440@60Hz. VGA may be limited to 2048x1280. However, due to bandwidth and software/graphics card limits, at most three monitors may operate simultaneously. Proprietary Dell hardware supports unique modes. Frequency-wise, Users report successful output at up to 1080p@165Hz (the monitor's max). See the following screenshot from the Dell TB Docks 3/4 user manual (source: dell.com):
 
 ![Resolutions screen](images/resolutions.png)
 
 ### Architecture and bandwidth model
 
-The TB16 uses DP 1.2-class video paths on its dock outputs (see the Dell TB16 docs and the resolution table). The Alpine Ridge TB3 generation used here supports two DP inputs to be routed through the TB controller (`DisplayPort 1.2`, `Port Configuration: Dual`), i.e., architecturally up to `2 x (HBR2 x4)` from the host to the dock. In practice, this means the dock can usually handle combinations like `1x 4K@60 + 2x 4K@30` (host/monitor-dependent), but not `3x 4K@60`, as that would require three DP flows. At the same time, the actual supported flows also depend on the upstream TB controller. If your laptop does not support two DP streams per port, you cannot use two MST devices at the same time, e.g., no DP and mDP monitors at the same time.
+The TB16 uses DP 1.2-class video paths on its dock outputs (see the Dell TB16 docs and the resolution table). The Alpine Ridge TB3 generation used here supports two DP inputs to be routed through the TB controller (`DisplayPort 1.2`, `Port Configuration: Dual`), i.e., architecturally up to `2 x (HBR2 x4)` from the host to the dock. In practice, this means the dock can usually handle combinations like `1x 4K@60 + 2x 4K@30` (host/monitor-dependent), but not `3x 4K@60`, as that would require three DP flows. At the same time, the actual supported flows also depend on the upstream TB controller. If your laptop doesn't support two DP streams per port, you cannot use two MST devices at the same time (e.g., no DP and mDP monitors at the same time).
 
-A reference architecture sketch by Phiarc (community reverse engineering [Lenovo Thunderbolt 3 Dock block diagram](https://commons.wikimedia.org/wiki/File:Lenovo_Thunderbolt_3_Dock_40AC_block_diagram.svg)) shows how a MST VMM3320 can handle two DisplayPorts, a VGA and an HDMI connector all in one device; this also matches the leaked specs for a VMM5320, the chip's sucessor for DP1.4 and HDMI 2.x. The Dell dock instead used a VMM3320 with native VGA and a VMM3330 with native HDMI. A plausible reason for separate VMM3320/VMM3330 paths is to avoid one shared MST becoming the bottleneck for all legacy ports. It makes the design mode expensive, but allows now for higher throughput.
+A reference architecture sketch by Phiarc (community reverse engineering [Lenovo Thunderbolt 3 Dock block diagram](https://commons.wikimedia.org/wiki/File:Lenovo_Thunderbolt_3_Dock_40AC_block_diagram.svg)) shows how a MST VMM3320 can handle two DisplayPorts, a VGA and an HDMI connector all in one device; this also matches the leaked specs for a VMM5320, the chip's sucessor for DP1.4 and HDMI 2.x. The Dell dock instead used a VMM3320 with native VGA and a VMM3330 with native HDMI. A plausible reason for separate VMM3320/VMM3330 paths is to avoid one shared MST becoming the bottleneck for all legacy ports. It makes the design more expensive, but allows for higher throughput now.
 
 > [!NOTE]
-> Dell documents a 5K (5120x2880) limitation on TB16 over dual DP/mDP (first one in single display list) for some systems with switchable graphics as a design limitation, with workarounds such as disabling switchable graphics (where supported) or using TB3-to-dual-DP adapters (KB `000175286`).
+> Dell documents a 5K (5120x2880) limitation on TB16 over dual DP/mDP (the first one in the single-display list) for some systems with switchable graphics as a design limitation, with workarounds such as disabling switchable graphics (where supported) or using TB3-to-dual-DP adapters (KB `000175286`).
 
 A laptop + Dock can support up to 4 screens (panels) if your graphics adapter supports it. On `i915` compatible systems, you can check how many displays your card supports with
 ```
@@ -532,7 +532,7 @@ grep "CRTC" /sys/kernel/debug/dri/<PCI-address>/i915_display_info
 ```
 Where `<PCI-address>` is the address shown using `lspci`, escaped, e.g., `0000\:00\:02.0`. Other graphics adapters should have similar ways to test this.
 
-As said previously, Dell states that the Dock does not support HDCP; however, the kernel reports HDCP 1.4. I've tested it on TubiTV with 720p and 1080p movies over HDMI, and it works correctly, using about 4 MB/s as expected. Other streaming services, such as Hulu and Netflix, require HDCP 2.x for its stronger protections and thus cap the output at 576p for our dock.
+As said previously, Dell states that the Dock does not support HDCP; however, the kernel reports HDCP 1.4. I've tested it on TubiTV with 720p and 1080p movies over HDMI, and it works correctly, using about 4 MB/s as expected. Other streaming services, such as Hulu and Netflix, require HDCP 2.x for their stronger protections and thus cap the output at 576p for our dock.
 
 ### Tested resolution combinations by me or user feedback
 
@@ -546,23 +546,23 @@ As said previously, Dell states that the Dock does not support HDCP; however, th
 ### Limitations and frequent issues - also by the Laptop
 
 During tests with different monitors and setups, I noticed the following (expanding list):
-- An Apple M2 (not Max, Pro, or Ultra) cannot manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1), and HDMI (MST-2), and all worked, but only one at a time. Even if I closed the laptop lid, with one panel less to manage, the only external screen that worked was the last used one.
-- Similarly, if you have a laptop with an older TB chip, e.g., Intel JHL6240, the connection does not support two DP streams, thus you can use only one of the MSTs at a time. When switching between MSTs, you may also need to power off the Dock completely first.
+- An Apple M2 (not Max, Pro, or Ultra) cannot manage more than one external monitor at a time. I tried to use USB-C, DisplayPort (MST-1), and HDMI (MST-2), and all worked, but only one at a time. Even with the laptop lid closed and one panel less to manage, the only external screen that worked was the last one used.
+- Similarly, if you have a laptop with an older TB chip, e.g., Intel JHL6240, the connection does not support two DP streams; thus, you can use only one of the MSTs at a time. When switching between MSTs, you may also need to power off the Dock completely first.
 - The Synaptics MSTs apparently support their patented ViewXpand™ technology, meaning you can use two monitors connected to the same MST, and it will use only one pane (stream) as if it were SST, a DP v1.1a mode-switch feature => may help with the problem above (to test)
 - A WD15 Dock, also with the Universal Cable, uses the DisplayPort alternate mode, capping throughput at 10Gbit, and thus limiting screen number and resolutions (see table above).
-- Attaching a display to USB-C (not sure about TB displays) effectively "steals" one of the MSTs, i.e., the one not in use. If both are in use, the USB-C display is not activated. This limitation is due to the number of DP flows available from the host to the dock, which is capped at 2 by the installed Thunderbolt architecture.
-- The mDP is a hard one to make work. I did multiple flashes and reboots on one dock to finally get it to go, in different orders for MST, Cable, and Dock. I don't really know what and why, but not every Dock has the mDP working right away. Port function seems quite inconsistent. I have three docks, one I use with mDP, one with HDMI and VGA, and the last with USB-C. On the  first two, all ports now work. On the third, however, mDP won't work, even after many retries. I will investigate.
+- Attaching a display to USB-C (not sure about TB displays) effectively "steals" one of the MSTs, i.e., the one not in use. If both are in use, the USB-C display won't activate. This limitation is due to the number of DP flows available from the host to the dock, which the installed Thunderbolt architecture caps at 2.
+- The mDP is a hard one to make work. I did multiple flashes and reboots on one dock to finally get it to go, in different orders for MST, Cable, and Dock. I don't really know what and why, but not every Dock has the mDP working right away. Port function seems quite inconsistent. I have three docks: one I use with mDP, one with HDMI and VGA, and the last with USB-C. On the  first two, all ports now work. On the third, however, mDP won't work, even after many retries. I will investigate.
 - Sometimes handshakes go wrong. What does that mean? It means, e.g., that you attach a powered system to the powered dock, particularly after a write, and the system just won't recognize, let's say, HDMI. If you attach another laptop, without changing anything, the port works. Once you reboot the dock and the first system, the port finally works here, too. In short, the whole system is a bit wobbly.
-- MacOS does [NOT support MST configuration](https://www.reddit.com/r/mac/s/ZYVqpMWHU1). This means, display setups like 4k@60Hz or maybe even two displays on the same MST may not work on a Mac.
+- MacOS does [NOT support MST configuration](https://www.reddit.com/r/mac/s/ZYVqpMWHU1). This means display setups like 4k@60Hz, or even two displays on the same MST, may not work on a Mac.
   
 ## Audio outputs and resolutions
 
-As discussed above, the Realtek audio controller in the Dock comprises two ICs: one for interfacing and headphone amplification, and the other for media and ADC/DAC stream decoding. The front connector for a headset features hardware detection and may not appear in your mixer settings unless it is connected. The rear provides a line output connector that provides no amplification. Use it to connect your stereo/hifi device, or, as in my case, an external headphone amplifier.
+As discussed above, the Realtek audio controller in the Dock comprises two ICs: one for interfacing and headphone amplification, and the other for media and ADC/DAC stream decoding. The front headset connector has hardware detection and may not appear in your mixer settings unless it is connected. The rear provides a line output connector that provides no amplification. Use it to connect your stereo/hifi device, or, as in my case, an external headphone amplifier.
 
 
 ### Audio resolutions
 
-If we check the hardware parameters of the device, we see the following (run `cat /proc/asound/card*/pcm*p/sub0/hw_params` in terminal while output is selected)
+If we check the hardware parameters of the device, we see the following (run `cat /proc/asound/card*/pcm*p/sub0/hw_params` in the terminal while output is selected)
 ```
 access: MMAP_INTERLEAVED
 format: S24_3LE
@@ -573,7 +573,7 @@ period_size: 512
 buffer_size: 32768
 ```
 
-This output indicates a hardware configuration at 48 kHz, 24-bit. While it is still unclear whether we can change these parameters, as the sibling chips' specifications list a default of 48 kHz, with a possible configuration up to 192kHz, the change will require firmware adaptation, which is out of scope.
+This output indicates a hardware configuration at 48 kHz, 24-bit. It's still unclear whether we can change these parameters, as the sibling chips' specifications list a default of 48 kHz, with a possible configuration up to 192kHz; any change would require firmware adaptation, which is out of scope.
 
 ### Line out on Mac
 
@@ -584,4 +584,4 @@ Macs detect the audio chip as a single card with four streams, twice left and ri
 * Add the Realtek card, and then on the right, choose the second streams for left and right for audio output
 * Optionally, add a second device with a microphone, e.g., the Webcam microphone
 
-Now, you can select the line out by opening the settings top-right and clicking the arrow on the right corner of the sound settings.
+Now, you can select the line-out by opening the settings in the top-right and clicking the arrow in the right corner of the sound settings.
