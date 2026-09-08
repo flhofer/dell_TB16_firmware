@@ -3,7 +3,7 @@
         width=100px
         title="My Image"
         alt="Buy me a ☕?"
-    />](https://www.paypal.com/donate/?hosted_button_id=7X35TPY8WY5UJ)
+    />](https://www.paypal.com/donate/?hosted_button_id=7X35TPY8WY5UJ) Buy me a ☕?
 
 # Contents
 - [Dell Firmware flashing instructions](#dell-tb16-firmware)
