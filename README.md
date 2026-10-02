@@ -232,6 +232,27 @@ It will prompt you to select the correct device to flash. Select the device name
 
 I kept the latest and the previous versions in this repository for a straightforward reason: legacy devices. The main difference between v16.xx NVMs and the v2x.xx NVMs is that the latter doesn't allow communication without a security authorization mechanism. This means legacy devices (first-gen TB3 and Thunderbolt 1-2 adapters) can no longer communicate with updated controllers. With v16.xx NVM, selecting a security mode in the BIOS was still possible, optionally disabling Thunderbolt security. In short, unless you want to connect to a legacy Thunderbolt device upstream or downstream, use the latest v2x.xx firmware. It is less buggy and has a better user experience (see table above).
 
+### Anomalies in flashing
+
+The following errors may show and depend on proper detection and/or authorization (Check the BIOS settings as well). I could not flash this dock until I set `Type-C dock passthrough` and `always allow Type-C Dell...` in the BIOS.
+
+```
+├─Thunderbolt Cable:
+│     Device ID:          ec48dad54c4415479874bc52795c1fcad78b1293
+│     Current version:    26.06
+│     Vendor:             Dell (THUNDERBOLT:0x00D4, TBT:0x00D4)
+│     Update Error:       • not authorized
+│     GUIDs:              6634407c-6706-5fe9-907e-37efcbc8098a ← THUNDERBOLT\VEN_00D4&DEV_B051
+│                         b4fd3cdf-4e3a-5090-a583-45367cfd6421 ← TBT-00d4b051
+│                         8564922d-2c7a-5169-9cff-d3e73f0bd807 ← TBT-00d4b051-controller0-1
+│     Device Flags:       • System requires external power source
+│                         • Device stages updates
+│                         • Updatable
+│                         • Signed Payload
+│                         • Can tag for emulation
+```
+Also, these firmwares are staged; that means they are not flashed and loaded (don't know which order or when) and are not available until repower, although the firmware number updates. Leave some slack after writing.
+
 ### Alternate NVMs (untested)
 
 While searching for better bins, I found some hidden images in one of the flashing tools that don't include the TB3 security code. This means that if you successfully flash the dock, you can communicate downstream with legacy devices that don't support this function. A TB3-to-TB2 adapter is one such device. Apple Macs have special firmware to make those work; PCs need a special NVM. Unfortunately, you cannot flash these firmware files with a TB security-enabled device. If you do, the flashing starts but returns an error after a minute. Please report back if you manage to flash the firmware.
