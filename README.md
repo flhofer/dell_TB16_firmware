@@ -159,7 +159,7 @@ Compare the output with the values in `bins/SHA256SUMS` before flashing.
 ## Flashing instructions
 
 I will try to find alternative flashing methods for all systems to replace the original Dell tool, which is limited and buggy. Also, while the original tool works only with Dell PCs, these instructions should work on all Thunderbolt-equipped systems.
-For Linux recovery and diagnostics helper scripts, see [`tools/scripts/README.md`](tools/scripts/README.md).
+For Linux recovery and diagnostics helper scripts, see [`tools/scripts/README.md`](tools/scripts/README.md). If you intend to use Windows for MST and ASMedia flashing, review the [Prepare for Windows flashing](#prepare-for-windows-flashing) chapter first.
 
 ### Recovery if flashing appears to fail
 
@@ -314,6 +314,21 @@ Furthermore, Dell messed up the firmware packaging for 1.05. The dock companions
 ### Synaptics MST flashing on non-Dell systems
 
 I added the Multi-Transport-Stream flash utility distributed with the official packages above to the folder. This is mainly because the flasher aborts if it detects a system that isn't Dell. You will find two EXEs, both supposedly `3.12.002`, but one was distributed in the TB15/16/18DC package as `1.05`, and the other in the WD15 package as `1.07`. They differ, so I added both. I guess the latter has the program code to write the MST firmware over USB in addition to TB- which would explain the 0.5MB extra. The files were designed to run as a command-line tool on Windows 10 and should flash without active DP streams. So keep that in mind when preparing for a flash (i.e., Rufus). **TBC with short command example**
+
+### Prepare for Windows flashing
+
+If you intend to use Windows tools, including the Official ones and Windows-To-Go versions made with Rufus, consider the following points:
+
+* It works best with Windows 10 64-bit
+* Ideally, perform all updates before you begin
+* Make sure an up-to-date Thunderbolt driver is installed
+* If you intend to flash or test the MST Video outputs, install an up-to-date official driver - NOT Windows. Otherwise, it will throw a `Could not initialize GPU library` error.
+
+You will notice proper function if in the Task Manager (CTRL+Shift+ESC) you see something like this:
+
+![Taskmanager GPU](images/GPU_diver_lib.png)
+
+After that, the MST tools might still throw a `Could not find MST Hub IC` error, but that is often solved with power cycles and replugging.
 
 # The Dell TB16 Dock
 
