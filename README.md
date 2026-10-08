@@ -1,9 +1,20 @@
-[<img
+
+## This is still a work in progress!!
+
+[<img align="right"
         src="https://github.com/flhofer/flhofer/blob/main/images/coffee.png"
-        width=100px
+        width=200px
         title="My Image"
         alt="Buy me a ☕?"
-    />](https://www.paypal.com/donate/?hosted_button_id=7X35TPY8WY5UJ) Buy me a ☕? -- Thanks to all the sponsors :heart: 
+    />](https://www.paypal.com/donate/?hosted_button_id=7X35TPY8WY5UJ)
+
+I’m currently working on:
+- :electric_plug: Detection and repair of non-functional ports via Synaptics Debug Tools
+- :floppy_disk: Reconfiguring Flash due to a malfunction in said tool
+- :clipboard: Prerequisites and procedures for Windows flashing using standard tools, not Dell
+- :unlock: Procedures to unlock all features and tests for the USB controller via ASM Debug-Tool
+
+Want to support my efforts? Buy me a ☕? -- Thanks to all the sponsors :heart: 
 
 # Contents
 - [Dell Firmware flashing instructions](#dell-tb16-firmware)
