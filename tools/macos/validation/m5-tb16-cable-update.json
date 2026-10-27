@@ -12,7 +12,7 @@
   "active_bank_bytes": 516096,
   "css_header_write": false,
   "firmware_written": true,
-  "activation_verified": false,
+  "activation_verified": true,
   "inactive_readback_available": false,
   "backup_scope": "active bank only; recovery is not implemented",
   "backup_sha256": "8c06495af6bb04c838986e61c115fab0a556a787e6ed9cc2155502e3bd3c2953",
@@ -23,12 +23,23 @@
   "authentication_attempted": true,
   "authentication_ioreturn": "0x00000000",
   "authentication_status": 0,
-  "next_step": "Activation requires a dock power-cycle and a fresh active NVM version read",
-  "validation_phase": "authentication succeeded; awaiting physical power-cycle and active-header verification",
+  "next_step": "Dock NVM 27.00 and display-chip access remain separate work",
+  "validation_phase": "activation verified after physical power-cycle; HDMI retested without signal",
   "implementation_commit": "1fb317b",
   "started_utc": "2026-10-27T04:57:08Z",
   "host": "M5 MacBook Pro",
   "macos_build": "26A434",
   "dock_controller_updated": false,
-  "hdmi_after_power_cycle": "pending user test"
+  "hdmi_after_power_cycle": "no signal (user report); only internal display detected by macOS",
+  "activated_cable_version": "26.06",
+  "dock_controller_version": "16.00",
+  "accessory_approval_after_power_cycle": "macOS prompted; user allowed connection",
+  "post_activation_backup": {
+    "bytes": 516096,
+    "matching_reads": 2,
+    "sha256": "f417751bcf1f960bb232d0e4377a04c845e1710aff9ee3227d481d3c89e97386",
+    "output": "backups/cable-26.06-active-20261027.backup.bin",
+    "digital_payload_exact_match": true,
+    "digital_payload_bytes_compared": 217088
+  }
 }

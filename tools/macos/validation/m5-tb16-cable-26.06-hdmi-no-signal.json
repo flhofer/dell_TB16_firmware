@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "host": {
+    "macos": "27.0.1",
+    "architecture": "arm64"
+  },
+  "registry": {
+    "tb16_switches": [
+      {
+        "name": "Dell Thunderbolt Cable",
+        "model_id": "0xb051",
+        "rom_version_raw": 38,
+        "eeprom_revision_raw": 26,
+        "display_adapters": [
+          {
+            "Port Number": 8,
+            "Adapter Type": 917762,
+            "Required Bandwidth Allocated": 0,
+            "Maximum Bandwidth Allocated": 0
+          }
+        ]
+      },
+      {
+        "name": "Dell Thunderbolt Dock - Unsupported",
+        "model_id": "0xb054",
+        "rom_version_raw": 22,
+        "eeprom_revision_raw": 16,
+        "display_adapters": [
+          {
+            "Port Number": 8,
+            "Adapter Type": 917762,
+            "Required Bandwidth Allocated": 1,
+            "Maximum Bandwidth Allocated": 1
+          },
+          {
+            "Port Number": 10,
+            "Adapter Type": 917761,
+            "Required Bandwidth Allocated": 161,
+            "Maximum Bandwidth Allocated": 161
+          }
+        ]
+      }
+    ],
+    "thunderbolt_display_outputs": [
+      {
+        "IOObjectClass": "AppleThunderboltDPOutAdapterCM",
+        "HPD State": true,
+        "DP State": 2,
+        "Delegate": "Legacy",
+        "Established DP Lane Count": 2,
+        "Established DP Link Rate": 2,
+        "Established DP Bandwidth": 160
+      },
+      {
+        "IOObjectClass": "AppleThunderboltDPOutAdapterCM",
+        "HPD State": false,
+        "DP State": 0,
+        "Delegate": "Legacy"
+      }
+    ],
+    "asmedia_driver_attached": true,
+    "usb_devices_below_asmedia": [
+      "USB 10/100/1000 LAN",
+      "USB Audio",
+      "USB2807 Hub",
+      "USB5807 Hub"
+    ],
+    "ioi2c_interfaces_with_capabilities": 0,
+    "ioi2c_native_aux_interfaces": 0,
+    "iodp_devices": [
+      {
+        "class": "DCPDPDeviceProxy",
+        "location": "Embedded",
+        "unit": 0
+      }
+    ],
+    "external_iodp_device_count": 0
+  },
+  "system_information": {
+    "thunderbolt_dell_devices": [
+      {
+        "name": "Dell Thunderbolt Cable",
+        "firmware_reported": "26.26",
+        "mode": "thunderbolt_three"
+      },
+      {
+        "name": "Dell Thunderbolt Dock - Unsupported",
+        "firmware_reported": "16.16",
+        "mode": "thunderbolt_three"
+      }
+    ],
+    "displays": [
+      {
+        "name": "Color LCD",
+        "connection": "spdisplays_internal",
+        "online": "spdisplays_yes"
+      }
+    ]
+  },
+  "interpretation": [
+    "Monitor wake/hot-plug is not evidence of an active video stream.",
+    "An Unsupported device name alone does not prove Thunderbolt traffic is blocked.",
+    "Driver/hub enumeration does not prove usable USB peripherals.",
+    "No External IODP device means the private read backend has no dock target.",
+    "Registry and System Information are separate snapshots; hot-plug can change state."
+  ]
+}

@@ -60,9 +60,9 @@ provides read-only DPCD diagnostics for external devices exposed by macOS.
 
 The port now includes experimental Thunderbolt Cable/Dock NVM staging and
 authentication, with offline update plans and mandatory fresh backups. NVM
-Cable NVM 26.06 staging and authentication have now succeeded on one M5/TB16;
-activation and HDMI operation still require verification. Dock NVM writing
-has not been tested on hardware.
+Cable NVM 26.06 staging, authentication and activation have now succeeded on
+one M5/TB16. HDMI still had no signal after that update. Dock NVM writing has
+not been tested on hardware.
 There is no ASMedia USB writer. The tested M5/TB16 HDMI setup exposes no
 external IODP device, so
 the new diagnostic backend cannot yet reach its display chips. Lower-level
