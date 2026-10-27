@@ -2,7 +2,7 @@
 
 This is an initial native macOS implementation of the TB16 **Synaptics MST**
 update path. It is not a complete macOS replacement for the Linux/Windows
-procedure. **No physical TB16 has been used to validate this implementation.**
+procedure. **Firmware writing has not been validated on a physical TB16.**
 Do not treat passing software tests or a successful build as evidence that a
 firmware write will work on your Mac.
 
@@ -20,10 +20,11 @@ chips, so it could address the VMM3330 part of an HDMI problem once its
 transport is validated. It cannot fix a Thunderbolt link that does not
 enumerate, and it cannot yet perform the repository's complete update sequence.
 
-On Apple Silicon, the next development milestone is detecting a connected
-TB16 and obtaining repeatable read-only VMM3330 DPCD access. The current
-IOI2C backend has not demonstrated this. It may require a separate Apple
-Silicon transport before the EEPROM/update protocol can be used on those Macs.
+On Apple Silicon, the next development milestone is obtaining repeatable
+read-only VMM3330 DPCD access. A private IODP read backend now exists, and its
+underlying API was validated with a bounded capability read on the M5's
+built-in panel. The connected TB16 still exposes no external IODP device,
+so neither backend can currently reach its display chips on this setup.
 
 After HDMI, validate USB, Ethernet, audio, charging and sleep/wake. The
 ASMedia update concerns the USB-controller path and is separate from the
@@ -51,7 +52,7 @@ attempting display-chip access.
 
 | Component | macOS implementation | Remaining work |
 | --- | --- | --- |
-| VMM3320 / VMM3330 MST | Experimental IOI2C native AUX backend and Leaf update protocol | Validate AUX reads, EEPROM access, erase/write and power-cycle on hardware |
+| VMM3320 / VMM3330 MST | Experimental IOI2C update backend; private IODP read-only backend | Obtain external device access on the tested M5; validate backup and writing on hardware |
 | Thunderbolt Cable / Dock NVM | No writer | Implement and validate macOS switch NVM access and authentication |
 | ASMedia ASM1042A | No writer | Implement privileged PCIe register access and validate the flashing protocol |
 | TI PD / EC | No writer | Identify and implement their update transports |
@@ -63,12 +64,11 @@ attempting display-chip access.
   `kIOI2CDisplayPortNativeTransactionType` capability. The backend checks this
   capability and refuses interfaces without it. Driver support varies; Intel
   Macs are the intended first hardware validation target, not confirmed supported hosts.
-- **Apple Silicon support is not established.** The bridge compiles for arm64,
-  but Apple Silicon display drivers may expose no usable IOI2C interfaces.
-  No private IOAV/IOPD API fallback has been implemented. An empty `list`
-  means this backend cannot proceed on that setup; `sudo` does not create a
-  missing transport. An empty list with no dock connected does not prove the
-  same Mac cannot expose an endpoint when a dock and display are attached.
+- **Apple Silicon firmware updating is not established.** Display drivers may
+  expose no usable IOI2C interfaces. The optional `iodp` backend uses private
+  APIs for read-only diagnostics, requires an external DP device exposed by
+  macOS, and cannot issue remote-control or firmware writes. `sudo` does not
+  create a missing transport/device. See the diagnostic commands below.
 - A powered TB16 connected directly over Thunderbolt, with an active monitor
   connected to the MST path being tested: DP/VGA for VMM3320, mDP/HDMI for VMM3330.
   Test one path at a time to make target identification easier.
@@ -118,6 +118,58 @@ that EEPROM access will succeed. A nonzero exit status means a check failed.
 If opening an advertised interface returns a permission error, retry the same
 probe with `sudo`. Unsupported-mode errors and missing capabilities cannot
 be fixed by running as root. Do not disable SIP for this tool.
+
+## Apple Silicon read-only diagnostics
+
+```sh
+python3 tools/macos/tb16.py diagnose
+python3 tools/macos/tb16.py list --backend iodp --experimental
+```
+
+`diagnose` needs no compiled bridge, root access or third-party packages. It
+reports the dock switches, raw version properties, HDMI/DP adapter hot-plug
+and link metadata, ASMedia driver and USB children, display devices and AUX
+availability. It filters out UIDs, serial-number properties, raw EDID and DROM
+before printing JSON. Nothing is sent off the Mac. The registry and System
+Information are collected separately, so hot-plug may change state between them.
+
+The `iodp` list shows devices advertising `IODPDeviceUserInterfaceSupported`,
+including embedded devices for diagnostic visibility. The native bridge
+refuses to open embedded or unknown-location devices. An embedded-only list
+does not mean that the dock's display chips were read successfully.
+
+If an **External** device appears, use its ID from that backend's list:
+
+```sh
+python3 tools/macos/tb16.py read-dpcd --backend iodp --experimental \
+  --device 0x100001234 --address 0x500 --length 16
+python3 tools/macos/tb16.py probe --backend iodp --experimental --device 0x100001234
+```
+
+The example ID is a placeholder. `read-dpcd` performs only bounded reads
+(1-256 bytes, split into packets of at most 16 bytes). At `0x500` it can obtain
+the branch identification area containing the Synaptics chip/version fields,
+if the selected external device actually provides them. `probe` additionally
+checks the TB16 chip ID and remote-control capability using reads only.
+Neither command enables remote control.
+
+The backend resolves `IODPDeviceCreateWithService` and `IODPDeviceReadDPCD`
+at runtime. Their four-argument read ABI was inspected in the local IOKit
+binary on macOS 27.0.1 arm64e. One 16-byte read at DPCD address zero on the
+built-in panel returned `141ec44100000180020000000f090000` with success during
+development. This was a control read for API validation; the shipping backend
+does not permit using the built-in panel as a target. No external read has
+yet been validated. The ABI is private and may change on other macOS versions.
+The private API returns a status without exposing an actual byte count;
+it is therefore not presented as a verified firmware-update transport.
+The existence of Apple Silicon DPCD diagnostics is also documented by the
+[BetterDisplay developer](https://github.com/waydabber/BetterDisplay/issues/5496).
+This tool does not require BetterDisplay.
+
+There is deliberately no native IODP write entry point. `backup` and
+`flash --write` with `--backend iodp` are rejected before opening a device,
+because even EEPROM backup requires remote-control register writes. The
+existing experimental IOI2C update path is separate.
 
 ## EEPROM backup and experimental write
 
@@ -202,16 +254,41 @@ not working. Read-only inspection found:
   also does not establish usable downstream USB peripherals.
 - The updater's `list` returned no IOI2C endpoints, both with and without the
   dock connected. The current AUX backend cannot access either MST chip on
-  this tested configuration. An Apple Silicon transport remains necessary
-  to demonstrate native MST updating on this Mac.
+  this tested configuration.
+- With a monitor on HDMI, including after reconnecting the upstream
+  Thunderbolt cable with dock power and HDMI left connected, the monitor
+  still had no signal. The Thunderbolt output adapter reported both HPD
+  states true, two established DP lanes and link-rate value `2`. These are
+  driver-reported metadata, not proof of an end-to-end active video stream.
+- The private IODP backend enumerated only the embedded display device;
+  System Information listed only `Color LCD`. The external controllers
+  existed, but there was no external DP **device** for the read API to open.
+  The tool correctly refused to open the embedded device as an updater target.
+- USB Ethernet and USB Audio also enumerated below the ASMedia controller
+  during this session. This is stronger evidence of enumeration than the
+  earlier hub-only observation, but still does not verify peripheral operation.
+- The user confirmed that the same HDMI cable and monitor display an image
+  when connected directly to the Mac. The no-signal result is specific to
+  the dock path in this test; the exact failing component is still unknown.
+
+The filtered post-reconnect report is saved in
+[`validation/m5-tb16-hdmi-no-signal.json`](validation/m5-tb16-hdmi-no-signal.json).
 
 This observation does not identify the cause of the HDMI failure, validate
 firmware writes, or establish that an MST update alone would resolve it.
 
+The next transport investigation is an access path available before a working
+external display exists. Static inspection of the local macOS 27.0.1 kernel
+identified a Thunderbolt DP output user client, but its exposed methods are
+link/HPD/mux controls rather than a direct AUX read operation. The generic
+Thunderbolt user client has configuration-read and IECS/I2C command methods;
+their permission model and wire arguments still need validating before any
+use. No guessed kernel method selectors or commands were sent to hardware.
+
 Before describing this as a working macOS updater, collect evidence for:
 
-1. IOI2C enumeration and repeatable DPCD reads with a connected TB16 on each
-   proposed host/graphics-driver configuration.
+1. Repeatable DPCD reads from the dock on each proposed host/graphics-driver
+   configuration, including an access path that works when HDMI has no signal.
 2. Correct VMM3320/VMM3330 selection and repeatable full EEPROM backups.
 3. A successful write on recoverable test hardware, verified readback and the
    expected running firmware after a power-cycle.
@@ -225,7 +302,7 @@ checked against fwupd commit
 This implementation is limited to the two TB16 Leaf chips and the pinned
 03.12.002 image, rather than supporting the other Synaptics families.
 
-The native bridge uses the public SDK
+The IOI2C bridge uses the public SDK
 [`IOI2CInterface.h`](https://github.com/apple-oss-distributions/IOGraphics/blob/76285384ff0ce63965a21b8023bf6d7e447fcc19/IOGraphicsFamily/IOKit/i2c/IOI2CInterface.h)
 and follows Apple's
 [`IOFramebuffer` native AUX request layout](https://github.com/apple-oss-distributions/IOGraphics/blob/76285384ff0ce63965a21b8023bf6d7e447fcc19/IOGraphicsFamily/IOFramebuffer.cpp#L14624).
