@@ -20,10 +20,15 @@ build/test_nvm_header: tests/test_nvm_header.c thunderbolt.c
 	mkdir -p build
 	$(CC) $(CFLAGS) -framework IOKit -framework CoreFoundation $< -o $@
 
-test: all build/test_aux build/test_thunderbolt build/test_nvm_header
+build/test_nvm_update: tests/test_nvm_update.c thunderbolt.c
+	mkdir -p build
+	$(CC) $(CFLAGS) -framework IOKit -framework CoreFoundation $< -o $@
+
+test: all build/test_aux build/test_thunderbolt build/test_nvm_header build/test_nvm_update
 	./build/test_aux
 	./build/test_thunderbolt
 	./build/test_nvm_header
+	./build/test_nvm_update
 	python3 -m unittest discover -s tests -v
 
 clean:

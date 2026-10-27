@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Experimental native macOS TB16 MST updater. No NVM or ASMedia writer."""
+"""Experimental native macOS TB16 MST/NVM tools. No ASMedia writer."""
 import argparse
 import hashlib
 import json
@@ -46,6 +46,17 @@ def main(argv=None):
     nvm_backup.add_argument("--device", type=device_id, required=True)
     nvm_backup.add_argument("--experimental", action="store_true")
     nvm_backup.add_argument("--output", type=Path, required=True)
+    plan = commands.add_parser("plan-nvm", help="offline NVM update plan from an existing active-bank backup")
+    plan.add_argument("--target", choices=("cable", "dock"), required=True)
+    plan.add_argument("--image", type=Path, required=True)
+    plan.add_argument("--backup", type=Path, required=True)
+    update = commands.add_parser("update-nvm", help="NVM dry run; staging requires --write; auth requires --authenticate")
+    update.add_argument("--device", type=device_id, required=True)
+    update.add_argument("--experimental", action="store_true")
+    update.add_argument("--image", type=Path, required=True)
+    update.add_argument("--backup", type=Path, help="new active-bank backup file required for --write")
+    update.add_argument("--write", action="store_true", help="stage to inactive NVM bank (unvalidated on hardware)")
+    update.add_argument("--authenticate", action="store_true", help="also request authentication once after staging")
     inspect = commands.add_parser("inspect-image", help="validate the bundled raw MST image offline")
     inspect.add_argument("image", nargs="?", type=Path, default=DEFAULT_IMAGE)
     for name in ("probe", "backup", "flash", "read-dpcd"):
@@ -64,8 +75,15 @@ def main(argv=None):
             command.add_argument("--write", action="store_true", help="perform a real EEPROM update")
             command.add_argument("--backup", type=Path, help="new file for a mandatory pre-write backup")
     args = parser.parse_args(argv)
-    if args.command in ("read-tbt-config", "read-nvm-header", "backup-nvm") and not args.experimental:
+    if args.command in ("read-tbt-config", "read-nvm-header", "backup-nvm", "update-nvm") and not args.experimental:
         parser.error(f"{args.command} requires --experimental (private, build-specific kernel ABI)")
+    if args.command == "update-nvm":
+        if args.authenticate and not args.write:
+            parser.error("--authenticate requires --write in the same session")
+        if args.write and args.backup is None:
+            parser.error("--write requires --backup NEW_FILE")
+        if not args.write and args.backup is not None:
+            parser.error("Dry runs do not save a backup; omit --backup or use offline plan-nvm")
     if args.command == "read-tbt-config":
         from thunderbolt import validate_read
         try:
@@ -83,6 +101,36 @@ def main(argv=None):
                                         args.address + args.length > 0x100000):
         parser.error("DPCD address must be 20-bit and length must be 1 to 256 bytes")
     try:
+        if args.command == "plan-nvm":
+            from nvm import plan_update
+            print(json.dumps(plan_update(args.image.read_bytes(), args.backup.read_bytes(),
+                                         0xb051 if args.target == "cable" else 0xb054), indent=2))
+            return 0
+        if args.command == "update-nvm":
+            from nvm import plan_header, update, validate_nvm_image
+            from thunderbolt import Thunderbolt
+            image = args.image.read_bytes()
+            # Hash allowlist before opening a device; exact role is checked below.
+            from nvm import IMAGES
+            if hashlib.sha256(image).hexdigest() not in IMAGES:
+                raise AuxError("Unsupported NVM image; expected a pinned cable/dock image")
+            native = Thunderbolt()
+            endpoint = next((entry for entry in native.endpoints() if int(entry["id"], 0) == args.device), None)
+            if endpoint is None:
+                raise AuxError("Selected TB16 switch is no longer present; enumerate again")
+            model = int(endpoint["model_id"], 0)
+            validate_nvm_image(image, model)
+            with native.open(args.device) as reader:
+                if args.write:
+                    result = update(reader, image, model, args.backup, args.authenticate,
+                                    progress=lambda line: print(line, file=sys.stderr, flush=True))
+                else:
+                    result = {**plan_header(image, reader.nvm_header(), model), "state": "dry_run",
+                              "backup_checked": False, "authentication_attempted": False}
+            print(json.dumps({"device": f"0x{args.device:x}", **result}, indent=2))
+            if result["state"] == "authentication_outcome_unknown":
+                return 2
+            return 1 if result["state"] == "authentication_failed" else 0
         if args.command in ("list-tbt", "read-tbt-config", "read-nvm-header", "backup-nvm"):
             from thunderbolt import Thunderbolt
             thunderbolt = Thunderbolt()

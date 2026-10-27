@@ -1,4 +1,4 @@
-"""Bounded read-only TB16 configuration access. This is not a DPCD/NVM writer."""
+"""Bounded TB16 configuration access and guarded inactive-bank NVM operations."""
 import ctypes as C
 from contextlib import contextmanager
 import fcntl
@@ -40,6 +40,13 @@ class Thunderbolt(Native):
         self.lib.tb16_tbt_nvm_header.restype = C.c_uint32
         self.lib.tb16_tbt_nvm_read.argtypes = [C.c_void_p, C.c_uint32, C.c_void_p, C.c_uint32]
         self.lib.tb16_tbt_nvm_read.restype = C.c_uint32
+        self.lib.tb16_tbt_nvm_stage_begin.argtypes = [C.c_void_p, C.c_uint32, C.c_uint32]
+        self.lib.tb16_tbt_nvm_stage_begin.restype = C.c_uint32
+        self.lib.tb16_tbt_nvm_stage_write.argtypes = [C.c_void_p, C.c_uint32, C.c_void_p, C.c_uint32]
+        self.lib.tb16_tbt_nvm_stage_write.restype = C.c_uint32
+        self.lib.tb16_tbt_nvm_authenticate.argtypes = [C.c_void_p, C.POINTER(C.c_uint32),
+                                                    C.POINTER(C.c_uint32)]
+        self.lib.tb16_tbt_nvm_authenticate.restype = C.c_uint32
 
     def endpoints(self):
         entries, count = C.POINTER(TbtEndpoint)(), C.c_uint32()
@@ -87,8 +94,8 @@ class ConfigReader:
     @contextmanager
     def mailbox(self):
         if os.geteuid() != 0:
-            raise AuxError("Reading the active NVM header requires sudo to submit FLASH_READ "
-                           "to the control mailbox; it does not write firmware")
+            raise AuxError("NVM mailbox access requires sudo; read commands submit FLASH_READ "
+                           "without programming firmware")
         # One root-owned lock for this tool's mailbox operations across processes.
         fd = os.open("/var/run/tb16-macos-nvm.lock",
                      os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
@@ -113,40 +120,74 @@ class ConfigReader:
             return self._nvm_header()
 
     def backup_nvm(self, output_path, progress=lambda line: None):
+        with self.mailbox():
+            info, _ = self._backup_nvm(output_path, progress)
+            return info
+
+    def _active_bank(self, size, progress=lambda line: None):
+        data = bytearray(size)
+        last_percent = -1
+        for address in range(0, size, 64):
+            packet = (C.c_uint8 * min(64, size - address)).from_buffer(data, address)
+            check(self.lib.tb16_tbt_nvm_read(self.handle, address, packet, len(packet)),
+                  f"active NVM read at {address:#x}")
+            percent = (address + len(packet)) * 100 // size
+            if percent // 10 != last_percent:
+                progress(f"{percent}%")
+                last_percent = percent // 10
+        return bytes(data)
+
+    def _backup_nvm(self, output_path, progress):
         output_path = Path(output_path)
         if output_path.exists():
             raise AuxError("NVM backup destination already exists; choose a new file")
-        with self.mailbox():
-            info = self._nvm_header()
-            size = info["active_bank_size"]
-            copies = []
-            for pass_number in (1, 2):
-                data = bytearray(size)
-                last_percent = -1
-                for address in range(0, size, 64):
-                    packet = (C.c_uint8 * min(64, size - address)).from_buffer(data, address)
-                    check(self.lib.tb16_tbt_nvm_read(self.handle, address, packet, len(packet)),
-                          f"active NVM read at {address:#x}")
-                    percent = (address + len(packet)) * 100 // size
-                    if percent // 10 != last_percent:
-                        progress(f"NVM backup pass {pass_number}/2: {percent}%")
-                        last_percent = percent // 10
-                copies.append(bytes(data))
-            if copies[0] != copies[1]:
-                raise AuxError("Active NVM reads differ; no backup saved")
-            fd = os.open(output_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
-            with os.fdopen(fd, "wb") as output:
-                output.write(copies[0])
-                output.flush()
-                os.fsync(output.fileno())
-                # Make the resulting backup readable by the invoking sudo user.
-                if "SUDO_UID" in os.environ and "SUDO_GID" in os.environ:
-                    os.fchown(output.fileno(), int(os.environ["SUDO_UID"]), int(os.environ["SUDO_GID"]))
-            if output_path.read_bytes() != copies[0]:
-                raise AuxError("Saved NVM backup failed verification")
-            return {**info, "output": str(output_path), "bytes": size,
-                    "sha256": hashlib.sha256(copies[0]).hexdigest(), "matching_reads": 2,
-                    "scope": "active NVM bank only; not a complete physical SPI flash dump"}
+        # Caller holds the mailbox lock across backup and subsequent operations.
+        info = self._nvm_header()
+        size = info["active_bank_size"]
+        copies = []
+        for pass_number in (1, 2):
+            copies.append(self._active_bank(size, lambda percent:
+                progress(f"NVM backup pass {pass_number}/2: {percent}")))
+        if copies[0] != copies[1]:
+            raise AuxError("Active NVM reads differ; no backup saved")
+        fd = os.open(output_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+        with os.fdopen(fd, "wb") as output:
+            output.write(copies[0])
+            output.flush()
+            os.fsync(output.fileno())
+            # Make the resulting backup readable by the invoking sudo user.
+            if "SUDO_UID" in os.environ and "SUDO_GID" in os.environ:
+                os.fchown(output.fileno(), int(os.environ["SUDO_UID"]), int(os.environ["SUDO_GID"]))
+        if output_path.read_bytes() != copies[0]:
+            raise AuxError("Saved NVM backup failed verification")
+        return {**info, "output": str(output_path), "bytes": size,
+                "sha256": hashlib.sha256(copies[0]).hexdigest(), "matching_reads": 2,
+                "scope": "active NVM bank only; not a complete physical SPI flash dump"}, copies[0]
+
+    def stage_begin(self, model, size):
+        check(self.lib.tb16_tbt_nvm_stage_begin(self.handle, model, size), "begin inactive NVM staging")
+
+    def stage_write(self, address, data):
+        packet = (C.c_uint8 * len(data)).from_buffer_copy(data)
+        check(self.lib.tb16_tbt_nvm_stage_write(self.handle, address, packet, len(data)),
+              f"inactive NVM write at {address:#x}; authentication not requested; keep dock powered")
+
+    def authenticate(self):
+        status, attempted = C.c_uint32(0xffffffff), C.c_uint32(0)
+        code = self.lib.tb16_tbt_nvm_authenticate(self.handle, C.byref(status), C.byref(attempted))
+        if not attempted.value:
+            check(code, "authentication preflight failed; no authentication requested")
+            raise AuxError("Native authentication returned without attempting the command")
+        result = {"authentication_attempted": True, "authentication_ioreturn": f"0x{code:08x}",
+                  "authentication_status": None, "activation_verified": False}
+        if code or status.value == 0xffffffff:
+            return {**result, "state": "authentication_outcome_unknown",
+                    "next_step": "Keep dock powered, preserve output and backup; do not retry blindly"}
+        return {**result, "authentication_status": status.value,
+                "state": "authentication_reported" if status.value == 0 else "authentication_failed",
+                "next_step": ("Activation requires a dock power-cycle and a fresh active NVM version read"
+                              if status.value == 0 else
+                              "Device rejected authentication; preserve output/backup and investigate before retrying")}
 
 
 def parse_nvm_header(data):
