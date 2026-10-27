@@ -1,4 +1,4 @@
-"""Read-only, filtered macOS report. Never includes raw registry dumps or UIDs."""
+"""Read-only dock diagnostics, excluding device identifiers and raw EDID/DROM."""
 import json
 import platform
 import plistlib
@@ -13,7 +13,6 @@ def walk_registry(value):
 
 
 def summarize_registry(registry):
-    """Keep transport evidence, excluding serials, UIDs, DROM and raw EDID."""
     entries = list(walk_registry(registry))
     switches = []
     dp_devices = []
@@ -98,10 +97,4 @@ def collect():
     return {"schema_version": 1,
             "host": {"macos": platform.mac_ver()[0], "architecture": platform.machine()},
             "registry": summarize_registry(plistlib.loads(registry.stdout)),
-            "system_information": summarize_profiler(json.loads(profiler.stdout)),
-            "interpretation": [
-                "Monitor wake/hot-plug is not evidence of an active video stream.",
-                "An Unsupported device name alone does not prove Thunderbolt traffic is blocked.",
-                "Driver/hub enumeration does not prove usable USB peripherals.",
-                "No External IODP device means the private read backend has no dock target.",
-                "Registry and System Information are separate snapshots; hot-plug can change state."]}
+            "system_information": summarize_profiler(json.loads(profiler.stdout))}

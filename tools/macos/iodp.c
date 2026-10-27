@@ -1,7 +1,4 @@
-/* Experimental, READ-ONLY Apple Silicon DPCD bridge.
- * The private IOKit ABI was inspected on macOS 27.0.1 arm64e. These functions
- * are resolved at runtime; there is deliberately no DPCD write entry point.
- */
+/* Read-only IODP bridge. Private ABI inspected on macOS 27.0.1 arm64e. */
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <dlfcn.h>
@@ -37,9 +34,7 @@ static int supported(io_service_t service)
     return result;
 }
 
-/* List all advertised DP devices so an embedded-only result is visible.
- * Only External devices can subsequently be opened by this bridge.
- */
+/* List embedded devices for diagnosis; only external devices may be opened. */
 IOReturn tb16_iodp_list(tb16_dp_endpoint **out, uint32_t *count)
 {
     *out = NULL;

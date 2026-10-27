@@ -1,4 +1,4 @@
-"""ctypes wrapper for the small SDK-built IOI2C bridge; no private Apple APIs."""
+"""ctypes bindings for the IOI2C and read-only IODP backends."""
 import ctypes as C
 from pathlib import Path
 import sys
@@ -18,26 +18,31 @@ def check(code, operation):
         raise AuxError(f"{operation}: IOKit error 0x{code:08x}")
 
 
-class Native:
+def bind(lib, name, arguments, result=C.c_uint32):
+    function = getattr(lib, name)
+    function.argtypes, function.restype = arguments, result
+    return function
+
+
+class Bridge:
     def __init__(self):
         if sys.platform != "darwin":
-            raise AuxError("The native AUX backend requires macOS.")
+            raise AuxError("The native bridge requires macOS")
         path = Path(__file__).resolve().parent / "build/libtb16aux.dylib"
         try:
             self.lib = C.CDLL(str(path))
         except OSError as error:
             raise AuxError("Build the native bridge with: make -C tools/macos") from error
-        self.lib.tb16_list.argtypes = [C.POINTER(C.POINTER(Endpoint)), C.POINTER(C.c_uint32)]
-        self.lib.tb16_list.restype = C.c_uint32
-        self.lib.tb16_free.argtypes = [C.c_void_p]
-        self.lib.tb16_free.restype = None
-        self.lib.tb16_open.argtypes = [C.c_uint64, C.POINTER(C.c_void_p)]
-        self.lib.tb16_open.restype = C.c_uint32
-        self.lib.tb16_close.argtypes = [C.c_void_p]
-        self.lib.tb16_close.restype = C.c_uint32
-        self.lib.tb16_transfer.argtypes = [C.c_void_p, C.c_uint32, C.c_void_p,
-                                         C.c_uint32, C.c_uint32]
-        self.lib.tb16_transfer.restype = C.c_uint32
+        bind(self.lib, "tb16_free", [C.c_void_p], None)
+
+
+class Native(Bridge):
+    def __init__(self):
+        super().__init__()
+        bind(self.lib, "tb16_list", [C.POINTER(C.POINTER(Endpoint)), C.POINTER(C.c_uint32)])
+        bind(self.lib, "tb16_open", [C.c_uint64, C.POINTER(C.c_void_p)])
+        bind(self.lib, "tb16_close", [C.c_void_p])
+        bind(self.lib, "tb16_transfer", [C.c_void_p, C.c_uint32, C.c_void_p, C.c_uint32, C.c_uint32])
 
     def endpoints(self):
         entries, count = C.POINTER(Endpoint)(), C.c_uint32()
@@ -59,7 +64,7 @@ class Aux:
     def __init__(self, lib, registry_id):
         self.lib, self.connection = lib, C.c_void_p()
         check(lib.tb16_open(registry_id, C.byref(self.connection)),
-              "open native AUX interface (it must advertise native AUX support)")
+              "open native AUX interface")
 
     def __enter__(self):
         return self
@@ -74,11 +79,15 @@ class Aux:
             raise AuxError("AUX transfer must fit within the 20-bit DPCD address space")
         for offset in range(0, len(data), 16):
             packet = (C.c_uint8 * min(16, len(data) - offset)).from_buffer(data, offset)
-            check(self.lib.tb16_transfer(self.connection, address + offset, packet,
-                                         len(packet), int(writing)),
+            check(self._packet(address + offset, packet, writing),
                   f"AUX {'write' if writing else 'read'} at 0x{address + offset:05x}")
 
+    def _packet(self, address, packet, writing):
+        return self.lib.tb16_transfer(self.connection, address, packet, len(packet), int(writing))
+
     def read(self, address, length):
+        if length <= 0 or address < 0 or address + length > 0x100000:
+            raise AuxError("DPCD read must fit within the 20-bit address space")
         data = bytearray(length)
         self._transfer(address, data, False)
         return bytes(data)
@@ -92,20 +101,14 @@ class DpEndpoint(C.Structure):
                 ("location", C.c_char * 32)]
 
 
-class IodpNative(Native):
-    """Private Apple Silicon API; intentionally limited to read-only diagnostics."""
+class IodpNative(Bridge):
     def __init__(self):
         super().__init__()
-        self.lib.tb16_iodp_available.argtypes = []
-        self.lib.tb16_iodp_available.restype = C.c_uint32
-        self.lib.tb16_iodp_list.argtypes = [C.POINTER(C.POINTER(DpEndpoint)), C.POINTER(C.c_uint32)]
-        self.lib.tb16_iodp_list.restype = C.c_uint32
-        self.lib.tb16_iodp_open.argtypes = [C.c_uint64, C.POINTER(C.c_void_p)]
-        self.lib.tb16_iodp_open.restype = C.c_uint32
-        self.lib.tb16_iodp_close.argtypes = [C.c_void_p]
-        self.lib.tb16_iodp_close.restype = None
-        self.lib.tb16_iodp_read.argtypes = [C.c_void_p, C.c_uint32, C.c_void_p, C.c_uint32]
-        self.lib.tb16_iodp_read.restype = C.c_uint32
+        bind(self.lib, "tb16_iodp_available", [])
+        bind(self.lib, "tb16_iodp_list", [C.POINTER(C.POINTER(DpEndpoint)), C.POINTER(C.c_uint32)])
+        bind(self.lib, "tb16_iodp_open", [C.c_uint64, C.POINTER(C.c_void_p)])
+        bind(self.lib, "tb16_iodp_close", [C.c_void_p], None)
+        bind(self.lib, "tb16_iodp_read", [C.c_void_p, C.c_uint32, C.c_void_p, C.c_uint32])
         if not self.lib.tb16_iodp_available():
             raise AuxError("Private IODP device/read functions are unavailable on this macOS version")
 
@@ -126,27 +129,16 @@ class IodpNative(Native):
         return IodpAux(self.lib, registry_id)
 
 
-class IodpAux:
+class IodpAux(Aux):
     def __init__(self, lib, registry_id):
         self.lib, self.connection = lib, C.c_void_p()
         check(lib.tb16_iodp_open(registry_id, C.byref(self.connection)),
-              "open IODP device (only an advertised External device is allowed)")
-
-    def __enter__(self):
-        return self
+              "open external IODP device")
 
     def __exit__(self, kind, value, traceback):
         self.lib.tb16_iodp_close(self.connection)
 
-    def read(self, address, length):
-        if length <= 0 or address < 0 or address + length > 0x100000:
-            raise AuxError("DPCD read must fit within the 20-bit address space")
-        data = bytearray(length)
-        for offset in range(0, length, 16):
-            packet = (C.c_uint8 * min(16, length - offset)).from_buffer(data, offset)
-            check(self.lib.tb16_iodp_read(self.connection, address + offset, packet, len(packet)),
-                  f"IODP read at 0x{address + offset:05x}")
-        return bytes(data)
-
-    def write(self, address, data):
-        raise AuxError("The IODP backend is read-only; firmware backup/control/write is unavailable")
+    def _packet(self, address, packet, writing):
+        if writing:
+            raise AuxError("IODP is read-only")
+        return self.lib.tb16_iodp_read(self.connection, address, packet, len(packet))

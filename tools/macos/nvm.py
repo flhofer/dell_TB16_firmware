@@ -1,4 +1,4 @@
-"""Pinned Alpine Ridge images and an update workflow; no native import at load time."""
+"""Pinned Alpine Ridge images and the backup/stage/authenticate workflow."""
 import hashlib
 
 from native import AuxError
@@ -18,14 +18,15 @@ def digest(data):
 
 def validate_nvm_image(image, model):
     from thunderbolt import parse_nvm_header
-    identity = IMAGES.get(digest(image))
+    image_sha256 = digest(image)
+    identity = IMAGES.get(image_sha256)
     if identity is None:
         raise AuxError("Only the pinned Cable_26_06.bin and Dock_BME_27_00.bin images are supported")
     role, expected_model, version, filename = identity
     if model != expected_model:
         raise AuxError(f"{filename} requires the {role} controller (model {expected_model:#06x})")
     offset = int.from_bytes(image[:4], "little") & 0xffffff
-    if offset != 0x4000 or offset % 0x1000 or not 0x8000 <= len(image) <= 0x100000:
+    if offset != 0x4000 or not 0x8000 <= len(image) <= 0x100000:
         raise AuxError("Unsupported Alpine Ridge image/FARB layout")
     payload = image[offset:]
     header = parse_nvm_header(payload[:80])
@@ -34,7 +35,7 @@ def validate_nvm_image(image, model):
             header["nvm_version"] != version or len(payload) > header["active_bank_size"]):
         raise AuxError("Invalid digital section size, version or bank geometry")
     return payload, {"target": role, "model_id": f"0x{model:04x}", "image": filename,
-                     "image_sha256": digest(image), "target_version": version,
+                     "image_sha256": image_sha256, "target_version": version,
                      "farb_bytes_skipped": offset, "staging_bytes": len(payload),
                      "staging_sha256": digest(payload), "packets": (len(payload) + 63) // 64}
 
@@ -42,7 +43,7 @@ def validate_nvm_image(image, model):
 def plan_header(image, active, model):
     payload, info = validate_nvm_image(image, model)
     if active["nvm_version"] != "16.00":
-        raise AuxError("This initial update path supports an installed NVM version of 16.00 only")
+        raise AuxError("Supports installed NVM 16.00 only")
     if len(payload) > active["active_bank_size"]:
         raise AuxError("Image exceeds the target active-bank geometry")
     return {**info, "current_version": active["nvm_version"],
@@ -62,23 +63,18 @@ def plan_update(image, backup, model):
 
 
 def update(reader, image, model, backup_path, authenticate=False, progress=lambda line: None):
-    """One lock/session: backup twice, stage once, check active bank, optional auth.
-
-    The mailbox reads only the ACTIVE bank. Staging acknowledgements cannot be
-    advertised as inactive-bank readback. Only device authentication can check
-    the staged image; activation still requires a subsequent version check.
-    """
-    payload, _ = validate_nvm_image(image, model)  # Reject image/role before any device access.
+    """Hold one mailbox lock from backup through optional authentication."""
+    payload, _ = validate_nvm_image(image, model)
     with reader.mailbox():
         info, backup = reader._backup_nvm(backup_path, progress)
         plan = plan_update(image, backup, model)
-        progress("Backup verified; beginning inactive-bank staging. Keep dock power connected.")
+        progress("Backup verified. Staging inactive bank; keep dock powered.")
         reader.stage_begin(model, len(payload))
         for address in range(0, len(payload), 64):
             reader.stage_write(address, payload[address:address + 64])
             if address % 0x4000 == 0 or address + 64 >= len(payload):
                 progress(f"Inactive-bank staging: {min(address + 64, len(payload)) * 100 // len(payload)}%")
-        progress("Staging acknowledged; checking that the active bank is unchanged.")
+        progress("Staging complete. Checking active bank.")
         if reader._active_bank(len(backup)) != backup:
             raise AuxError("Active bank changed during staging; authentication was NOT requested. "
                            "Keep dock powered and preserve the backup")
@@ -86,6 +82,6 @@ def update(reader, image, model, backup_path, authenticate=False, progress=lambd
                   "active_bank_unchanged": True, "staged_readback_verified": False,
                   "state": "staged_unverified", "authentication_attempted": False}
         if authenticate:
-            progress("Requesting device authentication once; disconnects/timeouts leave the outcome unknown.")
+            progress("Requesting authentication once.")
             result.update(reader.authenticate())
         return result

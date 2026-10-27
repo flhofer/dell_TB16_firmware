@@ -1,6 +1,8 @@
-"""Read-only external-display modes via public CoreGraphics APIs; no IOKit bridge."""
+"""Read-only external-display modes via CoreGraphics."""
 import ctypes as C
 import platform
+
+from native import bind
 
 
 def collect():
@@ -8,11 +10,6 @@ def collect():
         raise RuntimeError("Live display modes require macOS")
     cg = C.CDLL("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")
     cf = C.CDLL("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")
-
-    def bind(lib, name, arguments, result):
-        function = getattr(lib, name)
-        function.argtypes, function.restype = arguments, result
-        return function
 
     online = bind(cg, "CGGetOnlineDisplayList",
                   [C.c_uint32, C.POINTER(C.c_uint32), C.POINTER(C.c_uint32)], C.c_int32)
@@ -57,8 +54,4 @@ def collect():
                 release(current)
             if modes:
                 release(modes)
-    return {"source": "public CoreGraphics APIs; external displays only; no mode changes",
-            "note": "Pixels describe the framebuffer, not measured HDMI wire timing. "
-                    "Listed modes are advertised by macOS, not proof they work on the monitor. "
-                    "Manually selected current modes may be absent from the default modes list.",
-            "external_displays": displays}
+    return {"external_displays": displays}

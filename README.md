@@ -50,29 +50,11 @@ Skills required for the flashing: a basic understanding of *nix Bash systems, an
 
 ## Experimental macOS port
 
-Native macOS porting work is in [`tools/macos`](tools/macos/README.md).
-It includes an experimental Synaptics VMM3320/VMM3330 MST updater using
-IOKit DisplayPort AUX, firmware validation, EEPROM backup, and checksum plus
-full readback verification. Flashing is opt-in; the default `flash` command
-performs a read-only dry run. **MST firmware writing has not been validated
-with a physical TB16.** A separate experimental Apple Silicon backend now
-provides read-only DPCD diagnostics for external devices exposed by macOS.
-
-The port includes experimental Thunderbolt NVM staging and authentication,
-with offline update plans and mandatory fresh backups. **Cable 26.06 and dock
-27.00 were flashed and activated natively on one M5 MacBook Pro running macOS
-27.0.1 build 26A434. HDMI and USB worked after both updates and power-cycles.**
-Post-update reads exactly matched both bundled firmware payloads. This is
-one tested setup; the private Thunderbolt ABI is restricted to that OS build.
-DisplayPort was also confirmed working at 2560x1440/120 Hz; HDMI was confirmed
-at 2560x1440/60 Hz and 1920x1080/120 Hz on the same monitor.
-
-The working display also enabled a read-only VMM3330 probe through the Apple
-Silicon backend. It reported unchanged MST firmware 03.10.02. MST and ASMedia
-were not flashed; there is no ASMedia writer. Ethernet, audio and sleep/wake
-still need functional testing. See the macOS README for exact requirements,
-commands, transport limitations and the recorded hardware results.
-The Linux/Windows instructions below remain the established update procedure.
+The [macOS tools](tools/macos/README.md) update the Thunderbolt cable and dock
+NVMs. Cable 26.06 and dock 27.00 were verified on an M5 MacBook Pro running
+macOS 27.0.1 (26A434), restoring HDMI and USB. The private Thunderbolt interface
+is restricted to that build. MST writing is experimental; ASMedia, TI and EC
+updates are not implemented.
 
 ## Pre-flight checklist
 Before flashing, verify all of the following:

@@ -1,9 +1,4 @@
-"""TB16 VMM3320/VMM3330 (Synaptics Leaf) remote-control protocol.
-
-Protocol reference: fwupd 4e6b89312b23c225b5ae7456a0566a2fdc3d870c,
-plugins/synaptics-mst/{fu-synaptics-mst.rs,fu-synaptics-mst-device.c}.
-This module has no OS dependencies; an AUX transport supplies read/write.
-"""
+"""Synaptics Leaf VMM3320/VMM3330 remote-control protocol; see README references."""
 from contextlib import contextmanager
 import hashlib
 import os
@@ -26,16 +21,14 @@ class MstError(RuntimeError):
 
 
 def validate_image(image):
-    """Accept only the repository's known TB16 03.12.002 raw image."""
     if len(image) != IMAGE_SIZE or hashlib.sha256(image).hexdigest() != IMAGE_SHA256:
-        raise MstError("Expected the unmodified bins/bme-ie-03.12.002.eeprom image; "
-                       "CAB, Thunderbolt NVM, ASMedia and arbitrary images are not accepted")
+        raise MstError("Expected the unmodified bins/bme-ie-03.12.002.eeprom image")
     if int.from_bytes(image[0x10E:0x110], "big") != BOARD_ID:
         raise MstError("Firmware board ID is not TB16 board 0x0112")
 
 
 def save_backup(path, data):
-    """Never overwrite a backup; persist and re-read it before permitting erase."""
+    """Save exclusively, flush and verify before allowing erase."""
     if len(data) != FLASH_SIZE:
         raise MstError("Backup must contain the full 64 KiB EEPROM")
     with Path(path).open("xb") as output:
@@ -57,7 +50,7 @@ class Mst:
         return data
 
     def probe(self):
-        """Only DPCD reads; does not enable remote control or touch flash."""
+        """Read chip/version without enabling remote control."""
         capable = bool(self.read(CAP, 1)[0] & 0x04)
         chip = int.from_bytes(self.read(0x507, 2), "big")
         version = ".".join(f"{part:02d}" for part in self.read(0x50A, 3))
@@ -137,7 +130,6 @@ class Mst:
         with self.session():
             self.check_board()
             data = self.get(READ_EEPROM, 0, FLASH_SIZE)
-            # A second read catches an unstable transport before trusting the backup.
             if self.get(READ_EEPROM, 0, FLASH_SIZE) != data:
                 raise MstError("EEPROM reads differ; refusing to save an unstable backup")
             save_backup(path, data)
@@ -145,7 +137,6 @@ class Mst:
 
     def flash(self, image, backup_path, progress=lambda message: None):
         validate_image(image)
-        # Check destination before opening a remote-control session.
         if Path(backup_path).exists():
             raise MstError("Backup already exists; choose a new path")
         with self.session():
@@ -157,8 +148,7 @@ class Mst:
             progress(f"Backup saved: {backup_path} (SHA-256 {hashlib.sha256(original).hexdigest()})")
             self.check_chip()
             self.check_board()
-            # Only this point starts a destructive operation. Never retry an erase
-            # or automatically restart a failed update.
+            # Erase once; a failed update must not restart automatically.
             progress("Erasing EEPROM; keep dock power and display cables connected")
             try:
                 self.set(ERASE, 0, b"\xff\xff")

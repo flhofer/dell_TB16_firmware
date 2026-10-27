@@ -14,6 +14,8 @@
 #include <time.h>
 #include <unistd.h>
 
+enum { DMA_PORT_CAP = 0x3e, MAIL_DATA = 0x3f, MAIL_IN = 0x4f, MAIL_OUT = 0x50 };
+
 typedef struct {
     uint64_t registry_id;
     uint64_t controller_id;
@@ -141,7 +143,6 @@ IOReturn tb16_tbt_list(tb16_tbt_endpoint **out, uint32_t *count)
 IOReturn tb16_tbt_read(tb16_tbt_handle *handle, uint32_t port, uint32_t space,
                       uint32_t offset, uint32_t *output, uint32_t count)
 {
-    /* Hops and counters are unnecessary for this investigation. */
     if (!handle || !handle->connection || !handle->route || !output || !count || count > 16 ||
         (space != 1 && space != 2) || port > 63 || (space == 2 && port != 0) ||
         offset > 0x1fff || count > 0x2000 - offset)
@@ -219,10 +220,71 @@ static double monotonic_seconds(void)
     return now.tv_sec + now.tv_nsec / 1e9;
 }
 
-/* Only active-flash READ requests. Never writes DATA, authenticates, erases,
- * resets, or exposes a generic configuration-write operation. The caller
- * serializes mailbox use against other instances of this tool.
- */
+/* Writes are limited to mailbox DATA and command registers. */
+static IOReturn mailbox_write(tb16_tbt_handle *handle, uint32_t offset,
+                              const uint32_t *data, uint32_t count)
+{
+    uint32_t wire[16];
+    if (!count || count > 16 || (offset != MAIL_DATA && offset != MAIL_IN) ||
+        (offset == MAIL_IN && count != 1))
+        return kIOReturnBadArgument;
+    for (uint32_t i = 0; i < count; ++i)
+        wire[i] = OSSwapHostToBigInt32(data[i]);
+    const uint64_t input[] = {handle->route, handle->dma_port, 1, offset,
+                              (uintptr_t)wire, count};
+    return IOConnectCallScalarMethod(handle->connection, 1, input, 6, NULL, NULL);
+}
+
+static IOReturn mailbox_wait(tb16_tbt_handle *handle, double seconds, uint32_t *status)
+{
+    double started = monotonic_seconds();
+    if (started < 0)
+        return kIOReturnError;
+    for (;;) {
+        uint32_t value = 0;
+        IOReturn result = tb16_tbt_read(handle, handle->dma_port, 1, MAIL_IN, &value, 1);
+        if (result != kIOReturnSuccess)
+            return result;
+        if (!(value & 1))
+            return tb16_tbt_read(handle, handle->dma_port, 1, MAIL_OUT, status, 1);
+        double now = monotonic_seconds();
+        if (now < 0)
+            return kIOReturnError;
+        if (now - started >= seconds)
+            return kIOReturnTimeout;
+        usleep(1000);
+    }
+}
+
+static IOReturn mailbox_port(tb16_tbt_handle *handle)
+{
+    uint32_t port = handle->dma_port, value = 0;
+    const uint32_t candidates[] = {3, 5, 7};
+    for (unsigned i = 0; !port && i < 3; ++i) {
+        IOReturn result = tb16_tbt_read(handle, candidates[i], 1, 2, &value, 1);
+        if (result == kIOReturnSuccess && (value & 0xffffff) == 2)
+            port = candidates[i];
+    }
+    if (!port)
+        return kIOReturnNotFound;
+    IOReturn result = tb16_tbt_read(handle, port, 1, DMA_PORT_CAP, &value, 1);
+    if (result != kIOReturnSuccess)
+        return result;
+    /* VSE 1: header, DATA[16], MAIL_IN, MAIL_OUT. */
+    if ((value & 0xffffff00) != 0x13010500)
+        return kIOReturnUnsupported;
+    handle->dma_port = port;
+    return kIOReturnSuccess;
+}
+
+static IOReturn mailbox_idle(tb16_tbt_handle *handle)
+{
+    uint32_t value = 0;
+    IOReturn result = tb16_tbt_read(handle, handle->dma_port, 1, MAIL_IN, &value, 1);
+    return result == kIOReturnSuccess && (value & 1) ? kIOReturnBusy : result;
+}
+
+/* FLASH_READ addresses the active bank; the caller holds the mailbox lock. */
 static IOReturn nvm_read(tb16_tbt_handle *handle, uint8_t *output,
                         uint32_t start, uint32_t size)
 {
@@ -230,64 +292,29 @@ static IOReturn nvm_read(tb16_tbt_handle *handle, uint8_t *output,
         return kIOReturnBadArgument;
     if (geteuid() != 0)
         return kIOReturnNotPrivileged;
-    uint32_t port = handle->dma_port, value = 0;
-    const uint32_t candidates[] = {3, 5, 7};
-    for (unsigned i = 0; !port && i < 3; ++i) {
-        IOReturn result = tb16_tbt_read(handle, candidates[i], 1, 2, &value, 1);
-        if (result == kIOReturnSuccess && (value & 0xffffff) == 2) {
-            port = candidates[i];
-            break;
-        }
-    }
-    if (!port)
-        return kIOReturnNotFound;
-    IOReturn result = tb16_tbt_read(handle, port, 1, 0x3e, &value, 1);
-    /* VSE capability 1, 0x13 DWORDs: header, DATA[16], MAIL_IN, MAIL_OUT. */
+    IOReturn result = mailbox_port(handle);
     if (result != kIOReturnSuccess)
         return result;
-    if ((value & 0xffffff00) != 0x13010500)
-        return kIOReturnUnsupported;
     memset(output, 0, size);
     for (uint32_t position = 0; position < size; position += 64) {
         uint32_t address = start + position;
         uint32_t count = (size - position < 64 ? size - position : 64) / 4;
-        result = tb16_tbt_read(handle, port, 1, 0x4f, &value, 1);
+        result = mailbox_idle(handle);
         if (result != kIOReturnSuccess)
             return result;
-        if (value & 1)
-            return kIOReturnBusy;
-        double started = monotonic_seconds();
-        if (started < 0)
-            return kIOReturnError;
-        /* FLASH_READ=2; 16 DWORDs use a zero length field. Address is bytes
-         * with its bottom two bits reserved for request/CSS flags.
-         */
+        /* Read length 16 is encoded as zero, unlike FLASH_WRITE. */
         uint32_t command = 0x20000001 | address | (count == 16 ? 0 : count << 24);
-        uint32_t wire_command = OSSwapHostToBigInt32(command);
-        const uint64_t input[] = {handle->route, port, 1, 0x4f, (uintptr_t)&wire_command, 1};
-        result = IOConnectCallScalarMethod(handle->connection, 1, input, 6, NULL, NULL);
+        result = mailbox_write(handle, MAIL_IN, &command, 1);
         if (result != kIOReturnSuccess)
             return result;
-        for (;;) {
-            result = tb16_tbt_read(handle, port, 1, 0x4f, &value, 1);
-            if (result != kIOReturnSuccess)
-                return result;
-            if (!(value & 1))
-                break;
-            double now = monotonic_seconds();
-            if (now < 0)
-                return kIOReturnError;
-            if (now - started >= 5.0)
-                return kIOReturnTimeout;
-            usleep(1000);
-        }
-        result = tb16_tbt_read(handle, port, 1, 0x50, &value, 1);
+        uint32_t status = 0;
+        result = mailbox_wait(handle, 5.0, &status);
         if (result != kIOReturnSuccess)
             return result;
-        if ((value & 15) != 0)
-            return (value & 15) == 2 ? kIOReturnNotPermitted : kIOReturnIOError;
+        if (status & 15)
+            return (status & 15) == 2 ? kIOReturnNotPermitted : kIOReturnIOError;
         uint32_t data[16] = {0};
-        result = tb16_tbt_read(handle, port, 1, 0x3f, data, count);
+        result = tb16_tbt_read(handle, handle->dma_port, 1, MAIL_DATA, data, count);
         if (result != kIOReturnSuccess)
             return result;
         for (uint32_t i = 0; i < count; ++i) {
@@ -295,7 +322,6 @@ static IOReturn nvm_read(tb16_tbt_handle *handle, uint8_t *output,
             memcpy(output + position + i * 4, &little, 4);
         }
     }
-    handle->dma_port = port;
     return kIOReturnSuccess;
 }
 
@@ -325,9 +351,7 @@ IOReturn tb16_tbt_nvm_read(tb16_tbt_handle *handle, uint32_t address,
     return nvm_read(handle, output, address, length);
 }
 
-/* Re-resolve the exact registry object before every programming packet. A new
- * device at the same route must never inherit an old handle's write authority.
- */
+/* Reject replacement devices, even if they reuse the same route. */
 static IOReturn stage_target(tb16_tbt_handle *handle)
 {
     if (!handle || !handle->registry_id || !handle->route)
@@ -363,54 +387,10 @@ static IOReturn stage_mailbox(tb16_tbt_handle *handle)
     IOReturn result = stage_target(handle);
     if (result != kIOReturnSuccess)
         return result;
-    uint32_t value = 0;
     if (!handle->dma_port)
         return kIOReturnNotReady;
-    result = tb16_tbt_read(handle, handle->dma_port, 1, 0x3e, &value, 1);
-    if (result != kIOReturnSuccess)
-        return result;
-    if ((value & 0xffffff00) != 0x13010500)
-        return kIOReturnUnsupported;
-    result = tb16_tbt_read(handle, handle->dma_port, 1, 0x4f, &value, 1);
-    if (result == kIOReturnSuccess && (value & 1))
-        return kIOReturnBusy;
-    return result;
-}
-
-/* Private helper, limited to this handle's DATA and MAIL_IN registers. */
-static IOReturn stage_register(tb16_tbt_handle *handle, uint32_t offset,
-                              const uint32_t *data, uint32_t count)
-{
-    uint32_t wire[16];
-    if (!count || count > 16 || (offset != 0x3f && offset != 0x4f) ||
-        (offset == 0x4f && count != 1))
-        return kIOReturnBadArgument;
-    for (uint32_t i = 0; i < count; ++i)
-        wire[i] = OSSwapHostToBigInt32(data[i]);
-    const uint64_t input[] = {handle->route, handle->dma_port, 1, offset,
-                              (uintptr_t)wire, count};
-    return IOConnectCallScalarMethod(handle->connection, 1, input, 6, NULL, NULL);
-}
-
-static IOReturn stage_complete(tb16_tbt_handle *handle, double seconds, uint32_t *status)
-{
-    double started = monotonic_seconds();
-    if (started < 0)
-        return kIOReturnError;
-    for (;;) {
-        uint32_t value = 0;
-        IOReturn result = tb16_tbt_read(handle, handle->dma_port, 1, 0x4f, &value, 1);
-        if (result != kIOReturnSuccess)
-            return result;
-        if (!(value & 1))
-            return tb16_tbt_read(handle, handle->dma_port, 1, 0x50, status, 1);
-        double now = monotonic_seconds();
-        if (now < 0)
-            return kIOReturnError;
-        if (now - started >= seconds)
-            return kIOReturnTimeout;
-        usleep(1000);
-    }
+    result = mailbox_port(handle);
+    return result == kIOReturnSuccess ? mailbox_idle(handle) : result;
 }
 
 IOReturn tb16_tbt_nvm_stage_begin(tb16_tbt_handle *handle, uint32_t model, uint32_t size)
@@ -460,18 +440,18 @@ IOReturn tb16_tbt_nvm_stage_write(tb16_tbt_handle *handle, uint32_t address,
         memcpy(&little, data + i * 4, 4);
         words[i] = OSSwapLittleToHostInt32(little);
     }
-    result = stage_register(handle, 0x3f, words, length / 4);
+    result = mailbox_write(handle, MAIL_DATA, words, length / 4);
     if (result != kIOReturnSuccess)
         goto failed;
     /* FLASH_WRITE uses count MINUS ONE. No CSS flag for Alpine Ridge (gen 3).
      * Addresses are relative to the inactive digital region, not the FARB.
      */
     uint32_t command = ((length / 4 - 1) << 24) | address | 1;
-    result = stage_register(handle, 0x4f, &command, 1);
+    result = mailbox_write(handle, MAIL_IN, &command, 1);
     if (result != kIOReturnSuccess)
         goto failed;
     uint32_t status = 0;
-    result = stage_complete(handle, 5.0, &status);
+    result = mailbox_wait(handle, 5.0, &status);
     if (result != kIOReturnSuccess)
         goto failed;
     if ((status & 15) || ((status >> 4) & 15)) {
@@ -485,10 +465,7 @@ failed:
     return result;
 }
 
-/* Status remains UINT32_MAX when authentication outcome is unknown. Errors
- * after command submission may mean the switch disconnected/reset. Never
- * retry, automatically power-cycle, or equate a timeout with successful auth.
- */
+/* One authentication attempt; UINT32_MAX means the outcome is unknown. */
 IOReturn tb16_tbt_nvm_authenticate(tb16_tbt_handle *handle, uint32_t *status,
                                  uint32_t *attempted)
 {
@@ -505,14 +482,12 @@ IOReturn tb16_tbt_nvm_authenticate(tb16_tbt_handle *handle, uint32_t *status,
         return result;
     uint32_t command = 0x10000001;
     *attempted = 1;
-    result = stage_register(handle, 0x4f, &command, 1);
+    result = mailbox_write(handle, MAIL_IN, &command, 1);
     if (result != kIOReturnSuccess)
         return result;
     uint32_t value = 0;
-    /* Authentication is asynchronous. Like the Intel driver, allow a short
-     * command-completion wait, then poll the auth-specific result separately.
-     */
-    result = stage_complete(handle, 0.15, &value);
+    /* Command acceptance and the asynchronous authentication result are separate. */
+    result = mailbox_wait(handle, 0.15, &value);
     if (result != kIOReturnSuccess && result != kIOReturnTimeout)
         return result;
     double started = monotonic_seconds();
@@ -529,7 +504,7 @@ IOReturn tb16_tbt_nvm_authenticate(tb16_tbt_handle *handle, uint32_t *status,
         if (now - started >= 5.0)
             return kIOReturnTimeout;
         usleep(100000);
-        result = tb16_tbt_read(handle, handle->dma_port, 1, 0x50, &value, 1);
+        result = tb16_tbt_read(handle, handle->dma_port, 1, MAIL_OUT, &value, 1);
         if (result != kIOReturnSuccess)
             return result;
     }

@@ -215,6 +215,29 @@ class NvmUpdateTests(unittest.TestCase):
                     tb16.main(base + flags)
                 native.assert_not_called()
 
+    def test_cli_preserves_authentication_exit_codes(self):
+        for state, expected in (("authentication_reported", 0), ("authentication_failed", 1),
+                                ("authentication_outcome_unknown", 2)):
+            with patch("thunderbolt.Thunderbolt") as native, patch("nvm.update") as writer:
+                native.return_value.endpoints.return_value = [{"id": "0x1", "model_id": "0xb051"}]
+                writer.return_value = {"state": state, "activation_verified": False}
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    code = tb16.main(["update-nvm", "--experimental", "--device", "1",
+                                      "--image", str(BINS / "Cable_26_06.bin"), "--write",
+                                      "--authenticate", "--backup", "unused.backup.bin"])
+                self.assertEqual(code, expected)
+                self.assertEqual(json.loads(output.getvalue())["state"], state)
+                writer.assert_called_once()
+
+    def test_cli_wrong_controller_never_opens_device(self):
+        with patch("thunderbolt.Thunderbolt") as native, redirect_stderr(io.StringIO()):
+            native.return_value.endpoints.return_value = [{"id": "0x1", "model_id": "0xb054"}]
+            code = tb16.main(["update-nvm", "--experimental", "--device", "1", "--image",
+                              str(BINS / "Cable_26_06.bin"), "--write", "--backup", "unused.backup.bin"])
+            self.assertEqual(code, 1)
+            native.return_value.open.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()
