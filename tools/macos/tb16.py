@@ -31,6 +31,21 @@ def main(argv=None):
     listing.add_argument("--backend", choices=("ioi2c", "iodp"), default="ioi2c")
     listing.add_argument("--experimental", action="store_true")
     commands.add_parser("diagnose", help="filtered, read-only dock/display report; no native bridge required")
+    commands.add_parser("list-tbt", help="list TB16 switches and parent controllers using IORegistry")
+    tbt = commands.add_parser("read-tbt-config", help="experimental read-only Thunderbolt configuration access")
+    tbt.add_argument("--device", type=device_id, required=True)
+    tbt.add_argument("--experimental", action="store_true")
+    tbt.add_argument("--space", choices=("switch", "port"), default="switch")
+    tbt.add_argument("--port", type=int, default=0)
+    tbt.add_argument("--offset", type=lambda s: int(s, 0), default=0, help="DWORD offset, not byte address")
+    tbt.add_argument("--count", type=int, default=5, help="1-16 DWORDs")
+    nvm = commands.add_parser("read-nvm-header", help="read active NVM version using the control mailbox; requires sudo")
+    nvm.add_argument("--device", type=device_id, required=True)
+    nvm.add_argument("--experimental", action="store_true")
+    nvm_backup = commands.add_parser("backup-nvm", help="save two matching reads of the active NVM bank; requires sudo")
+    nvm_backup.add_argument("--device", type=device_id, required=True)
+    nvm_backup.add_argument("--experimental", action="store_true")
+    nvm_backup.add_argument("--output", type=Path, required=True)
     inspect = commands.add_parser("inspect-image", help="validate the bundled raw MST image offline")
     inspect.add_argument("image", nargs="?", type=Path, default=DEFAULT_IMAGE)
     for name in ("probe", "backup", "flash", "read-dpcd"):
@@ -49,6 +64,14 @@ def main(argv=None):
             command.add_argument("--write", action="store_true", help="perform a real EEPROM update")
             command.add_argument("--backup", type=Path, help="new file for a mandatory pre-write backup")
     args = parser.parse_args(argv)
+    if args.command in ("read-tbt-config", "read-nvm-header", "backup-nvm") and not args.experimental:
+        parser.error(f"{args.command} requires --experimental (private, build-specific kernel ABI)")
+    if args.command == "read-tbt-config":
+        from thunderbolt import validate_read
+        try:
+            validate_read(2 if args.space == "switch" else 1, args.port, args.offset, args.count)
+        except AuxError as error:
+            parser.error(str(error))
     if args.command == "flash" and args.write and (not args.experimental or args.backup is None):
         parser.error("--write requires --experimental and --backup NEW_FILE")
     if getattr(args, "backend", None) == "iodp":
@@ -60,6 +83,26 @@ def main(argv=None):
                                         args.address + args.length > 0x100000):
         parser.error("DPCD address must be 20-bit and length must be 1 to 256 bytes")
     try:
+        if args.command in ("list-tbt", "read-tbt-config", "read-nvm-header", "backup-nvm"):
+            from thunderbolt import Thunderbolt
+            thunderbolt = Thunderbolt()
+            if args.command == "list-tbt":
+                print(json.dumps(thunderbolt.endpoints(), indent=2))
+            else:
+                with thunderbolt.open(args.device) as reader:
+                    if args.command == "backup-nvm":
+                        result = reader.backup_nvm(args.output, progress=lambda line: print(line, file=sys.stderr, flush=True))
+                        print(json.dumps({"device": f"0x{args.device:x}", **result}, indent=2))
+                        return 0
+                    if args.command == "read-nvm-header":
+                        print(json.dumps({"device": f"0x{args.device:x}", **reader.nvm_header()}, indent=2))
+                        return 0
+                    data = reader.read(2 if args.space == "switch" else 1,
+                                       args.port, args.offset, args.count)
+                    print(json.dumps({"device": f"0x{args.device:x}", "space": args.space,
+                                      "port": args.port, "dword_offset": args.offset,
+                                      "dwords": [f"0x{word:08x}" for word in data]}, indent=2))
+            return 0
         if args.command == "diagnose":
             from diagnostics import collect
             print(json.dumps(collect(), indent=2))

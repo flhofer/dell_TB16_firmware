@@ -1,0 +1,163 @@
+"""Bounded read-only TB16 configuration access. This is not a DPCD/NVM writer."""
+import ctypes as C
+from contextlib import contextmanager
+import fcntl
+import hashlib
+import os
+from pathlib import Path
+
+from native import AuxError, Native, check
+
+
+class TbtEndpoint(C.Structure):
+    _fields_ = [("registry_id", C.c_uint64), ("controller_id", C.c_uint64),
+                ("route", C.c_uint64), ("model_id", C.c_uint32),
+                ("chip_id", C.c_uint32), ("name", C.c_char * 128)]
+
+
+def validate_read(space, port, offset, count):
+    if (space not in (1, 2) or not 0 <= port <= 63 or (space == 2 and port != 0) or
+            not 1 <= count <= 16 or not 0 <= offset <= 0x1FFF or offset + count > 0x2000):
+        raise AuxError("Configuration read needs port space (1) or switch space (2), "
+                       "port 0-63 (0 for switch), DWORD offset 0-0x1fff, and 1-16 DWORDs")
+
+
+class Thunderbolt(Native):
+    def __init__(self):
+        super().__init__()
+        self.lib.tb16_tbt_abi_supported.argtypes = []
+        self.lib.tb16_tbt_abi_supported.restype = C.c_uint32
+        self.lib.tb16_tbt_list.argtypes = [C.POINTER(C.POINTER(TbtEndpoint)), C.POINTER(C.c_uint32)]
+        self.lib.tb16_tbt_list.restype = C.c_uint32
+        self.lib.tb16_tbt_open.argtypes = [C.c_uint64, C.POINTER(C.c_void_p)]
+        self.lib.tb16_tbt_open.restype = C.c_uint32
+        self.lib.tb16_tbt_read.argtypes = [C.c_void_p, C.c_uint32, C.c_uint32, C.c_uint32,
+                                          C.POINTER(C.c_uint32), C.c_uint32]
+        self.lib.tb16_tbt_read.restype = C.c_uint32
+        self.lib.tb16_tbt_close.argtypes = [C.c_void_p]
+        self.lib.tb16_tbt_close.restype = C.c_uint32
+        self.lib.tb16_tbt_nvm_header.argtypes = [C.c_void_p, C.c_void_p]
+        self.lib.tb16_tbt_nvm_header.restype = C.c_uint32
+        self.lib.tb16_tbt_nvm_read.argtypes = [C.c_void_p, C.c_uint32, C.c_void_p, C.c_uint32]
+        self.lib.tb16_tbt_nvm_read.restype = C.c_uint32
+
+    def endpoints(self):
+        entries, count = C.POINTER(TbtEndpoint)(), C.c_uint32()
+        check(self.lib.tb16_tbt_list(C.byref(entries), C.byref(count)), "enumerate TB16 switches")
+        try:
+            return [{"id": f"0x{entries[i].registry_id:x}",
+                     "controller_id": f"0x{entries[i].controller_id:x}",
+                     "route": f"0x{entries[i].route:x}",
+                     "model_id": f"0x{entries[i].model_id:04x}",
+                     "chip_id": f"0x{entries[i].chip_id:04x}",
+                     "name": entries[i].name.decode("utf-8", "replace"),
+                     "read_abi_supported": bool(self.lib.tb16_tbt_abi_supported())}
+                    for i in range(count.value)]
+        finally:
+            self.lib.tb16_free(entries)
+
+    def open(self, registry_id):
+        if not self.lib.tb16_tbt_abi_supported():
+            raise AuxError("Thunderbolt read ABI is verified only on arm64 macOS build 26A434; "
+                           "this build requires separate ABI validation")
+        return ConfigReader(self.lib, registry_id)
+
+
+class ConfigReader:
+    def __init__(self, lib, registry_id):
+        self.lib, self.handle = lib, C.c_void_p()
+        check(lib.tb16_tbt_open(registry_id, C.byref(self.handle)),
+              "open TB16 configuration reader and verify Intel 8086:1578 identity")
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, kind, value, traceback):
+        code = self.lib.tb16_tbt_close(self.handle)
+        if kind is None:
+            check(code, "close Thunderbolt reader")
+
+    def read(self, space=2, port=0, offset=0, count=5):
+        validate_read(space, port, offset, count)
+        output = (C.c_uint32 * count)()
+        check(self.lib.tb16_tbt_read(self.handle, port, space, offset, output, count),
+              f"Thunderbolt configuration read space={space} port={port} DWORD={offset:#x}")
+        return list(output)
+
+    @contextmanager
+    def mailbox(self):
+        if os.geteuid() != 0:
+            raise AuxError("Reading the active NVM header requires sudo to submit FLASH_READ "
+                           "to the control mailbox; it does not write firmware")
+        # One root-owned lock for this tool's mailbox operations across processes.
+        fd = os.open("/var/run/tb16-macos-nvm.lock",
+                     os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+        try:
+            if os.fstat(fd).st_uid != 0:
+                raise AuxError("NVM mailbox lock is not owned by root")
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as error:
+                raise AuxError("Another instance is using the NVM mailbox") from error
+            yield
+        finally:
+            os.close(fd)
+
+    def _nvm_header(self):
+        output = (C.c_uint8 * 80)()
+        check(self.lib.tb16_tbt_nvm_header(self.handle, output), "read active NVM header")
+        return parse_nvm_header(bytes(output))
+
+    def nvm_header(self):
+        with self.mailbox():
+            return self._nvm_header()
+
+    def backup_nvm(self, output_path, progress=lambda line: None):
+        output_path = Path(output_path)
+        if output_path.exists():
+            raise AuxError("NVM backup destination already exists; choose a new file")
+        with self.mailbox():
+            info = self._nvm_header()
+            size = info["active_bank_size"]
+            copies = []
+            for pass_number in (1, 2):
+                data = bytearray(size)
+                last_percent = -1
+                for address in range(0, size, 64):
+                    packet = (C.c_uint8 * min(64, size - address)).from_buffer(data, address)
+                    check(self.lib.tb16_tbt_nvm_read(self.handle, address, packet, len(packet)),
+                          f"active NVM read at {address:#x}")
+                    percent = (address + len(packet)) * 100 // size
+                    if percent // 10 != last_percent:
+                        progress(f"NVM backup pass {pass_number}/2: {percent}%")
+                        last_percent = percent // 10
+                copies.append(bytes(data))
+            if copies[0] != copies[1]:
+                raise AuxError("Active NVM reads differ; no backup saved")
+            fd = os.open(output_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+            with os.fdopen(fd, "wb") as output:
+                output.write(copies[0])
+                output.flush()
+                os.fsync(output.fileno())
+                # Make the resulting backup readable by the invoking sudo user.
+                if "SUDO_UID" in os.environ and "SUDO_GID" in os.environ:
+                    os.fchown(output.fileno(), int(os.environ["SUDO_UID"]), int(os.environ["SUDO_GID"]))
+            if output_path.read_bytes() != copies[0]:
+                raise AuxError("Saved NVM backup failed verification")
+            return {**info, "output": str(output_path), "bytes": size,
+                    "sha256": hashlib.sha256(copies[0]).hexdigest(), "matching_reads": 2,
+                    "scope": "active NVM bank only; not a complete physical SPI flash dump"}
+
+
+def parse_nvm_header(data):
+    if len(data) != 80 or int.from_bytes(data[5:7], "little") != 0x1578:
+        raise AuxError("Active NVM header does not identify Intel 1578; do not trust its version")
+    version = int.from_bytes(data[8:12], "little")
+    flash_field = int.from_bytes(data[0x45:0x49], "little")
+    # Intel Alpine Ridge uses a 16 KiB header and two firmware banks.
+    bank_size = (((1 << 20) << (flash_field & 7)) // 8 - (16 << 10)) // 2
+    if not 0 < bank_size <= 0x100000:
+        raise AuxError("Unsupported active NVM bank size")
+    return {"device_id": "0x1578", "nvm_version": f"{(version >> 16) & 255:02x}.{(version >> 8) & 255:02x}",
+            "active_bank_size": bank_size,
+            "source": "active Intel NVM digital header (80 bytes)", "firmware_written": False}
