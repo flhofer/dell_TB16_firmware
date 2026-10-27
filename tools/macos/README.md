@@ -109,8 +109,8 @@ untested. [Validation data](validation/m5-tb16.json) includes backup hashes.
 
 The IOI2C backend supports VMM3320 (DP/VGA) and VMM3330 (mDP/HDMI) with board
 ID `0x0112` and the pinned `bme-ie-03.12.002.eeprom` image. It requires a native
-AUX interface from `list`; none was exposed on the tested M5. IODP can probe
-the VMM3330 but cannot write or back up its EEPROM.
+AUX interface from `list`; none was exposed on the tested M5. IODP can probe both
+chips but cannot write or back up their EEPROMs.
 
 For a supported IOI2C interface, `probe` and the default `flash` are read-only.
 `backup --output NEW_FILE` reads EEPROM twice. A real update requires
