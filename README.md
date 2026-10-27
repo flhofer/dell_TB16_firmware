@@ -58,17 +58,18 @@ performs a read-only dry run. **MST firmware writing has not been validated
 with a physical TB16.** A separate experimental Apple Silicon backend now
 provides read-only DPCD diagnostics for external devices exposed by macOS.
 
-The port now includes experimental Thunderbolt Cable/Dock NVM staging and
-authentication, with offline update plans and mandatory fresh backups. NVM
-Cable NVM 26.06 staging, authentication and activation have now succeeded on
-one M5/TB16. HDMI still had no signal after that update. Dock NVM writing has
-not been tested on hardware.
-There is no ASMedia USB writer. The tested M5/TB16 HDMI setup exposes no
-external IODP device, so
-the new diagnostic backend cannot yet reach its display chips. Lower-level
-Thunderbolt configuration reads and complete active-bank backups work on the
-tested M5, independently of display detection. See the macOS README for exact
-requirements, commands, transport limitations, and the hardware test procedure.
+The port includes experimental Thunderbolt NVM staging and authentication,
+with offline update plans and mandatory fresh backups. **Cable 26.06 and dock
+27.00 were flashed and activated natively on one M5 MacBook Pro running macOS
+27.0.1 build 26A434. HDMI and USB worked after both updates and power-cycles.**
+Post-update reads exactly matched both bundled firmware payloads. This is
+one tested setup; the private Thunderbolt ABI is restricted to that OS build.
+
+The working display also enabled a read-only VMM3330 probe through the Apple
+Silicon backend. It reported unchanged MST firmware 03.10.02. MST and ASMedia
+were not flashed; there is no ASMedia writer. Ethernet, audio and sleep/wake
+still need functional testing. See the macOS README for exact requirements,
+commands, transport limitations and the recorded hardware results.
 The Linux/Windows instructions below remain the established update procedure.
 
 ## Pre-flight checklist

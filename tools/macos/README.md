@@ -2,9 +2,9 @@
 
 This is an initial native macOS implementation of the TB16 **Synaptics MST**
 and **Thunderbolt NVM** update paths. It is not a complete macOS replacement
-for the Linux/Windows procedure. **Cable NVM staging, authentication and
-activation have passed one hardware test. MST and dock NVM writing remain
-unvalidated on hardware.**
+for the Linux/Windows procedure. **Cable 26.06 and dock 27.00 were flashed,
+activated and read back successfully on one M5/TB16 setup. HDMI and USB then
+worked. MST writing remains unvalidated on hardware.**
 Do not treat passing software tests or a successful build as evidence that a
 firmware write will work on your Mac.
 
@@ -16,6 +16,13 @@ MST firmware 03.12.002 and display reliability improvements from Thunderbolt
 Cable NVM updates. Those reports do not establish which update a particular
 dock needs. Identify the current failure and installed versions first.
 
+On the tested M5, cable 16.00 to 26.06 alone left HDMI without a signal.
+After dock 16.00 to 27.00 and another physical power-cycle, the user confirmed
+HDMI and USB working, and macOS listed the external LG ULTRAGEAR display online.
+Both installed firmware payloads exactly matched their bundled images in
+post-update backups. This sequence does not establish whether the dock update
+alone would have been sufficient; USB was not retested between the updates.
+
 The relevant path is Mac -> Thunderbolt link/Cable controller -> VMM3330 ->
 HDMI. The VMM3320 serves DP/VGA. This implementation targets the two display
 chips and the cable/dock Thunderbolt controllers. It could address the VMM3330
@@ -23,16 +30,16 @@ part of an HDMI problem once its AUX transport is validated. It cannot fix a
 Thunderbolt link that does not enumerate, and it cannot yet perform the
 repository's complete update sequence.
 
-On Apple Silicon, repeatable read-only VMM3330 DPCD access remains a separate
-development milestone. A private IODP read backend now exists, and its
-underlying API was validated with a bounded capability read on the M5's
-built-in panel. The connected TB16 still exposes no external IODP device,
-so neither AUX backend can currently reach its display chips on this setup.
-The Thunderbolt NVM transport works independently of that missing device;
-cable staging, authentication and activation have now passed one hardware
-test. HDMI still had no signal afterward.
+On Apple Silicon, the private IODP backend could not reach the display chip
+before the NVM updates because macOS exposed no external device. After both
+updates, an external device appeared and a normal-user, read-only probe
+identified **VMM3330 running 03.10.02** on the HDMI path. The MST firmware was
+not changed. IOI2C still exposes no native AUX interface, so a writable MST
+transport remains unfinished. NVM updating works independently of that AUX
+limitation and was possible while HDMI had no signal.
 
-After HDMI, validate USB, Ethernet, audio, charging and sleep/wake. The
+HDMI and USB have user-confirmed functionality; charging was reported working
+before updating. Ethernet, audio and sleep/wake still need functional tests. The
 ASMedia update concerns the USB-controller path and is separate from the
 display-chip update. Use the repository's Mac-compatible ASMedia choice;
 the `140124_10_10_4_2.BIN` alternative is explicitly reported as incompatible
@@ -58,19 +65,23 @@ attempting display-chip access.
 
 | Component | macOS implementation | Remaining work |
 | --- | --- | --- |
-| VMM3320 / VMM3330 MST | Experimental IOI2C update backend; private IODP read-only backend | Obtain external device access on the tested M5; validate backup and writing on hardware |
-| Thunderbolt Cable / Dock NVM | Verified reads/backups on the tested M5; cable 16.00 to 26.06 activated successfully | Validate dock NVM writes; HDMI remains unresolved |
+| VMM3320 / VMM3330 MST | Experimental IOI2C updater; external VMM3330 IODP reads verified on the M5 after NVM updates | Implement writable Apple Silicon AUX transport; validate backups and writes |
+| Thunderbolt Cable / Dock NVM | Both updates activated and exact payload readback verified on the tested M5; HDMI and USB work | Repeat on more hardware; validate each additional macOS build's private ABI |
 | ASMedia ASM1042A | No writer | Implement privileged PCIe register access and validate the flashing protocol |
 | TI PD / EC | No writer | Identify and implement their update transports |
 
 ## Requirements and platform limits
 
 - macOS 12 or later, Python 3.9 or later, and Xcode Command Line Tools (`xcode-select --install`).
+- Thunderbolt NVM operations currently require **arm64 macOS build 26A434**,
+  a directly connected, powered TB16, and accessory approval. They do not
+  require a working display or AUX interface. The following AUX requirements
+  apply to MST operations.
 - A host graphics driver exposing an `IOI2CInterface` with the
   `kIOI2CDisplayPortNativeTransactionType` capability. The backend checks this
   capability and refuses interfaces without it. Driver support varies; Intel
   Macs are the intended first hardware validation target, not confirmed supported hosts.
-- **Apple Silicon firmware updating is not established.** Display drivers may
+- **Apple Silicon MST firmware updating is not established.** Display drivers may
   expose no usable IOI2C interfaces. The optional `iodp` backend uses private
   APIs for read-only diagnostics, requires an external DP device exposed by
   macOS, and cannot issue remote-control or firmware writes. `sudo` does not
@@ -164,8 +175,9 @@ at runtime. Their four-argument read ABI was inspected in the local IOKit
 binary on macOS 27.0.1 arm64e. One 16-byte read at DPCD address zero on the
 built-in panel returned `141ec44100000180020000000f090000` with success during
 development. This was a control read for API validation; the shipping backend
-does not permit using the built-in panel as a target. No external read has
-yet been validated. The ABI is private and may change on other macOS versions.
+does not permit using the built-in panel as a target. After both NVM updates,
+the external VMM3330 chip/version probe also succeeded as a normal user.
+The ABI is private and may change on other macOS versions.
 The private API returns a status without exposing an actual byte count;
 it is therefore not presented as a verified firmware-update transport.
 The existence of Apple Silicon DPCD diagnostics is also documented by the
@@ -297,14 +309,14 @@ No kernel modifications, entitlements or SIP changes are used.
 
 ## Experimental Thunderbolt NVM staging and authentication
 
-**Cable staging, authentication and activation have passed one hardware test.
-Dock NVM programming remains untested.** The writer is restricted to the same
+**Cable 26.06 and dock 27.00 staging, authentication, activation and exact
+payload readback have passed one M5/TB16 hardware test.** The writer is restricted to the same
 verified macOS build, Intel 1578 and Dell cable/dock model IDs as the reader.
 Only migration from installed NVM **16.00** is enabled in this initial path.
 The two allowed images have pinned SHA-256 values; modified images, older
 images and the security-disabled alternatives are rejected. The cable image
 is the repository's unofficial 26.06 choice, rather than a new Dell release
-specifically qualified for this Mac. Its compatibility still needs testing.
+specifically qualified for this Mac. Broader compatibility still needs testing.
 
 An offline plan uses an existing active-bank backup without loading IOKit,
 requiring root, or contacting the dock:
@@ -471,9 +483,9 @@ external display:
   byte counts and SHA-256 digests.
 
 The Thunderbolt DP output user client's exposed methods are link/HPD/mux
-controls rather than direct AUX reads. Configuration/NVM reads are now working,
-but the display-chip AUX route remains unavailable. NVM staging/authentication
-was implemented and emulator-tested, followed by the cable-only test below.
+controls rather than direct AUX reads. Configuration/NVM reads worked while
+the display-chip AUX route was unavailable. NVM staging/authentication was
+implemented and emulator-tested, followed by the hardware tests below.
 No guessed kernel selectors were sent.
 
 The first approved hardware write targeted only the cable controller:
@@ -501,12 +513,37 @@ the ignored `backups` directory. The filtered
 records the remaining display failure. System Information displays `26.26`
 for the cable; the actual Intel NVM header reports **26.06**.
 
-Before describing this as a working macOS updater, collect evidence for:
+The next approved hardware write targeted the dock controller:
+
+- A new 516,096-byte backup again passed two matching reads and saved-file
+  verification, with the same digest as the original dock 16.00 backup.
+- All 3,328 staging packets (212,992 digital-region bytes) were acknowledged.
+  The active bank remained unchanged, and authentication returned status zero.
+- After another physical power-cycle, active headers reported **cable 26.06
+  and dock 27.00**. A post-update dock backup passed two matching reads and
+  saved-file verification (SHA-256 `686a57de871dfacaa3888437341ffc2d43848e6236d8acdd507c645c877f4d44`).
+  All 212,992 digital-region bytes exactly matched the pinned 27.00 image.
+- The user confirmed **HDMI and USB working**. macOS listed the external LG
+  ULTRAGEAR online, and an external IODP device appeared. The dock still used
+  the name `Dell Thunderbolt Dock - Unsupported` despite working HDMI and USB.
+- The normal-user IODP probe read VMM3330 firmware **03.10.02** and its
+  remote-control capability. It did not enable remote control, verify the
+  board ID or write MST firmware. IOI2C still exposed no native AUX interface.
+- Ethernet and audio enumerated, but their functionality and sleep/wake were
+  not tested. ASMedia and MST firmware were left unchanged.
+
+The sanitized [dock update report](validation/m5-tb16-dock-update.json) and
+[working-display diagnostic snapshot](validation/m5-tb16-nvm-updated-hdmi-working.json)
+record these results. System Information reports `27.27` for the dock;
+its active Intel NVM header reports **27.00**. This is one tested host/dock
+combination, not evidence of support on every Apple Silicon Mac or OS build.
+
+To validate the remaining MST update path, collect evidence for:
 
 1. Repeatable DPCD reads from the dock on each proposed host/graphics-driver
    configuration, including an access path that works when HDMI has no signal.
 2. Correct VMM3320/VMM3330 selection and repeatable full EEPROM backups.
-3. A successful write on recoverable test hardware, verified readback and the
+3. A successful MST write on recoverable test hardware, verified readback and the
    expected running firmware after a power-cycle.
 4. Display operation on both MST paths after updating.
 
