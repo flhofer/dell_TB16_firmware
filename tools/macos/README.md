@@ -183,9 +183,30 @@ construction and handling of submission errors, transaction errors and short
 transfers without issuing hardware requests.
 
 Validation completed during development: native arm64 compilation with
-warnings as errors, Intel syntax checks, offline image inspection, tests, and live IORegistry
-enumeration on an Apple Silicon Mac with no dock attached. Enumeration returned
-no IOI2C endpoints. No firmware or remote-control writes were run on hardware.
+warnings as errors, Intel syntax checks, offline image inspection, tests, and
+live IORegistry enumeration. No firmware or remote-control writes were run on
+hardware.
+
+A connected TB16 was subsequently inspected on an M5 MacBook Pro running
+macOS 27.0.1. The user reported charging working, with HDMI and USB peripherals
+not working. Read-only inspection found:
+
+- System Information enumerated `Dell Thunderbolt Cable` and
+  `Dell Thunderbolt Dock - Unsupported`, each reporting firmware `16.16` and
+  a 40 Gb/s connection. These are the macOS-reported values, not independently
+  decoded NVM versions or proof that a particular image needs installing.
+- IORegistry showed the ASMedia `1b21:1142` PCIe device with the
+  `AppleASMedia1042USBXHCI` driver attached, plus `USB5807 Hub` and `USB2807 Hub`
+  children. Thus the unsupported device name does not by itself establish
+  that all Thunderbolt/PCIe communication is blocked. Driver/hub enumeration
+  also does not establish usable downstream USB peripherals.
+- The updater's `list` returned no IOI2C endpoints, both with and without the
+  dock connected. The current AUX backend cannot access either MST chip on
+  this tested configuration. An Apple Silicon transport remains necessary
+  to demonstrate native MST updating on this Mac.
+
+This observation does not identify the cause of the HDMI failure, validate
+firmware writes, or establish that an MST update alone would resolve it.
 
 Before describing this as a working macOS updater, collect evidence for:
 
