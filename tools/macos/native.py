@@ -85,3 +85,68 @@ class Aux:
 
     def write(self, address, data):
         self._transfer(address, bytearray(data), True)
+
+
+class DpEndpoint(C.Structure):
+    _fields_ = [("registry_id", C.c_uint64), ("path", C.c_char * 512),
+                ("location", C.c_char * 32)]
+
+
+class IodpNative(Native):
+    """Private Apple Silicon API; intentionally limited to read-only diagnostics."""
+    def __init__(self):
+        super().__init__()
+        self.lib.tb16_iodp_available.argtypes = []
+        self.lib.tb16_iodp_available.restype = C.c_uint32
+        self.lib.tb16_iodp_list.argtypes = [C.POINTER(C.POINTER(DpEndpoint)), C.POINTER(C.c_uint32)]
+        self.lib.tb16_iodp_list.restype = C.c_uint32
+        self.lib.tb16_iodp_open.argtypes = [C.c_uint64, C.POINTER(C.c_void_p)]
+        self.lib.tb16_iodp_open.restype = C.c_uint32
+        self.lib.tb16_iodp_close.argtypes = [C.c_void_p]
+        self.lib.tb16_iodp_close.restype = None
+        self.lib.tb16_iodp_read.argtypes = [C.c_void_p, C.c_uint32, C.c_void_p, C.c_uint32]
+        self.lib.tb16_iodp_read.restype = C.c_uint32
+        if not self.lib.tb16_iodp_available():
+            raise AuxError("Private IODP device/read functions are unavailable on this macOS version")
+
+    def endpoints(self):
+        entries, count = C.POINTER(DpEndpoint)(), C.c_uint32()
+        check(self.lib.tb16_iodp_list(C.byref(entries), C.byref(count)), "enumerate IODP devices")
+        try:
+            return [{"id": f"0x{entries[i].registry_id:x}",
+                     "backend": "iodp", "read_only": True,
+                     "location": entries[i].location.decode("utf-8", "replace"),
+                     "external": entries[i].location == b"External",
+                     "path": entries[i].path.decode("utf-8", "replace")}
+                    for i in range(count.value)]
+        finally:
+            self.lib.tb16_free(entries)
+
+    def open(self, registry_id):
+        return IodpAux(self.lib, registry_id)
+
+
+class IodpAux:
+    def __init__(self, lib, registry_id):
+        self.lib, self.connection = lib, C.c_void_p()
+        check(lib.tb16_iodp_open(registry_id, C.byref(self.connection)),
+              "open IODP device (only an advertised External device is allowed)")
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, kind, value, traceback):
+        self.lib.tb16_iodp_close(self.connection)
+
+    def read(self, address, length):
+        if length <= 0 or address < 0 or address + length > 0x100000:
+            raise AuxError("DPCD read must fit within the 20-bit address space")
+        data = bytearray(length)
+        for offset in range(0, length, 16):
+            packet = (C.c_uint8 * min(16, length - offset)).from_buffer(data, offset)
+            check(self.lib.tb16_iodp_read(self.connection, address + offset, packet, len(packet)),
+                  f"IODP read at 0x{address + offset:05x}")
+        return bytes(data)
+
+    def write(self, address, data):
+        raise AuxError("The IODP backend is read-only; firmware backup/control/write is unavailable")

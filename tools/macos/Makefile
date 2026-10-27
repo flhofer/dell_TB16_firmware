@@ -4,9 +4,9 @@ CFLAGS = -std=c11 -O2 -Wall -Wextra -Werror -mmacosx-version-min=12.0
 .PHONY: all test clean
 all: build/libtb16aux.dylib
 
-build/libtb16aux.dylib: aux.c
+build/libtb16aux.dylib: aux.c iodp.c
 	mkdir -p build
-	$(CC) $(CFLAGS) -dynamiclib -framework IOKit -framework CoreFoundation $< -o $@
+	$(CC) $(CFLAGS) -dynamiclib -framework IOKit -framework CoreFoundation $^ -o $@
 
 build/test_aux: tests/test_aux.c aux.c
 	mkdir -p build
