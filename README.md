@@ -64,6 +64,8 @@ with offline update plans and mandatory fresh backups. **Cable 26.06 and dock
 27.0.1 build 26A434. HDMI and USB worked after both updates and power-cycles.**
 Post-update reads exactly matched both bundled firmware payloads. This is
 one tested setup; the private Thunderbolt ABI is restricted to that OS build.
+DisplayPort was also confirmed working at 2560x1440/120 Hz; HDMI was confirmed
+at 2560x1440/60 Hz and 1920x1080/120 Hz on the same monitor.
 
 The working display also enabled a read-only VMM3330 probe through the Apple
 Silicon backend. It reported unchanged MST firmware 03.10.02. MST and ASMedia

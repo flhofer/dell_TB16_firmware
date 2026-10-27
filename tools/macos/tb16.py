@@ -56,7 +56,7 @@ def main(argv=None):
     update.add_argument("--experimental", action="store_true")
     update.add_argument("--image", type=Path, required=True)
     update.add_argument("--backup", type=Path, help="new active-bank backup file required for --write")
-    update.add_argument("--write", action="store_true", help="stage to inactive NVM bank (unvalidated on hardware)")
+    update.add_argument("--write", action="store_true", help="stage to inactive NVM bank (experimental; tested on one M5/TB16)")
     update.add_argument("--authenticate", action="store_true", help="also request authentication once after staging")
     inspect = commands.add_parser("inspect-image", help="validate the bundled raw MST image offline")
     inspect.add_argument("image", nargs="?", type=Path, default=DEFAULT_IMAGE)

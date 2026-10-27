@@ -80,6 +80,10 @@ timings use 497.75 MHz at 120 Hz versus 241.5 MHz at approximately 60 Hz; the
 [HDMI's published bandwidth overview](https://www.hdmi.org/download/savefile?fileKey=Marketing%2Fuhs_program_overview_2022-01-01.pdf)). Higher refresh rates
 are better investigated over a direct DisplayPort cable from the dock to a
 monitor's DisplayPort input, with actual mode support verified on that setup.
+The user subsequently connected DisplayPort and confirmed **2560x1440 at
+120 Hz** working. CoreGraphics and System Information both reported that mode;
+no further firmware was changed. See the
+[DisplayPort validation report](validation/m5-tb16-displayport-1440p-120.json).
 The [mode investigation report](validation/m5-tb16-hdmi-refresh-rates.json)
 records the user-confirmed working modes **1920x1080 at 120 Hz** and
 **2560x1440 at 60 Hz**, plus the blank-screen result at 2560x1440/120.
@@ -102,6 +106,23 @@ attempting display-chip access.
 | Thunderbolt Cable / Dock NVM | Both updates activated and exact payload readback verified on the tested M5; HDMI and USB work | Repeat on more hardware; validate each additional macOS build's private ABI |
 | ASMedia ASM1042A | No writer | Implement privileged PCIe register access and validate the flashing protocol |
 | TI PD / EC | No writer | Identify and implement their update transports |
+
+The implemented NVM path is ready for review as an experimental port scoped
+to the tested build. Before claiming broader or everyday reliability, the
+remaining validation is:
+
+- Sleep/wake, reconnecting the dock and a Mac reboot with the dock attached,
+  checking that video and USB return without another firmware update.
+- Ethernet and analog/USB audio operation; enumeration alone is insufficient.
+- More TB16 units and Macs. Each additional macOS build needs its private
+  Thunderbolt ABI inspected and validated before enabling writes; do not
+  remove the build restriction to claim wider support.
+
+Useful follow-up development includes a post-power-cycle verification command
+that checks the installed payload against the intended image, and macOS CI
+for the existing native/Python checks. Complete MST, ASMedia and TI/EC flashing
+would be separate work. They were not required for the working HDMI, USB and
+DisplayPort results above, and their firmware was not changed in these tests.
 
 ## Requirements and platform limits
 
