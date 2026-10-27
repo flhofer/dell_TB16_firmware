@@ -54,13 +54,15 @@ Native macOS porting work is in [`tools/macos`](tools/macos/README.md).
 It includes an experimental Synaptics VMM3320/VMM3330 MST updater using
 IOKit DisplayPort AUX, firmware validation, EEPROM backup, and checksum plus
 full readback verification. Flashing is opt-in; the default `flash` command
-performs a read-only dry run. **Firmware writing has not been validated
+performs a read-only dry run. **MST firmware writing has not been validated
 with a physical TB16.** A separate experimental Apple Silicon backend now
 provides read-only DPCD diagnostics for external devices exposed by macOS.
 
 The port now includes experimental Thunderbolt Cable/Dock NVM staging and
 authentication, with offline update plans and mandatory fresh backups. NVM
-programming has passed emulator tests but has not been run on the dock.
+Cable NVM 26.06 staging and authentication have now succeeded on one M5/TB16;
+activation and HDMI operation still require verification. Dock NVM writing
+has not been tested on hardware.
 There is no ASMedia USB writer. The tested M5/TB16 HDMI setup exposes no
 external IODP device, so
 the new diagnostic backend cannot yet reach its display chips. Lower-level

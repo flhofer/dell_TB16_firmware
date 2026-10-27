@@ -2,8 +2,9 @@
 
 This is an initial native macOS implementation of the TB16 **Synaptics MST**
 and **Thunderbolt NVM** update paths. It is not a complete macOS replacement
-for the Linux/Windows procedure. **Firmware writing has not been validated on
-a physical TB16.**
+for the Linux/Windows procedure. **Cable NVM staging/authentication have passed
+one hardware test; activation is pending. MST and dock NVM writing remain
+unvalidated on hardware.**
 Do not treat passing software tests or a successful build as evidence that a
 firmware write will work on your Mac.
 
@@ -28,7 +29,8 @@ underlying API was validated with a bounded capability read on the M5's
 built-in panel. The connected TB16 still exposes no external IODP device,
 so neither AUX backend can currently reach its display chips on this setup.
 The Thunderbolt NVM transport works independently of that missing device;
-the next NVM milestone is hardware validation of staging and authentication.
+cable staging/authentication have now passed one hardware test. Activation
+and HDMI behavior still require verification.
 
 After HDMI, validate USB, Ethernet, audio, charging and sleep/wake. The
 ASMedia update concerns the USB-controller path and is separate from the
@@ -57,7 +59,7 @@ attempting display-chip access.
 | Component | macOS implementation | Remaining work |
 | --- | --- | --- |
 | VMM3320 / VMM3330 MST | Experimental IOI2C update backend; private IODP read-only backend | Obtain external device access on the tested M5; validate backup and writing on hardware |
-| Thunderbolt Cable / Dock NVM | Verified reads/backups on the tested M5; staging/authentication pass emulator tests | Validate staging/authentication on hardware, activation and HDMI behavior |
+| Thunderbolt Cable / Dock NVM | Verified reads/backups on the tested M5; cable staging/authentication passed one hardware test | Verify cable activation and HDMI; validate dock NVM writes |
 | ASMedia ASM1042A | No writer | Implement privileged PCIe register access and validate the flashing protocol |
 | TI PD / EC | No writer | Identify and implement their update transports |
 
@@ -295,7 +297,8 @@ No kernel modifications, entitlements or SIP changes are used.
 
 ## Experimental Thunderbolt NVM staging and authentication
 
-**The writer has not been run on hardware.** It is restricted to the same
+**Cable staging/authentication have passed one hardware test; activation is
+pending. Dock NVM programming remains untested.** The writer is restricted to the same
 verified macOS build, Intel 1578 and Dell cable/dock model IDs as the reader.
 Only migration from installed NVM **16.00** is enabled in this initial path.
 The two allowed images have pinned SHA-256 values; modified images, older
@@ -411,8 +414,8 @@ payload slicing, unchanged-active-bank checks, failure states and CLI defaults.
 
 Validation completed during development: native arm64 compilation with
 warnings as errors, Intel syntax checks, offline image inspection, tests, and
-live IORegistry enumeration. No firmware or remote-control writes were run on
-hardware.
+live IORegistry enumeration. Initially no firmware or remote-control writes
+were run on hardware; the later cable NVM experiment is recorded below.
 
 A connected TB16 was subsequently inspected on an M5 MacBook Pro running
 macOS 27.0.1. The user reported charging working, with HDMI and USB peripherals
@@ -470,8 +473,22 @@ external display:
 The Thunderbolt DP output user client's exposed methods are link/HPD/mux
 controls rather than direct AUX reads. Configuration/NVM reads are now working,
 but the display-chip AUX route remains unavailable. NVM staging/authentication
-is now implemented and emulator-tested; it has not been exercised on hardware.
-No guessed kernel selectors or flash-programming commands were sent.
+was implemented and emulator-tested, followed by the cable-only test below.
+No guessed kernel selectors were sent.
+
+The first approved hardware write targeted only the cable controller:
+
+- A fresh 516,096-byte backup passed two matching reads and saved-file
+  verification. Its SHA-256 matched the earlier 16.00 backup exactly.
+- All 3,392 staging packets (217,088 digital-region bytes) were acknowledged.
+- A subsequent full active-bank read matched the backup before authentication.
+- One authentication request returned IOReturn zero and device status zero.
+- The dock controller was not programmed. Activation and the HDMI retest are
+  pending a physical power-cycle; authentication alone is not proof of either.
+
+The sanitized [cable update report](validation/m5-tb16-cable-update.json)
+records the result. Raw backup, log and command output remain locally under
+the ignored `backups` directory.
 
 Before describing this as a working macOS updater, collect evidence for:
 
