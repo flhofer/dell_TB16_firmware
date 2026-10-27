@@ -81,9 +81,12 @@ timings use 497.75 MHz at 120 Hz versus 241.5 MHz at approximately 60 Hz; the
 are better investigated over a direct DisplayPort cable from the dock to a
 monitor's DisplayPort input, with actual mode support verified on that setup.
 The [mode investigation report](validation/m5-tb16-hdmi-refresh-rates.json)
-records the 1080p/120 baseline, failing 1440p/120 user test, EDID timing
-summary and subsequent macOS configuration of 1440p/60. A reported active
-mode alone is not proof that the picture is visible.
+records the user-confirmed working modes **1920x1080 at 120 Hz** and
+**2560x1440 at 60 Hz**, plus the blank-screen result at 2560x1440/120.
+The successful 1440p/60 selection was made in macOS System Settings ->
+Displays. The report also includes EDID timing and CoreGraphics evidence.
+A reported active mode alone is not proof that the picture is visible;
+this 1440p/60 result includes the user's visual confirmation.
 
 For diagnosis, connect dock AC power, the upstream Thunderbolt cable and one
 HDMI monitor directly. Approve the accessory if macOS asks; charging alone

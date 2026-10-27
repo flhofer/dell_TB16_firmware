@@ -60,7 +60,7 @@
     "link_config_0x00100": "14840000000000000000000000000000",
     "configured_link": "HBR2, four lanes"
   },
-  "physical_1440p_60_picture": "awaiting user confirmation",
+  "physical_1440p_60_picture": "working, confirmed by user",
   "display_mode_changes_by_tool": false,
   "coregraphics": {
     "source": "public read-only CoreGraphics APIs",
@@ -145,5 +145,18 @@
     },
     "default_mode_list_unchanged": true,
     "manually_selected_1440p_60_absent_from_default_list": true
-  }
+  },
+  "mode_selection_application": "macOS System Settings -> Displays",
+  "user_confirmed_working_modes": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "refresh_hz": 120
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "refresh_hz": 60
+    }
+  ]
 }
