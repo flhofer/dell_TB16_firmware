@@ -1,0 +1,55 @@
+{
+  "validation": "offline plans against previously verified device backups",
+  "host": "M5 MacBook Pro",
+  "macos_build": "26A434",
+  "hardware_programming_performed": false,
+  "authentication_performed": false,
+  "hdmi_working": false,
+  "plans": [
+    {
+      "target": "cable",
+      "model_id": "0xb051",
+      "image": "Cable_26_06.bin",
+      "image_sha256": "3e1b0b7f349854eee359dd653d6aac2360a4ff12bc74eeae1b6d9a2fd6cc2069",
+      "target_version": "26.06",
+      "farb_bytes_skipped": 16384,
+      "staging_bytes": 217088,
+      "staging_sha256": "69da1e98c778e20810943681dd9d95422036034b7655fbc5d372452bc47302ab",
+      "packets": 3392,
+      "current_version": "16.00",
+      "active_bank_bytes": 516096,
+      "css_header_write": false,
+      "firmware_written": false,
+      "activation_verified": false,
+      "inactive_readback_available": false,
+      "backup_scope": "active bank only; recovery is not implemented",
+      "backup_sha256": "8c06495af6bb04c838986e61c115fab0a556a787e6ed9cc2155502e3bd3c2953"
+    },
+    {
+      "target": "dock",
+      "model_id": "0xb054",
+      "image": "Dock_BME_27_00.bin",
+      "image_sha256": "c7e6e20de545b9fdeba64e830abcae5e75f21ac064ebcdd1d2c2b388fd3fde64",
+      "target_version": "27.00",
+      "farb_bytes_skipped": 16384,
+      "staging_bytes": 212992,
+      "staging_sha256": "4c68c1754d7e2ce9c4d8d5cb136acd9ffc2f46f27b60f2aac55f8d34922758f2",
+      "packets": 3328,
+      "current_version": "16.00",
+      "active_bank_bytes": 516096,
+      "css_header_write": false,
+      "firmware_written": false,
+      "activation_verified": false,
+      "inactive_readback_available": false,
+      "backup_scope": "active bank only; recovery is not implemented",
+      "backup_sha256": "f652434d56993fadab5268a7ed9bcf0bb72dd5c5c126703bb16f3506fffa8d8d"
+    }
+  ],
+  "software_validation": {
+    "python_tests_passed": 49,
+    "native_test_programs_passed": 4,
+    "arm64_build": "passed with warnings as errors",
+    "x86_64_syntax_check": "passed",
+    "live_configuration_reads": "both existing TB16 controller identities still read as 0x15788086"
+  }
+}

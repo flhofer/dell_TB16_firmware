@@ -1,8 +1,9 @@
 # Experimental macOS port
 
 This is an initial native macOS implementation of the TB16 **Synaptics MST**
-update path. It is not a complete macOS replacement for the Linux/Windows
-procedure. **Firmware writing has not been validated on a physical TB16.**
+and **Thunderbolt NVM** update paths. It is not a complete macOS replacement
+for the Linux/Windows procedure. **Firmware writing has not been validated on
+a physical TB16.**
 Do not treat passing software tests or a successful build as evidence that a
 firmware write will work on your Mac.
 
@@ -16,15 +17,18 @@ dock needs. Identify the current failure and installed versions first.
 
 The relevant path is Mac -> Thunderbolt link/Cable controller -> VMM3330 ->
 HDMI. The VMM3320 serves DP/VGA. This implementation targets the two display
-chips, so it could address the VMM3330 part of an HDMI problem once its
-transport is validated. It cannot fix a Thunderbolt link that does not
-enumerate, and it cannot yet perform the repository's complete update sequence.
+chips and the cable/dock Thunderbolt controllers. It could address the VMM3330
+part of an HDMI problem once its AUX transport is validated. It cannot fix a
+Thunderbolt link that does not enumerate, and it cannot yet perform the
+repository's complete update sequence.
 
-On Apple Silicon, the next development milestone is obtaining repeatable
-read-only VMM3330 DPCD access. A private IODP read backend now exists, and its
+On Apple Silicon, repeatable read-only VMM3330 DPCD access remains a separate
+development milestone. A private IODP read backend now exists, and its
 underlying API was validated with a bounded capability read on the M5's
 built-in panel. The connected TB16 still exposes no external IODP device,
-so neither backend can currently reach its display chips on this setup.
+so neither AUX backend can currently reach its display chips on this setup.
+The Thunderbolt NVM transport works independently of that missing device;
+the next NVM milestone is hardware validation of staging and authentication.
 
 After HDMI, validate USB, Ethernet, audio, charging and sleep/wake. The
 ASMedia update concerns the USB-controller path and is separate from the
@@ -53,7 +57,7 @@ attempting display-chip access.
 | Component | macOS implementation | Remaining work |
 | --- | --- | --- |
 | VMM3320 / VMM3330 MST | Experimental IOI2C update backend; private IODP read-only backend | Obtain external device access on the tested M5; validate backup and writing on hardware |
-| Thunderbolt Cable / Dock NVM | Verified configuration/header reads and active-bank backups on the tested M5; no writer | Implement image validation, inactive-bank staging and authentication |
+| Thunderbolt Cable / Dock NVM | Verified reads/backups on the tested M5; staging/authentication pass emulator tests | Validate staging/authentication on hardware, activation and HDMI behavior |
 | ASMedia ASM1042A | No writer | Implement privileged PCIe register access and validate the flashing protocol |
 | TI PD / EC | No writer | Identify and implement their update transports |
 
@@ -256,9 +260,8 @@ This locates the controller's DMA/NHI port and validates its mailbox capability.
 It submits only **FLASH_READ** commands to the mailbox, then reads 80 bytes
 of the active digital header. Submitting the read command writes a temporary
 control register and requires administrator access; it does not program
-firmware. The native code does not implement flash programming, erasure,
-authentication, resets or generic register writes. Busy mailboxes, errors and
-timeouts abort without a retry or reset.
+firmware. The read commands never call the separate staging/authentication
+entry points. Busy mailboxes, errors and timeouts abort without a retry or reset.
 
 For a verified backup of the entire active firmware bank:
 
@@ -290,6 +293,98 @@ and bank-size calculation were checked against the Linux kernel's
 and [`nvm.c`](https://github.com/torvalds/linux/blob/master/drivers/thunderbolt/nvm.c).
 No kernel modifications, entitlements or SIP changes are used.
 
+## Experimental Thunderbolt NVM staging and authentication
+
+**The writer has not been run on hardware.** It is restricted to the same
+verified macOS build, Intel 1578 and Dell cable/dock model IDs as the reader.
+Only migration from installed NVM **16.00** is enabled in this initial path.
+The two allowed images have pinned SHA-256 values; modified images, older
+images and the security-disabled alternatives are rejected. The cable image
+is the repository's unofficial 26.06 choice, rather than a new Dell release
+specifically qualified for this Mac. Its compatibility still needs testing.
+
+An offline plan uses an existing active-bank backup without loading IOKit,
+requiring root, or contacting the dock:
+
+```sh
+python3 tools/macos/tb16.py plan-nvm --target cable \
+  --image bins/Cable_26_06.bin \
+  --backup tools/macos/backups/cable-active.backup.bin
+```
+
+For the dock controller, select `--target dock` and
+`bins/Dock_BME_27_00.bin` with its own backup. Offline validation checks the
+bank layout/version and image's intended role; it cannot prove which physical
+device supplied an arbitrary backup. The saved development
+[update plans](validation/m5-tb16-nvm-update-plan.json) were checked against
+both actual M5/TB16 backups. They contain no raw firmware or device UIDs.
+
+A live dry run additionally matches the selected controller and reads its
+active header. It submits FLASH_READ control commands, with no programming
+or authentication and no backup file created:
+
+```sh
+sudo python3 tools/macos/tb16.py update-nvm --experimental \
+  --device 0x100001234 --image bins/Cable_26_06.bin
+```
+
+The following command performs a real inactive-bank write and then requests
+authentication. Use a real **cable** switch ID from a fresh `list-tbt` and a
+**new** backup filename. Do not run it as part of read-only diagnostics:
+
+```sh
+sudo python3 tools/macos/tb16.py update-nvm --experimental \
+  --device 0x100001234 --image bins/Cable_26_06.bin \
+  --backup tools/macos/backups/cable-before-staging.backup.bin \
+  --write --authenticate
+```
+
+For the dock controller, use its own ID, image and new backup filename.
+Update one controller at a time. The workflow holds the mailbox lock, reads
+the full active bank twice, saves and verifies the new backup, then stages
+the digital region in packets of at most 64 bytes. It skips the image's
+16 KiB FARB prefix; Alpine Ridge does not use the older-generation CSS-header
+write. Write lengths use the mailbox's count-minus-one encoding.
+
+The native layer rechecks the exact registry entry, route, parent controller,
+Dell model, Intel identity and mailbox before every programming packet. A
+disconnect or any failed packet invalidates the session; incomplete or failed
+staging cannot authenticate. The active bank is read again and must match the
+backup before authentication. Do not run other firmware utilities concurrently;
+the lock coordinates only instances of this tool.
+
+Without `--authenticate`, `--write` stops at `staged_unverified`. A later
+process cannot authenticate an old session: rerun the full backup/staging
+workflow with another new backup file if authentication is needed. There is
+no independent authenticate, erase, reset or generic register-write command.
+
+The mailbox's FLASH_READ command addresses the **active** bank, so the writer
+cannot independently read back its inactive staging buffer. It reports staging
+acknowledgements separately from authentication and activation:
+
+| Result state | Meaning | Exit code |
+| --- | --- | --- |
+| `dry_run` | Image/target/header checked; no firmware written | 0 |
+| `staged_unverified` | All staging packets acknowledged; no auth requested | 0 |
+| `authentication_reported` | Device returned auth status zero; activation still unverified | 0 |
+| `authentication_failed` | Device returned a nonzero authentication status | 1 |
+| `authentication_outcome_unknown` | Command attempted but disconnect, timeout or missing status prevented confirmation | 2 |
+
+Never interpret exit zero alone as proof of activated firmware. Authentication
+is attempted once, with no retry and no automatic dock reset. Native staging
+polls have a five-second deadline. Authentication waits up to 150 ms for
+command completion, then up to five seconds for its status; kernel calls can
+add their own timeout. If the
+outcome is unknown or a write fails, keep the dock powered, preserve output
+and the backup, and investigate before retrying. Backups do not guarantee
+recovery, and this tool has no restore operation.
+
+After confirmed authentication, manually power-cycle the dock, enumerate
+again, and run `read-nvm-header` against its new ID. Require **26.06** for the
+cable or **27.00** for the dock from the active header. Then test HDMI, USB,
+Ethernet, audio and sleep/wake. NVM activation does not establish that HDMI
+works or update the MST/ASMedia firmware.
+
 ## Tests and hardware validation still needed
 
 ```sh
@@ -307,8 +402,12 @@ construction and handling of submission errors, transaction errors and short
 transfers without issuing hardware requests.
 The Thunderbolt C tests additionally verify the six-scalar request, wire byte
 order, read-only mailbox opcodes, privilege rejection, capability matching,
-busy/error/timeout handling and bounds. Python tests check Intel versions
-against the bundled images and verify matching-read/exclusive-save behavior.
+busy/error/timeout handling and bounds. A separate native mailbox/registry
+emulator executes the actual staging/authentication implementation, including
+wire byte order, one- and sixteen-DWORD lengths, short final packets,
+replacement/disconnect rejection, staging failures and single-attempt auth.
+Python tests check role/hash/version validation, backup-before-write ordering,
+payload slicing, unchanged-active-bank checks, failure states and CLI defaults.
 
 Validation completed during development: native arm64 compilation with
 warnings as errors, Intel syntax checks, offline image inspection, tests, and
@@ -370,7 +469,8 @@ external display:
 
 The Thunderbolt DP output user client's exposed methods are link/HPD/mux
 controls rather than direct AUX reads. Configuration/NVM reads are now working,
-but the display-chip AUX route and NVM staging/authentication remain unfinished.
+but the display-chip AUX route remains unavailable. NVM staging/authentication
+is now implemented and emulator-tested; it has not been exercised on hardware.
 No guessed kernel selectors or flash-programming commands were sent.
 
 Before describing this as a working macOS updater, collect evidence for:
@@ -401,5 +501,7 @@ The existing Linux Thunderbolt writer relies on
 [`nvm_non_active` and `nvm_authenticate`](https://github.com/torvalds/linux/blob/master/Documentation/admin-guide/thunderbolt.rst),
 which are kernel interfaces, not portable files. A macOS NVM implementation
 needs a separate transport; installing a CLI does not supply those interfaces.
-ASMedia similarly requires PCIe register access, as illustrated by
-[`ASMTool`](https://github.com/smx-smx/ASMTool). Neither transport is implemented here.
+The experimental native implementation above supplies a separate, build-specific
+Thunderbolt transport. ASMedia requires its own PCIe register access, as
+illustrated by [`ASMTool`](https://github.com/smx-smx/ASMTool); that transport
+is not implemented here.

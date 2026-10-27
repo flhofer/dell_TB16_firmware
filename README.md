@@ -58,10 +58,13 @@ performs a read-only dry run. **Firmware writing has not been validated
 with a physical TB16.** A separate experimental Apple Silicon backend now
 provides read-only DPCD diagnostics for external devices exposed by macOS.
 
-The port does not yet update the Thunderbolt Cable/Dock NVM or ASMedia USB
-controller. The tested M5/TB16 HDMI setup exposes no external IODP device, so
+The port now includes experimental Thunderbolt Cable/Dock NVM staging and
+authentication, with offline update plans and mandatory fresh backups. NVM
+programming has passed emulator tests but has not been run on the dock.
+There is no ASMedia USB writer. The tested M5/TB16 HDMI setup exposes no
+external IODP device, so
 the new diagnostic backend cannot yet reach its display chips. Lower-level
-Thunderbolt configuration reads and active NVM header reads now work on the
+Thunderbolt configuration reads and complete active-bank backups work on the
 tested M5, independently of display detection. See the macOS README for exact
 requirements, commands, transport limitations, and the hardware test procedure.
 The Linux/Windows instructions below remain the established update procedure.
