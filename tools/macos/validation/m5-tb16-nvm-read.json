@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "host": {
+    "macos": "27.0.1",
+    "build": "26A434",
+    "architecture": "arm64"
+  },
+  "transport": "IOThunderboltFamilyUserClient configuration reads and DMA FLASH_READ mailbox",
+  "targets": [
+    {
+      "role": "cable",
+      "dell_model_id": "0xb051",
+      "switch_header_dwords": [
+        "0x15788086",
+        "0x0412c105",
+        "0x00000001",
+        "0x80000000",
+        "0x020000ff"
+      ],
+      "active_nvm": {
+        "device_id": "0x1578",
+        "nvm_version": "16.00",
+        "active_bank_size": 516096,
+        "source": "active Intel NVM digital header (80 bytes)",
+        "firmware_written": false,
+        "bytes_saved": 516096,
+        "sha256": "8c06495af6bb04c838986e61c115fab0a556a787e6ed9cc2155502e3bd3c2953",
+        "matching_device_reads": 2,
+        "saved_copy_verified": true
+      }
+    },
+    {
+      "role": "dock",
+      "dell_model_id": "0xb054",
+      "switch_header_dwords": [
+        "0x15788086",
+        "0x0422c105",
+        "0x00000301",
+        "0x80000000",
+        "0x020000ff"
+      ],
+      "active_nvm": {
+        "device_id": "0x1578",
+        "nvm_version": "16.00",
+        "active_bank_size": 516096,
+        "source": "active Intel NVM digital header (80 bytes)",
+        "firmware_written": false,
+        "bytes_saved": 516096,
+        "sha256": "f652434d56993fadab5268a7ed9bcf0bb72dd5c5c126703bb16f3506fffa8d8d",
+        "matching_device_reads": 2,
+        "saved_copy_verified": true
+      }
+    }
+  ],
+  "firmware_programmed": false,
+  "firmware_erased": false,
+  "dock_reset": false,
+  "limitations": [
+    "Active banks only; separate SPI headers and inactive banks are not backed up.",
+    "No native NVM programming/authentication or restore implementation yet.",
+    "Display-chip AUX access and dock HDMI output remain unresolved."
+  ]
+}

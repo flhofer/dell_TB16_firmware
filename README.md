@@ -60,7 +60,9 @@ provides read-only DPCD diagnostics for external devices exposed by macOS.
 
 The port does not yet update the Thunderbolt Cable/Dock NVM or ASMedia USB
 controller. The tested M5/TB16 HDMI setup exposes no external IODP device, so
-the new diagnostic backend cannot yet reach its display chips. See the macOS README for exact
+the new diagnostic backend cannot yet reach its display chips. Lower-level
+Thunderbolt configuration reads and active NVM header reads now work on the
+tested M5, independently of display detection. See the macOS README for exact
 requirements, commands, transport limitations, and the hardware test procedure.
 The Linux/Windows instructions below remain the established update procedure.
 

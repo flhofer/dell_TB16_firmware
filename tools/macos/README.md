@@ -53,7 +53,7 @@ attempting display-chip access.
 | Component | macOS implementation | Remaining work |
 | --- | --- | --- |
 | VMM3320 / VMM3330 MST | Experimental IOI2C update backend; private IODP read-only backend | Obtain external device access on the tested M5; validate backup and writing on hardware |
-| Thunderbolt Cable / Dock NVM | No writer | Implement and validate macOS switch NVM access and authentication |
+| Thunderbolt Cable / Dock NVM | Verified configuration/header reads and active-bank backups on the tested M5; no writer | Implement image validation, inactive-bank staging and authentication |
 | ASMedia ASM1042A | No writer | Implement privileged PCIe register access and validate the flashing protocol |
 | TI PD / EC | No writer | Identify and implement their update transports |
 
@@ -173,6 +173,9 @@ existing experimental IOI2C update path is separate.
 
 ## EEPROM backup and experimental write
 
+These MST commands use the IOI2C backend. For Thunderbolt controller NVM
+backups, use the separate commands in the next section.
+
 The next operations enable the Synaptics remote-control mode. Backup reads
 EEPROM and temporarily writes control registers, but does not erase or program
 EEPROM. Do not run other display-control or firmware tools concurrently.
@@ -218,6 +221,75 @@ and backup. A failed update may have left its single firmware image incomplete.
 Do not immediately power-cycle it. The updater attempts to leave remote-control
 mode, but does not submit a cleanup command over a still-busy operation.
 
+## Lower-level Thunderbolt access and active NVM backups
+
+This path works independently of display detection. Its private kernel ABI
+is deliberately restricted to **arm64 macOS build 26A434 (27.0.1)**, the build
+whose actual kernel was inspected. Other builds require ABI validation before
+enabling it; there is no force override. Registry listing is still available.
+
+```sh
+make -C tools/macos
+python3 tools/macos/tb16.py list-tbt
+python3 tools/macos/tb16.py read-tbt-config --experimental --device 0x100001234
+```
+
+Use an actual switch ID from `list-tbt`; it is different from a display/AUX
+interface ID and changes after unplugging. Only Dell cable/dock model IDs
+`00d4:b051` and `00d4:b054` are listed. Opening a reader revalidates the model,
+finds its parent Thunderbolt controller, and reads the switch identity to
+require Intel `8086:1578`. The host Mac is not an allowed target.
+
+`read-tbt-config` defaults to five switch-header DWORDs. It also supports
+`--space port --port NUMBER --offset DWORD_OFFSET --count COUNT`. Reads are
+limited to 1-16 DWORDs in switch/port space; the native wrapper has no generic
+configuration-write entry point. Configuration reads worked as a normal user
+on the tested Mac.
+
+To read the installed firmware version from active NVM:
+
+```sh
+sudo python3 tools/macos/tb16.py read-nvm-header --experimental --device 0x100001234
+```
+
+This locates the controller's DMA/NHI port and validates its mailbox capability.
+It submits only **FLASH_READ** commands to the mailbox, then reads 80 bytes
+of the active digital header. Submitting the read command writes a temporary
+control register and requires administrator access; it does not program
+firmware. The native code does not implement flash programming, erasure,
+authentication, resets or generic register writes. Busy mailboxes, errors and
+timeouts abort without a retry or reset.
+
+For a verified backup of the entire active firmware bank:
+
+```sh
+mkdir -p tools/macos/backups
+sudo python3 tools/macos/tb16.py backup-nvm --experimental \
+  --device 0x100001234 --output tools/macos/backups/cable-active.backup.bin
+```
+
+Use separate files for cable and dock. The backup reads the active bank twice,
+requires identical bytes, saves to a new file, flushes it and checks the saved
+bytes. The destination must not already exist. Files are created with private
+permissions and assigned to the invoking sudo user. The `backups` directory
+and `*.backup.bin` files are ignored by Git because raw NVM may contain device
+identifiers. The CLI reports a SHA-256 digest and byte count.
+
+An active-bank backup is **not a complete physical SPI-flash dump**. It excludes
+the separate flash header, inactive bank and other controllers' firmware.
+There is no restore command yet, so these files do not guarantee recovery.
+A root-owned lock serializes this tool's mailbox users; do not run other
+firmware tools concurrently. Keep the dock connected throughout the reads.
+
+The six-scalar configuration-read ABI was verified from the local
+`IOThunderboltFamilyUserClient::externalMethod` and `configReadAction` code.
+The output is in big-endian Thunderbolt wire order, which the wrapper converts
+to host DWORDs. The active-flash mailbox protocol, Intel header version fields
+and bank-size calculation were checked against the Linux kernel's
+[`dma_port.c`](https://github.com/torvalds/linux/blob/master/drivers/thunderbolt/dma_port.c)
+and [`nvm.c`](https://github.com/torvalds/linux/blob/master/drivers/thunderbolt/nvm.c).
+No kernel modifications, entitlements or SIP changes are used.
+
 ## Tests and hardware validation still needed
 
 ```sh
@@ -233,6 +305,10 @@ macOS graphics driver or prove electrical AUX behavior.
 The native C checks intercept request submission to verify address/buffer
 construction and handling of submission errors, transaction errors and short
 transfers without issuing hardware requests.
+The Thunderbolt C tests additionally verify the six-scalar request, wire byte
+order, read-only mailbox opcodes, privilege rejection, capability matching,
+busy/error/timeout handling and bounds. Python tests check Intel versions
+against the bundled images and verify matching-read/exclusive-save behavior.
 
 Validation completed during development: native arm64 compilation with
 warnings as errors, Intel syntax checks, offline image inspection, tests, and
@@ -277,13 +353,25 @@ The filtered post-reconnect report is saved in
 This observation does not identify the cause of the HDMI failure, validate
 firmware writes, or establish that an MST update alone would resolve it.
 
-The next transport investigation is an access path available before a working
-external display exists. Static inspection of the local macOS 27.0.1 kernel
-identified a Thunderbolt DP output user client, but its exposed methods are
-link/HPD/mux controls rather than a direct AUX read operation. The generic
-Thunderbolt user client has configuration-read and IECS/I2C command methods;
-their permission model and wire arguments still need validating before any
-use. No guessed kernel method selectors or commands were sent to hardware.
+Lower-level hardware validation subsequently succeeded without a working
+external display:
+
+- Both switch headers returned Intel identity `0x15788086` and the expected
+  routes (`0x1` for cable, `0x301` for dock) through native configuration reads.
+- Both controllers exposed an idle DMA flash-read mailbox on NHI port 5.
+- Active NVM headers identified **16.00 on both controllers**, with a
+  516,096-byte active bank each. These are actual header-derived NVM versions,
+  distinct from System Information's `16.16` display.
+- Both 516,096-byte active banks were subsequently backed up. Each backup
+  passed two matching device reads and saved-file verification. Raw dumps are
+  retained locally under the ignored `backups` directory; the filtered
+  [NVM validation report](validation/m5-tb16-nvm-read.json) records versions,
+  byte counts and SHA-256 digests.
+
+The Thunderbolt DP output user client's exposed methods are link/HPD/mux
+controls rather than direct AUX reads. Configuration/NVM reads are now working,
+but the display-chip AUX route and NVM staging/authentication remain unfinished.
+No guessed kernel selectors or flash-programming commands were sent.
 
 Before describing this as a working macOS updater, collect evidence for:
 
