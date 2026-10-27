@@ -55,6 +55,36 @@ There are limits firmware updates do not remove:
   need a supported stream arrangement and must respect the Mac's display limits.
 - The repository reports that the dock power button only controls Dell PCs.
 
+For resolution or refresh-rate problems, capture both the selected mode and
+the modes advertised by macOS, without changing any display settings:
+
+```sh
+python3 tools/macos/tb16.py display-modes
+python3 tools/macos/tb16.py diagnose
+```
+
+`display-modes` uses public CoreGraphics APIs and requires neither root nor
+the compiled IOKit bridge. It reports external displays only, including
+point dimensions, framebuffer pixel dimensions and refresh rates. It does
+not measure the HDMI wire timing or prove that a listed mode produces an
+image. A manually selected current mode may be absent from the default mode
+list. `diagnose` also includes System Information's resolution/refresh and
+pixel-dimension strings; neither command includes raw EDID or serial numbers.
+
+The TB16's HDMI output is HDMI 1.4a, rather than the newer HDMI implementation
+in the tested Mac. Do not assume it will expose the same modes. For a blank
+screen at 2560x1440 and 120 Hz, first reduce refresh to 60 Hz at the working
+resolution, then try 2560x1440 at 60 Hz. On this monitor the advertised 1440p
+timings use 497.75 MHz at 120 Hz versus 241.5 MHz at approximately 60 Hz; the
+120 Hz RGB timing exceeds this HDMI generation's bandwidth (10.2 Gb/s in
+[HDMI's published bandwidth overview](https://www.hdmi.org/download/savefile?fileKey=Marketing%2Fuhs_program_overview_2022-01-01.pdf)). Higher refresh rates
+are better investigated over a direct DisplayPort cable from the dock to a
+monitor's DisplayPort input, with actual mode support verified on that setup.
+The [mode investigation report](validation/m5-tb16-hdmi-refresh-rates.json)
+records the 1080p/120 baseline, failing 1440p/120 user test, EDID timing
+summary and subsequent macOS configuration of 1440p/60. A reported active
+mode alone is not proof that the picture is visible.
+
 For diagnosis, connect dock AC power, the upstream Thunderbolt cable and one
 HDMI monitor directly. Approve the accessory if macOS asks; charging alone
 does not establish a working data connection. See

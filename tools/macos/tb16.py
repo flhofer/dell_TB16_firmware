@@ -31,6 +31,7 @@ def main(argv=None):
     listing.add_argument("--backend", choices=("ioi2c", "iodp"), default="ioi2c")
     listing.add_argument("--experimental", action="store_true")
     commands.add_parser("diagnose", help="filtered, read-only dock/display report; no native bridge required")
+    commands.add_parser("display-modes", help="read-only external-display modes/refresh rates using CoreGraphics")
     commands.add_parser("list-tbt", help="list TB16 switches and parent controllers using IORegistry")
     tbt = commands.add_parser("read-tbt-config", help="experimental read-only Thunderbolt configuration access")
     tbt.add_argument("--device", type=device_id, required=True)
@@ -101,6 +102,10 @@ def main(argv=None):
                                         args.address + args.length > 0x100000):
         parser.error("DPCD address must be 20-bit and length must be 1 to 256 bytes")
     try:
+        if args.command == "display-modes":
+            from display_modes import collect
+            print(json.dumps(collect(), indent=2))
+            return 0
         if args.command == "plan-nvm":
             from nvm import plan_update
             print(json.dumps(plan_update(args.image.read_bytes(), args.backup.read_bytes(),

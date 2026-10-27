@@ -80,7 +80,9 @@ def summarize_profiler(profiler):
         for display in gpu.get("spdisplays_ndrvs", []):
             displays.append({"name": display.get("_name"),
                              "connection": display.get("spdisplays_connection_type"),
-                             "online": display.get("spdisplays_online")})
+                             "online": display.get("spdisplays_online"),
+                             "mode_reported": display.get("_spdisplays_resolution"),
+                             "pixels_reported": display.get("_spdisplays_pixels")})
     return {"thunderbolt_dell_devices": devices(profiler.get("SPThunderboltDataType", [])),
             "displays": displays}
 
