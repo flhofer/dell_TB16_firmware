@@ -18,6 +18,7 @@ Want to support my efforts? Buy me a ☕? -- Thanks to all the sponsors :heart:
 
 # Contents
 - [Dell Firmware flashing instructions](#dell-tb16-firmware)
+  - [Experimental macOS port](#experimental-macos-port)
   - [TLDR; Suggested steps](#tldr-suggested-steps)
   - [Firmware versions and status](#firmware-versions-and-status)
   - [Flashing instructions](#flashing-instructions)
@@ -46,6 +47,21 @@ The Power button works only on Dell PCs, though. Is there a script somewhere tha
 > This procedure also works for Dell TB15 (retired due to overheating issues - tested by @bovvski) and may work for the related models Dell WD15 (same dock, USB upstream) and Dell TB18DC (same dock, dual TB upstream), as they share most components. In any case, I'm not responsible for any damage caused by following these instructions.
 
 Skills required for the flashing: a basic understanding of *nix Bash systems, and maybe a basic understanding of the Windows command line. The capability of either creating a live Linux and/or Windows 10 setup, or the availability of both on a system with a Thunderbolt 3+ controller.
+
+## Experimental macOS port
+
+Native macOS porting work is in [`tools/macos`](tools/macos/README.md).
+It includes an experimental Synaptics VMM3320/VMM3330 MST updater using
+IOKit DisplayPort AUX, firmware validation, EEPROM backup, and checksum plus
+full readback verification. Flashing is opt-in; the default `flash` command
+performs a read-only dry run. **This implementation has not been validated
+with a physical TB16.**
+
+The port does not yet update the Thunderbolt Cable/Dock NVM or ASMedia USB
+controller. Apple Silicon AUX access is not established; building the tool
+does not establish hardware compatibility. See the macOS README for exact
+requirements, commands, transport limitations, and the hardware test procedure.
+The Linux/Windows instructions below remain the established update procedure.
 
 ## Pre-flight checklist
 Before flashing, verify all of the following:
