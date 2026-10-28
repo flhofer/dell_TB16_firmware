@@ -18,6 +18,7 @@ Want to support my efforts? Buy me a ☕? -- Thanks to all the sponsors :heart:
 
 # Contents
 - [Dell Firmware flashing instructions](#dell-tb16-firmware)
+  - [Experimental macOS port](#experimental-macos-port)
   - [TLDR; Suggested steps](#tldr-suggested-steps)
   - [Firmware versions and status](#firmware-versions-and-status)
   - [Flashing instructions](#flashing-instructions)
@@ -46,6 +47,14 @@ The Power button works only on Dell PCs, though. Is there a script somewhere tha
 > This procedure also works for Dell TB15 (retired due to overheating issues - tested by @bovvski) and may work for the related models Dell WD15 (same dock, USB upstream) and Dell TB18DC (same dock, dual TB upstream), as they share most components. In any case, I'm not responsible for any damage caused by following these instructions.
 
 Skills required for the flashing: a basic understanding of *nix Bash systems, and maybe a basic understanding of the Windows command line. The capability of either creating a live Linux and/or Windows 10 setup, or the availability of both on a system with a Thunderbolt 3+ controller.
+
+## Experimental macOS port
+
+The [macOS tools](tools/macos/README.md) update the Thunderbolt cable and dock
+NVMs. Cable 26.06 and dock 27.00 were verified on an M5 MacBook Pro running
+macOS 27.0.1 (26A434), restoring HDMI and USB. The private Thunderbolt interface
+is restricted to that build. MST writing is experimental; ASMedia, TI and EC
+updates are not implemented.
 
 ## Pre-flight checklist
 Before flashing, verify all of the following:

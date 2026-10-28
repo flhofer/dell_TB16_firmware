@@ -1,0 +1,54 @@
+{
+  "host": "M5 MacBook Pro",
+  "macos": "27.0.1",
+  "build": "26A434",
+  "nvm_updates": [
+    {
+      "target": "cable",
+      "from": "16.00",
+      "to": "26.06",
+      "backup_reads": 2,
+      "authentication_status": 0,
+      "activation_verified": true,
+      "active_bank_bytes": 516096,
+      "active_bank_sha256": "f417751bcf1f960bb232d0e4377a04c845e1710aff9ee3227d481d3c89e97386",
+      "payload_bytes": 217088,
+      "payload_matches_image": true
+    },
+    {
+      "target": "dock",
+      "from": "16.00",
+      "to": "27.00",
+      "backup_reads": 2,
+      "authentication_status": 0,
+      "activation_verified": true,
+      "active_bank_bytes": 516096,
+      "active_bank_sha256": "686a57de871dfacaa3888437341ffc2d43848e6236d8acdd507c645c877f4d44",
+      "payload_bytes": 212992,
+      "payload_matches_image": true
+    }
+  ],
+  "working": {
+    "HDMI": [
+      "1920x1080 @ 120 Hz",
+      "2560x1440 @ 60 Hz"
+    ],
+    "DisplayPort": [
+      "2560x1440 @ 120 Hz"
+    ],
+    "USB": "user confirmed",
+    "charging": "user confirmed before updating"
+  },
+  "untested": [
+    "Ethernet",
+    "audio",
+    "sleep/wake"
+  ],
+  "mst_probe": {
+    "backend": "IODP read-only",
+    "version": "03.10.02",
+    "HDMI": "VMM3330",
+    "DisplayPort": "VMM3320"
+  },
+  "mst_and_asmedia_firmware_changed": false
+}

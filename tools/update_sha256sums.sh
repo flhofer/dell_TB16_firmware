@@ -16,6 +16,7 @@ shasum -a 256 \
   Dock_BME_16_00_nosec.bin \
   Dock_BME_27_00.bin \
   HP_131025_10_11_AB.bin \
+  bme-ie-03.12.002.eeprom \
   mst_03_12_002.cab > SHA256SUMS
 
 echo "Updated ${BIN_DIR}/SHA256SUMS"
