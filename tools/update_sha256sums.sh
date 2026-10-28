@@ -16,6 +16,15 @@ shasum -a 256 \
   Dock_BME_16_00_nosec.bin \
   Dock_BME_27_00.bin \
   HP_131025_10_11_AB.bin \
+  TB16_TI_Port1_1.2.11.bin \
+  TB16_TI_Port2_1.2.32.bin \
+  TB16_Dock_EC_1.0.0.10.bin \
+  TB16_TBT_Cable_PD_0.0.3.12.bin \
+  TB16_Universal_Cable_PD_0.0.3.12.bin \
+  TB16_PD_EC_1.0.0.pfs \
+  TB16_PD_EC_manifest.json \
+  TB16_PD_EC_metadata/*.bin \
+  TB16_PD_EC_metadata/*.sig \
   bme-ie-03.12.002.eeprom \
   mst_03_12_002.cab > SHA256SUMS
 
