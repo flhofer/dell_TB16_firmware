@@ -14,11 +14,16 @@ I’m currently working on:
 - :clipboard: Prerequisites and procedures for Windows flashing using standard tools, not Dell
 - :unlock: Procedures to unlock all features and tests for the USB controller via ASM Debug-Tool
 
+With others, @Wosca/@altbert, currently working on:
+- 🍎 MacOS support for flashing (works for TB parts now)
+- 🔘 Power button compatibility with other Laptops
+- 🔌 Power delivery codes to increase USB-PD on non Dell Laptops
+
 Want to support my efforts? Buy me a ☕? -- Thanks to all the sponsors :heart: 
 
 # Contents
 - [Dell Firmware flashing instructions](#dell-tb16-firmware)
-  - [Experimental macOS port](#experimental-macos-port)
+  - [Experimental MacOS port](#experimental-macos-port)
   - [TLDR; Suggested steps](#tldr-suggested-steps)
   - [Firmware versions and status](#firmware-versions-and-status)
   - [Flashing instructions](#flashing-instructions)
@@ -48,7 +53,7 @@ The Power button works only on Dell PCs, though. Is there a script somewhere tha
 
 Skills required for the flashing: a basic understanding of *nix Bash systems, and maybe a basic understanding of the Windows command line. The capability of either creating a live Linux and/or Windows 10 setup, or the availability of both on a system with a Thunderbolt 3+ controller.
 
-## Experimental macOS port
+## Experimental MacOS port
 
 The [macOS tools](tools/macos/README.md) update the Thunderbolt cable and dock
 NVMs. Cable 26.06 and dock 27.00 were verified on an M5 MacBook Pro running
@@ -131,10 +136,10 @@ Synaptics MST-1 VMM3320 | DP + VGA stream processing | 03.12.002 (displayed 3.12
 Synaptics MST-2 VMM3330 | mini-DP + HDMI stream processing | 03.12.002 (displayed 3.12.02)  | mst_03_12_002.cab | " "  | Linux |
   " | " |  03.12.002 | bme-ie-03.12.002.eeprom | " "  | Windows via VMMUpdater64 |
   " | " |  03.12.002 | mst-3_12_002-1_05.exe | " "  | Windows via CMD |
-Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00 | Cable_16_00.bin | Fixes MacBook charging problem (to confirm) | Linux |
-  " | " | 26.06 | Cable_26_06.bin | Unofficial update borrowed from WD15[^2], fixes "DROM data CRC32 mismatch" error and random display malfunction + Thunderbolt security update | Linux |
-Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00 | Dock_BME_16_00.bin | Unknown benefits | Linux |
-" | " | 27.00 | Dock_BME_27_00.bin | Thunderbolt security update | Linux |
+Thunderbolt TB16 Cable | Intel DSL6540 'Alpine Ridge' TB bridge | 16.00 | Cable_16_00.bin | Fixes MacBook charging problem (to confirm) | Linux/MacOS |
+  " | " | 26.06 | Cable_26_06.bin | Unofficial update borrowed from WD15[^2], fixes "DROM data CRC32 mismatch" error and random display malfunction + Thunderbolt security update | Linux/MacOS |
+Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back) | 16.00 | Dock_BME_16_00.bin | Unknown benefits | Linux/MacOS |
+" | " | 27.00 | Dock_BME_27_00.bin | Thunderbolt security update | Linux/MacOS |
 ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows, also with ASMTool |
  " | " | 131025_10.11_AB aka 131025_10.11_171 | HP_131025_10_11_AB.bin | Unofficial update - HP version, unclear changes | Windows, also with ASMTool |
  " | " | 140124_10.10_04 (this is older, but contains a "port warm reset patch") | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs, where this problem also does not arise | Windows, also with ASMTool |
