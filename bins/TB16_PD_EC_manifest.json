@@ -1,0 +1,107 @@
+{
+  "source": "official/DellDockingStationFwUp_1.0.0_03192018_TB16.exe",
+  "source_sha256": "ff9f2fa9b6a56ba000b57d1cbe29b0a5fbe3e563b3d0ac95c67198e7649db4e1",
+  "zlib_offset": "0x2a5810",
+  "pfs_crc_verified": true,
+  "signatures_cryptographically_verified": false,
+  "entries": [
+    {
+      "file": "TB16_PD_EC_metadata/TB16_Package_Version_1.0.0.bin",
+      "signature": "TB16_PD_EC_metadata/TB16_Package_Version_1.0.0.sig",
+      "guid": "e7ca1f36-bf73-4574-afe6-a4ccacabf479",
+      "version": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "pfs_data_offset": "0x58",
+      "size": 156,
+      "sha256": "3b9415f6600672e8361fb109438e4ec51c2805ec374e874f2319a6f023fb8895"
+    },
+    {
+      "file": "TB16_TI_Port1_1.2.11.bin",
+      "signature": "TB16_PD_EC_metadata/TB16_TI_Port1_1.2.11.sig",
+      "guid": "8fe183da-c94e-4804-b319-0f1ba5457a69",
+      "version": [
+        0,
+        1,
+        2,
+        11
+      ],
+      "pfs_data_offset": "0x23c",
+      "size": 57736,
+      "sha256": "f450e5b8586fd5772a00f98038a998e6ba4daa38183d157060f0ad6c91e802dd"
+    },
+    {
+      "file": "TB16_TI_Port2_1.2.32.bin",
+      "signature": "TB16_PD_EC_metadata/TB16_TI_Port2_1.2.32.sig",
+      "guid": "1b52c630-86f6-4aee-9f0c-474dc6be49b6",
+      "version": [
+        0,
+        1,
+        2,
+        32
+      ],
+      "pfs_data_offset": "0xe50c",
+      "size": 57812,
+      "sha256": "c92f358e1a196ae7edaf6d803261c2378c28894cae07a60c06dc8e6f7fb7e2ef"
+    },
+    {
+      "file": "TB16_Dock_EC_1.0.0.10.bin",
+      "signature": "TB16_PD_EC_metadata/TB16_Dock_EC_1.0.0.10.sig",
+      "guid": "33cc8870-b1fc-4ec7-948a-c07496874faf",
+      "version": [
+        1,
+        0,
+        0,
+        10
+      ],
+      "pfs_data_offset": "0x1c828",
+      "size": 57344,
+      "sha256": "1afd6ad0cb1fae70dc33fb77825548c048c30fe40966bb0f63d1c0a685394760"
+    },
+    {
+      "file": "TB16_TBT_Cable_PD_0.0.3.12.bin",
+      "signature": "TB16_PD_EC_metadata/TB16_TBT_Cable_PD_0.0.3.12.sig",
+      "guid": "6dc832fc-5bb0-4e63-a2ff-02aaba5bc1dc",
+      "version": [
+        0,
+        0,
+        3,
+        12
+      ],
+      "pfs_data_offset": "0x2a970",
+      "size": 22016,
+      "sha256": "bcd888c3fdff75e3fe67eaaaf4784dbd67ce3b72274621bc2c109067b5c494f6"
+    },
+    {
+      "file": "TB16_Universal_Cable_PD_0.0.3.12.bin",
+      "signature": "TB16_PD_EC_metadata/TB16_Universal_Cable_PD_0.0.3.12.sig",
+      "guid": "e2bf3aad-61a3-44bf-91ef-349b39515d29",
+      "version": [
+        0,
+        0,
+        3,
+        12
+      ],
+      "pfs_data_offset": "0x300b8",
+      "size": 22016,
+      "sha256": "a91002db4518b98d394cee988097662a756896ec124966dd8d6f2f7aa77082bc"
+    },
+    {
+      "file": "TB16_PD_EC_metadata/TB16_PFS_Names.bin",
+      "signature": "TB16_PD_EC_metadata/TB16_PFS_Names.sig",
+      "guid": "4d583fd3-f80e-4055-a145-9bec16cb33b0",
+      "version": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "pfs_data_offset": "0x35800",
+      "size": 490,
+      "sha256": "b79dd245262b49d536c492db129e9e0ababf3d887b7d53af71606fabf165ae1b"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+The PkgVersion file can be empty.
+The Version of the PkgVersion payload becomes the “Package Version” compared to the Dock EC version during dock flash
+
