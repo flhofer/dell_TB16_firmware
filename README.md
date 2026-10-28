@@ -143,14 +143,22 @@ Thunderbolt TB16 Dock | Intel DSL6540 'Alpine Ridge' TB bridge and USB3.1 (back)
 ASM USB controller |  ASM 1042A USB 3.0 host controller | 	131025_10.11_A9 | DELL_131025_10_11_A9.bin | Fixes Realtek audio noise | Windows, also with ASMTool |
  " | " | 131025_10.11_AB aka 131025_10.11_171 | HP_131025_10_11_AB.bin | Unofficial update - HP version, unclear changes | Windows, also with ASMTool |
  " | " | 140124_10.10_04 (this is older, but contains a "port warm reset patch") | 140124_10_10_4_2.BIN | Unofficial update, fixes S3 wakeup hang for RTL Ethernet controller. NOTE: This update does not work with Macs, where this problem also does not arise | Windows, also with ASMTool |
-TI 1.2.11 Port Controller 1	 | Texas Instruments TB-chip firmware Cable | 01.02.11 | N/A | Updated through BIOS[^1] | none yet | 
-TI 1.2.32 Port Controller 2	| Texas Instruments TB-chip firmware Dock | 01.02.32 | N/A | Updated through BIOS[^1] | none yet | 
-Dock EC | Embedded controller for basic function, e.g. led, fan | 01.00.00.10 | N/A | Updated through BIOS[^1] | none yet | 
-Cable PD | Power Delivery controller | 00.03.12 | N/A | Updated through BIOS[^1]| none yet | 
+TI 1.2.11 Port Controller 1 | TI TPS65982 PD port controller 1 | 01.02.11 | TB16_TI_Port1_1.2.11.bin | Updated through BIOS[^1] | Dell BIOS-assisted package |
+TI 1.2.32 Port Controller 2 | TI TPS65982 PD port controller 2 | 01.02.32 | TB16_TI_Port2_1.2.32.bin | Updated through BIOS[^1] | Dell BIOS-assisted package |
+Dock EC | Embedded controller for basic function, e.g. led, fan | 01.00.00.10 | TB16_Dock_EC_1.0.0.10.bin | Updated through BIOS[^1] | Dell BIOS-assisted package |
+TBT Cable PD | Thunderbolt cable PD firmware | 00.03.12 | TB16_TBT_Cable_PD_0.0.3.12.bin | Updated through BIOS[^1] | Dell BIOS-assisted package |
+Universal Cable PD | Universal cable PD firmware | 00.03.12 | TB16_Universal_Cable_PD_0.0.3.12.bin | Updated through BIOS[^1] | Dell BIOS-assisted package |
 [^1]: These are updated early on and should already be done (Dell Tool v1.00.00 - v1.00.02)
 [^2]: Since the summer of 2016, Dell has shipped WD15 and TB16 docks with universal cables, supporting USB3 and Thunderbolt 3 (recognizable by the bolt and DP logo on the Type-C connector). It makes sense that they ship TB Cable firmware with the WD15.
 
 ### File integrity (SHA-256)
+
+The PD/EC images were extracted from the signed Dell 1.0.0 package. See
+[`tools/bios_flash`](tools/bios_flash/README.md) for reproducible extraction,
+provenance, and the Windows BIOS-assisted updater wrapper. These component
+payloads are not inputs for the Thunderbolt NVM flasher or complete SPI images.
+The wrapper launches the original package; standalone BIN flashing is not yet
+implemented. Windows 11 and XPS 13 Plus 9320 execution remain unvalidated.
 
 Checksums for all firmware files are listed in `bins/SHA256SUMS`.
 To regenerate the checksum file after adding/replacing firmware blobs, run:
